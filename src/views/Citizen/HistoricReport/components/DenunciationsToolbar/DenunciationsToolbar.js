@@ -75,10 +75,11 @@ const useStyles = makeStyles(theme => ({
 
 
 const DenunciationsToolbar = props => {
-  const { className, denunciationsSlect, categories, ...rest } = props;
+  const { className, denunciationsSlect, categories, reportStatus, ...rest } = props;
 
   const [descricao, setDescricao] = useState('');
   const [categoria, setCategoria] = useState('');
+  const [reportStatusValue, setReportStatusValue] = useState('');
   const [denunciationCategory, setDenunciationCategory] = useState('');
   const [denunciationStreet, setDenunciationStreet] = useState('');
   const [denunciationNeighborhood, setDenunciationNeighborhood] = useState('');
@@ -191,7 +192,30 @@ const DenunciationsToolbar = props => {
                 }
               </Select>
             </FormControl>
+            
           </Grid>
+
+          <Grid item xs={12} sm={2}>
+            <FormControl className={classes.formControl} fullWidth>
+              <InputLabel htmlFor="age-native-simple">Status</InputLabel>
+              <Select
+                native
+                value={reportStatusValue}
+                onChange={e => setReportStatusValue(e.target.value)}
+              >
+                <option aria-label="None" value="" />
+                {reportStatus.map(statusReport => {
+                  return (
+                    <option value={statusReport.id}>{statusReport.name}</option>
+                  )
+                })
+                }
+              </Select>
+            </FormControl>
+            
+          </Grid>
+
+          
 
           {/* <Grid item xs={12} sm={2}>
             <FormControl variant="outlined" margin="dense" fullWidth>

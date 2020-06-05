@@ -73,6 +73,14 @@ const styles = makeStyles(theme => ({
     color: "green",
     fontSize: 45
   },
+  markerProgress: {
+    color: "orange",
+    fontSize: 45
+  },
+  markerAnalysis: {
+    color: "blue",
+    fontSize: 45
+  },
   modal: {
     display: 'flex',
     alignItems: 'center',
@@ -85,6 +93,7 @@ const styles = makeStyles(theme => ({
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
+    overflow: 'hidden',
   },
   button1: {
     display: 'absolute',
@@ -103,12 +112,21 @@ const styles = makeStyles(theme => ({
 
 const ReportMap = props => {
 
-  const [locationsAproved, setLocationsApproved] = useState([])
-  const [locationsFinished, setLocationsFinished] = useState([])
+  const [locationsInAnalysis, setLocationsInAnalysis] = useState([]);
+  const [locationsInProgress, setLocationsInProgress] = useState([]);
+  const [locationsAproved, setLocationsApproved] = useState([]);
+  const [locationsFinished, setLocationsFinished] = useState([]);
 
-  const [longitude, setLongitude] = useState('')
-  const [latitude, setLatitude] = useState('')
-  const [idReportModal, setidReportModal] = useState('')
+  const [longitude, setLongitude] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [idReportModal, setidReportModal] = useState('');
+
+  const limpaTodos = () => {
+    setLocationsApproved([]);
+    setLocationsFinished([]);
+    setLocationsInProgress([]);
+    setLocationsInAnalysis([]);
+  }
 
   const limpaEstadoApproved = () => {
     setLocationsApproved([]);
@@ -118,11 +136,19 @@ const ReportMap = props => {
     setLocationsFinished([]);
   }
 
+  const limpaEstadoInProgress = () => {
+    locationsInProgress([]);
+  }
+
+  const limpaEstadoInAnalysis = () => {
+    locationsInAnalysis([]);
+  }
+
   const filterBoth = () => {
-    API.get('/report?status=c37d9588-1875-44dd-8cf1-6781de7533c3'
+    API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c'
     ).then(response => {
       const report = response.data
-      setLocationsFinished(report)
+      setLocationsInAnalysis(report)
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
@@ -132,6 +158,24 @@ const ReportMap = props => {
     ).then(response => {
       const report = response.data
       setLocationsApproved(report)
+    }).catch(erro => {
+      console.log(erro);
+      /* setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true); */
+    })
+    API.get('/report?status=c37d9588-1875-44dd-8cf1-6781de7533c3'
+    ).then(response => {
+      const report = response.data
+      setLocationsInProgress(report)
+    }).catch(erro => {
+      console.log(erro);
+      /* setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true); */
+    })
+    API.get('/report?status=52ccae2e-af86-4fcc-82ea-9234088dbedf' /*MOSTRANDO AS NEGADAS (ALTERAR PARA ENCERRADAS)*/
+    ).then(response => {
+      const report = response.data
+      setLocationsFinished(report)
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
@@ -162,8 +206,11 @@ const ReportMap = props => {
     API.get('/report?status=c37d9588-1875-44dd-8cf1-6781de7533c3'
     ).then(response => {
       const report = response.data
+      /* limpaTodos(); */
       setLocationsFinished(report)
+      limpaEstadoInProgress();
       limpaEstadoApproved();
+      limpaEstadoInAnalysis();
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
@@ -175,8 +222,11 @@ const ReportMap = props => {
     API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
     ).then(response => {
       const report = response.data
+      /* limpaTodos(); */
       setLocationsApproved(report)
+      limpaEstadoInProgress();
       limpaEstadoFinished();
+      limpaEstadoInAnalysis();
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
@@ -184,22 +234,38 @@ const ReportMap = props => {
     })
   }
 
-  /* const filtrarTodas = () => {
-    API.get('/report'
+  const filtroInAnalysis = () => {
+    API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c'
     ).then(response => {
       const report = response.data
-      setLocations(report)
+      limpaTodos();
+      setLocationsInAnalysis(report)
+     /*  limpaEstadoInProgress();
+      limpaEstadoFinished();
+      limpaEstadoApproved(); */
     }).catch(erro => {
       console.log(erro);
-       setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); 
+      /* setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true); */
     })
-  } */
+  }
 
-  /*  const teste = () => {
- 
-     console.log("ESTADO " + JSON.stringify(locations[0].latitude));
-   } */
+  const filtroInProgress = () => {
+    API.get('/report?status=c37d9588-1875-44dd-8cf1-6781de7533c3'
+    ).then(response => {
+      const report = response.data
+      /* limpaTodos(); */
+      setLocationsInAnalysis(report)
+      limpaEstadoFinished();
+      limpaEstadoApproved();
+      limpaEstadoInAnalysis();
+    }).catch(erro => {
+      console.log(erro);
+      /* setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true); */
+    })
+  }
+
 
   const style = styles();
 
@@ -266,12 +332,9 @@ const ReportMap = props => {
         defaultCenter={defaultProps.center}
         defaultZoom={defaultProps.zoom}
       >
-
-
         {locationsAproved.map(locationsMap => (
           console.log(locationsMap),
           <RoomIcon
-            //Abrir o modal (fazer)
             onClick={() => handleOpen(locationsMap.id)}
             key={locationsMap.id}
             className={style.markerApproved}
@@ -283,7 +346,6 @@ const ReportMap = props => {
         {locationsFinished.map(locationsMap => (
           console.log(locationsMap),
           <RoomIcon
-            //Abrir o modal (fazer)
             onClick={() => handleOpen(locationsMap.id)}
             key={locationsMap.id}
             className={style.markerFinished}
@@ -291,6 +353,26 @@ const ReportMap = props => {
             lng={locationsMap.longitude}
           />
 
+        ))}
+        {locationsInProgress.map(locationsMap => (
+          console.log(locationsMap),
+          <RoomIcon
+            onClick={() => handleOpen(locationsMap.id)}
+            key={locationsMap.id}
+            className={style.markerProgress}
+            lat={locationsMap.latitude}
+            lng={locationsMap.longitude}
+          />
+        ))}
+        {locationsInAnalysis.map(locationsMap => (
+          console.log(locationsMap),
+          <RoomIcon
+            onClick={() => handleOpen(locationsMap.id)}
+            key={locationsMap.id}
+            className={style.markerAnalysis}
+            lat={locationsMap.latitude}
+            lng={locationsMap.longitude}
+          />
         ))}
         <RoomIcon />
         <RoomIcon className={style.marker} lat={-22.893186} lng={-47.166818} />
@@ -307,31 +389,36 @@ const ReportMap = props => {
           <Button
             href="/criar-denuncia"
             className={style.button1}
-          >DENÚNCIAR</Button>
+          >Denúnciar</Button>
           <Button
             href="/historico-de-denuncias"
             className={style.button1}
-          >HISTÓRICO</Button>
-          <Button
-            href="/historico-denuncias"
-            className={style.button1}
-          >HISTÓRICO</Button>
+          >Histórico</Button>
           <Button
             text="My Marker"
             onClick={filterFinished}
             className={style.button1}
-          >EM PROGRESSO</Button>
-
+          >Encerradas</Button>{/* ALTERAR PARA FILTRAR POR ENCERRADO */}
           <Button
             text="My Marker"
             onClick={filtroApproved}
             className={style.button1}
-          >APROVADAS</Button>
+          >Aprovadas</Button>
+          <Button
+            text="My Marker"
+            onClick={filtroInAnalysis}
+            className={style.button1}
+          >Em análise</Button>
+          <Button
+            text="My Marker"
+            onClick={filtroInProgress}
+            className={style.button1}
+          >Em progresso</Button>
           <Button
             text="My Marker"
             onClick={filterBoth}
             className={style.button1}
-          >TODAS DENÚNCIAS</Button>
+          >Todas denúncias</Button>
         </div>
 
       </Grid>

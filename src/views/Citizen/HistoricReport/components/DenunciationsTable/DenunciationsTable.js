@@ -251,22 +251,8 @@ const DenunciationsTable = props => {
     setOpen(false);
   }
 
-
-  const [reportComments, setReportComments] = React.useState(false);
-  // Listar Cometarios
-  const listComments = () => {
-    API.get(`/report-commentary/report/0efd3d3e-2ff6-40e3-a7f0-6100fe403701`,
-    ).then(response => {
-      const listComments2 = response.data;
-      console.log("ENTRE.LLLLLL.." + JSON.stringify(listComments2))
-      setReportComments(listComments2);
-    }).catch(erro => {
-      console.log(erro);
-    })
-  }
-
   React.useEffect(() => {
-    listComments();
+    
     // listen for auth state changes
     const unsubscribe = firebase.auth().onAuthStateChanged(getFirebase)
     console.log(3)
@@ -339,24 +325,9 @@ const DenunciationsTable = props => {
   //FIM Modal de envio Coordenador
 
 
-  //modal comentario
-
-  const [openComments, setComments] = React.useState(false);
 
 
-  console.log(JSON.stringify(openComments))
 
-  const handleOpenComments = (denunciationsp2) => {
-    setOpenModalDenunciations({
-      ...denunciations,
-      denunciations: denunciationsp2
-    });
-    setComments(true);
-  };
-
-  const handleCloseComments = () => {
-    setComments(false);
-  };
 
   ////Modal de Denuncias 3 pontinho
   const [openDenunciation, setOpenDenunciation] = React.useState(false);
@@ -397,10 +368,6 @@ const DenunciationsTable = props => {
   };
   //FIM Abrir opções dos 3 pontinho
 
-
-  const tratarClose = () => {
-    setComments(false)
-  }
 
   const [progressStatus, setProgressStatus] = React.useState(true);
 
@@ -474,11 +441,6 @@ const DenunciationsTable = props => {
       {...rest}
       className={clsx(classes.root, className)}
     >
-      {openComments &&
-        <ReportCommentaries open={openComments} close={tratarClose} reportId={openModalDenunciations.denunciations.id}>
-
-        </ReportCommentaries>
-      }
       <CardContent className={classes.content}>
         <PerfectScrollbar>
           <div className={classes.inner}>
@@ -490,7 +452,7 @@ const DenunciationsTable = props => {
                   <TableCell>Bairro</TableCell>
                   <TableCell>Categoria</TableCell>
                   <TableCell>Datas</TableCell>
-                  <TableCell>Cometários</TableCell>
+                  <TableCell>Status</TableCell>
 
                 </TableRow>
               </TableHead>
@@ -505,9 +467,7 @@ const DenunciationsTable = props => {
                       <TableCell onClick={() => handleOpen(denunciation.id)}>{denunciation.neighborhood}</TableCell>
                       <TableCell onClick={() => handleOpen(denunciation.id)}>{denunciation.category.name}</TableCell>
                       <TableCell onClick={() => handleOpen(denunciation.id)}>{moment(denunciation.creationDate).format('DD/MM/YYYY')}</TableCell>
-                      <TableCell onClick={() => handleOpenComments(denunciation)}><div style={{
-                        textAlign: 'center',
-                      }}><ForumIcon /></div></TableCell>
+                      <TableCell onClick={() => handleOpen(denunciation.id)}>{(denunciation.reportStatus.description)}</TableCell>
                     </TableRow>
 
                   )
