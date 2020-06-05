@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom'
 import Icon from '@material-ui/core/Icon'
 import { makeStyles } from '@material-ui/styles';
 import RoomIcon from '@material-ui/icons/Room';
 import Report from 'components/Report';
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 
 
 import {
@@ -23,7 +24,8 @@ import {
   Typography,
   TextField,
   Grid,
-  Box
+  Box,
+  Avatar
 } from '@material-ui/core';
 import Camera, { idealResolution } from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
@@ -39,7 +41,7 @@ import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 
 import API from '../../../utils/API';
-import { useState, useEffect } from 'react';
+import s3 from 'utils/AWS-S3'
 import currentUser from 'utils/AppUser';
 import GoogleMapReact from 'google-map-react';
 
@@ -95,6 +97,12 @@ const styles = makeStyles(theme => ({
     padding: theme.spacing(2, 4, 3),
     overflow: 'hidden',
   },
+  avatar: {
+    height: 100,
+    width: 100,
+    flexShrink: 0,
+    flexGrow: 0
+  },
   button1: {
     display: 'absolute',
     backgroundColor: '#fff',
@@ -106,7 +114,8 @@ const styles = makeStyles(theme => ({
     "&:last-child": {
       borderRight: "solid 1px #cccccc"
     }
-  }
+  },
+
 
 }));
 
@@ -240,9 +249,9 @@ const ReportMap = props => {
       const report = response.data
       limpaTodos();
       setLocationsInAnalysis(report)
-     /*  limpaEstadoInProgress();
-      limpaEstadoFinished();
-      limpaEstadoApproved(); */
+      /*  limpaEstadoInProgress();
+       limpaEstadoFinished();
+       limpaEstadoApproved(); */
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
@@ -325,6 +334,54 @@ const ReportMap = props => {
   /* FIM MODAL */
 
 
+
+
+
+  /* INICIO MODAL  DENUCNIAS*/
+
+  const [openDenuncias, setOpenDenuncias] = React.useState(false);
+
+  const handleOpenDenuncias = props => {
+    setOpenDenuncias(true);
+  };
+
+  const handleCloseDenuncias = () => {
+    setOpenDenuncias(false);
+  };
+  /* FIM MODAL */
+
+  var fileUploadInput = React.createRef();
+
+  const showFileUpload = (e) => {
+    fileUploadInput.current.click();
+  }
+
+  const updatePhoto = photoUrl => {
+
+    // const update = {
+    //   userId: user.id,
+    //   photoURL: photoUrl
+    // }
+
+    // api.put('/user/update-photo-profile', update)
+    //   .then(response => {
+    //     setUser(response.data)
+    //   })
+  }
+
+  const uploadFileImg = (e) => {
+    s3(e.target.files[0])
+      .then((result) => {
+        const photo = result.fotoUrl
+        updatePhoto(photo)
+
+      }).catch((erro) => {
+
+      })
+  }
+
+
+
   return (
     <div style={{ height: '100vh', width: '100%' }}>
       <GoogleMapReact
@@ -387,7 +444,7 @@ const ReportMap = props => {
       >
         <div style={{ textAlign: 'left', width: 10 }}>
           <Button
-            href="/criar-denuncia"
+            onClick={handleOpenDenuncias}
             className={style.button1}
           >Denúnciar</Button>
           <Button
@@ -443,6 +500,153 @@ const ReportMap = props => {
               <Report reportId={idReportModal}></Report>
               <Button onClick={handleClose}>Voltar</Button>
 
+            </div>
+          </Fade>
+        </Modal>
+
+      </div>
+      {/* FIM MODAL */}
+
+
+
+
+      {/* MODAL DENUNCIA */}
+      <div>
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          className={style.modal}
+          open={openDenuncias}
+          onClose={handleCloseDenuncias}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={openDenuncias}>
+            {/* DENTRO DO MODAL */}
+            <div className={style.paper}>
+              <Card>
+                <form
+                  autoComplete="off"
+                  noValidate
+                >
+                  <CardHeader
+                    subheader="Informe sua Denúncia"
+                    title="Denúncias"
+                  />
+                  <Divider />
+                  <CardContent>
+                    <Grid
+                      container
+                      spacing={3}
+                    >
+                      <Grid
+                        item
+                        lg={12}
+                        md={12}
+                        xl={12}
+                        xs={12}
+                      >
+                        <TextField
+                          fullWidth
+                          helperText="Digite o título da denúncia"
+                          label="Título"
+                          margin="dense"
+                          name="titulo"
+                          required
+                          variant="outlined"
+                        />
+                      </Grid>
+
+
+
+                      <Grid
+                        item
+                        lg={12}
+                        md={12}
+                        xl={12}
+                        xs={12}
+                      >
+
+                        <TextareaAutosize style={{ width: '100%', fontSize: '15px', borderRadius: '4px', padding: '5px 13px 10px 13px' }} rowsMin={3} aria-label="empty textarea" placeholder="Descreva sua denúncia*" />
+
+                      </Grid>
+
+
+                      <Grid
+                        item
+                        lg={12}
+                        md={12}
+                        xl={12}
+                        xs={12}
+                      >
+
+                        <input
+                          onChange={uploadFileImg}
+                          type="file"
+                          id="my_file"
+                          accept="image/*"
+                          style={{ display: "none" }}
+                          ref={fileUploadInput}
+                        />
+                        <div style={{textAlign: 'center'}}>
+                        <Avatar
+                          className={style.avatar}
+                          onClick={showFileUpload}
+                        />
+                        </div>
+                      </Grid>
+
+
+
+
+
+                    </Grid>
+                  </CardContent>
+                  <Divider />
+                  <CardActions>
+                    <Grid
+                      item
+                      lg={6}
+                      md={6}
+                      xl={6}
+                      xs={6}
+                    >
+                      <Button
+                        color="primary"
+                        variant="contained"
+                        style={{ background: 'green' }}
+                      >
+                        Enviar
+                     </Button>
+                    </Grid>
+
+
+                    <Grid
+                      item
+                      lg={6}
+                      md={6}
+                      xl={6}
+                      xs={6}
+                    >
+                      <Button
+                        color="primary"
+                        onClick={handleCloseDenuncias}
+                        variant="contained"
+                        style={{
+                          background: 'red',
+                          float: 'right'
+                        }}
+
+                      >
+                        Fechar
+                     </Button>
+                    </Grid>
+                  </CardActions>
+                </form>
+              </Card>
             </div>
           </Fade>
         </Modal>
