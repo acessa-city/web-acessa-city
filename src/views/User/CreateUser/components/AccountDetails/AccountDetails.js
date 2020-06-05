@@ -66,36 +66,36 @@ const AccountDetails = props => {
     setErrors([]);
   }
 
-  const campoVazio = values =>{
+  // const campoVazio = values =>{
 
-    values.name === '' ||
-    values.cnpj=== ''||
-    values.email=== ''||
-    values.address=== ''||
-    values.neighborhood=== ''||
-    values.zipCode=== ''||
-    values.number=== ''||
-    values.cityId=== ''
-    ?  
-    setErrors([
-      "Existem campos vazios."
-    ]) : 
-    setErrorsStatus(false);
-  }
+  //   values.name === '' ||
+  //   values.cnpj=== ''||
+  //   values.email=== ''||
+  //   values.address=== ''||
+  //   values.neighborhood=== ''||
+  //   values.zipCode=== ''||
+  //   values.number=== ''||
+  //   values.cityId=== ''
+  //   ?  
+  //   setErrors([
+  //     "Existem campos vazios."
+  //   ]) : 
+  //   setErrorsStatus(false);
+  // }
 
 
-  const [password, setPassword] = useState({
-    password: '',
-    confirmPassword: ''
-  });
+  // const [password, setPassword] = useState({
+  //   password: '',
+  //   confirmPassword: ''
+  // });
 
-  const handleChange2 = (keyName, e) => { setPassword({ ...password, [keyName]: e.target.value }); }
+  //const handleChange2 = (keyName, e) => { setPassword({ ...password, [keyName]: e.target.value }); }
 
 
   const handleClick = (event) => {
     event.preventDefault();
 
-    campoVazio(values)
+    //campoVazio(values)
 
     const userCreate = {
 
@@ -110,6 +110,7 @@ const AccountDetails = props => {
         values.role
       ]
     }
+    console.log("teste", userCreate);
     props.createUser(userCreate);
     limparForm()
   }
@@ -124,8 +125,6 @@ const AccountDetails = props => {
     })
   }
 
-
-
   const teste = () => {
     return (<div>
       {errors.map(error => (
@@ -133,13 +132,23 @@ const AccountDetails = props => {
       ))}
     </div>)
   }
-
+  
+  const [roles, setRoles] = useState({
+    loaded: false,
+  });
 
   React.useEffect(() => {
 
     currentUser().then((result) => {
       setUserLogado(result);
+      setRoles({
+        ...roles,
+        loaded: true,
+        admin: result.roles.includes('admin'),
+        city_hall: result.roles.includes('city_hall'),
+      })
     })
+
   }, []);
 
   return (
@@ -220,18 +229,17 @@ const AccountDetails = props => {
               >
                 <TextField
                   fullWidth
-                  error={password.password != password.confirmPassword}
                   helperText="Informe a senha"
                   label="Senha"
                   margin="dense"
                   name="password"
-                  onChange={handleChange2}
+                  onChange={handleChange}
                   type="password"
-                  onChange={sender => handleChange2('password', sender)}
+                  value={values.password}
                   variant="outlined"
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
+              {/* <Grid item xs={12} md={3}>
                 <TextField
                   fullWidth
                   error={password.password != password.confirmPassword}
@@ -245,7 +253,7 @@ const AccountDetails = props => {
                   value={password.confirmPassword}
                   variant="outlined"
                 />
-              </Grid>
+              </Grid> */}
               <Grid
                 item
                 md={2}
@@ -253,19 +261,38 @@ const AccountDetails = props => {
               >
                 <FormControl variant="outlined" margin="dense" fullWidth>
                   <InputLabel>Tipo:</InputLabel>
-                  <Select native
-                    label="Role"
-                    value={values.role}
-                    onChange={handleChange}
-                    label="Role"
-                    inputProps={{
-                      name: 'role',
-                    }}>
-                    <option aria-label="None" value="" />
-                    <option value='coordinator'>Coordenador</option>
-                    <option value='moderator'>Moderador</option>
-                    <option value='user'>Usuários</option>
-                  </Select>
+                  {roles.admin &&
+                    <Select native
+                      label="Role"
+                      value={values.role}
+                      onChange={handleChange}
+                      label="Role"
+                      inputProps={{
+                        name: 'role',
+                      }}>
+
+                      <option aria-label="None" value="" />
+                      <option value='user'>Usuários</option>
+
+                    </Select>
+                  }
+
+                  {roles.city_hall &&
+                    <Select native
+                      label="Role"
+                      value={values.role}
+                      onChange={handleChange}
+                      label="Role"
+                      inputProps={{
+                        name: 'role',
+                      }}>
+
+                      <option aria-label="None" value="" />
+                      <option value='coordinator'>Coordenador</option>
+                      <option value='moderator'>Moderador</option>
+       
+                    </Select>
+                  }
                 </FormControl>
               </Grid>
             </Grid>
