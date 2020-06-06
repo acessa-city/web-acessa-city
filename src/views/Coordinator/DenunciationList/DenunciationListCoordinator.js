@@ -158,10 +158,13 @@ const DenunciationListCoordinator = () => {
       if(filtro.neighborhood){
         stringFiltro +=  '&neighborhood=' + filtro.neighborhood 
       }
+      if (filtro.status) {
+        stringFiltro += '&status=' + filtro.status
+      }
       
 
     console.log("filtro aqui" + JSON.stringify(filtro))
-    API.get(`/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010${stringFiltro}`,
+    API.get(`/report?${stringFiltro}`,
     ).then(response => {
       const filterDenunciation = response.data;
       setDenunciations(filterDenunciation);

@@ -138,9 +138,11 @@ const DenunciationList = () => {
       })
   }
 
+
+
  //Fitrar Denuncias
   const filter = (filtro) =>{
-    API.get(`/report?category=${filtro.category}&street=${filtro.street}&neighborhood=${filtro.neighborhood}&creationDate=${filtro.creationDate}&status=48cf5f0f-40c9-4a79-9627-6fd22018f72c`,
+    API.get(`/report?category=${filtro.category}&street=${filtro.street}&neighborhood=${filtro.neighborhood}&creationDate=${filtro.creationDate}&status=${filtro.status}`,
     ).then(response => {
       const filterDenunciation = response.data;
       setDenunciations(filterDenunciation);
