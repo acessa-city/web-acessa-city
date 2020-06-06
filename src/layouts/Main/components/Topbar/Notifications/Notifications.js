@@ -33,7 +33,6 @@ const Notifications = () => {
       api.get('user/'+userId+'/notifications')
       .then(result => {
         const messages = result.data;
-        console.log(result.data)
         setNotifications(messages)
       })
     }

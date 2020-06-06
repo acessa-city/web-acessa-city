@@ -46,9 +46,7 @@ const Routes = () => {
   });
 
   useEffect(() => {
-    console.log(22);
     currentUser().then(user => {
-      console.log('Routes: UserRoles::::', user.roles.includes('admin'))
       setRoles({
         ...roles,
         loaded: true,
