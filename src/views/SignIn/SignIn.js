@@ -51,15 +51,15 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.neutral,
     height: '100%',
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
     backgroundImage: 'url(/images/auth.jpg)',
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center'
   },
   quoteInner: {
-    textAlign: 'center',
+    // textAlign: 'center',
     flexBasis: '600px'
   },
   quoteText: {
@@ -181,10 +181,8 @@ const SignIn = props => {
     firebase.auth().signInWithPopup(googleAuthProvider)
       .then((result) => {          
         firebase.auth().onAuthStateChanged(function(user) {
-          console.log('FbUser:::', user);
             if (user) {
               user.getIdTokenResult().then((token) => {
-                console.log(token.token)
                 asyncLogin(token.token).then(result => {
                   window.location = '/'
                 })
@@ -215,11 +213,10 @@ const SignIn = props => {
       .signInWithEmailAndPassword(formState.values.email, formState.values.password)
       .then((result) => {          
         firebase.auth().onAuthStateChanged(function(user) {
-          console.log('FbUser:::', user);
             if (user) {
               user.getIdTokenResult().then((token) => {
                 console.log(token.token)
-                asyncLogin(token.token).then(result => {                  
+                asyncLogin(token.token).then(result => {
                   window.location = '/'
                 })
                 .catch(error => {
@@ -258,21 +255,14 @@ const SignIn = props => {
                 className={classes.quoteText}
                 variant="h1"
               >
-                Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
-                they sold out High Life.
+                Acessa City
               </Typography>
               <div className={classes.person}>
                 <Typography
                   className={classes.name}
-                  variant="body1"
+                  variant="h1"
                 >
-                  Takamaru Ayako
-                </Typography>
-                <Typography
-                  className={classes.bio}
-                  variant="body2"
-                >
-                  Manager at inVision
+                  Colaboração social em tempo real
                 </Typography>
               </div>
             </div>
@@ -299,7 +289,7 @@ const SignIn = props => {
                   className={classes.title}
                   variant="h2"
                 >
-                  Fazer login
+                  Fazer login - Acessa City
                 </Typography>
                 <Typography
                   color="textSecondary"
@@ -385,13 +375,13 @@ const SignIn = props => {
                   color="textSecondary"
                   variant="body1"
                 >
-                  Don't have an account?{' '}
+                  Ainda não tem uma conta?{' '}
                   <Link
                     component={RouterLink}
                     to="/sign-up"
                     variant="h6"
                   >
-                    Sign up
+                    Cadastre-se
                   </Link>
                 </Typography>
               </form>
