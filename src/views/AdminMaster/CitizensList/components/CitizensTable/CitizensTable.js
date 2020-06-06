@@ -169,7 +169,7 @@ const CitizensTable = props => {
 
 
   const handleClickDelete = (userDelete) => {
-
+    console.log("chegando id delete:", userDelete)
     API.delete(`/user/${userDelete.id}`)
     .then(response => {
       console.log("sucesso")

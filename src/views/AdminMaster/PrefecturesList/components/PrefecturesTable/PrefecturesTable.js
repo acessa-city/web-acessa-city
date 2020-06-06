@@ -54,7 +54,7 @@ import firebase from 'firebase/app'
 
 
 import API from '../../../../../utils/API';
-import AccountDetails from '../../../../../views/Account/components/AccountDetails';
+import CityHallCreate from '../../../../../views/AdminMaster/CityHallCreate';
 import { getInitials } from 'helpers';
 
 const useStyles = makeStyles(theme => ({
@@ -204,7 +204,7 @@ const PrefecturesTable = props => {
                     >
                       <TableCell onClick={() => handleClickAccount(prefecture)}>{prefecture.name}</TableCell>
                       <TableCell>{prefecture.cnpj}</TableCell>
-                      <TableCell>{prefecture.address}</TableCell>
+                      <TableCell>{prefecture.email}</TableCell>
                       <TableCell>
                         <IconButton
                           aria-label="display more actions" edge="end" color="inherit">
@@ -238,8 +238,8 @@ const PrefecturesTable = props => {
               >
                 <Fade in={open}>
                   <div className={classes.paper}>
- 
-                   <AccountDetails userId={openPrefecture.prefectures.id} />
+
+                   <CityHallCreate prefecturesId={openPrefecture.prefectures.id} />
 
                   </div>
                 </Fade>

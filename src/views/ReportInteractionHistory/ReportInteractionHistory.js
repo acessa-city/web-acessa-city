@@ -23,6 +23,8 @@ import {
   } from '@material-ui/core';
 
 import InteractionCard from './InteractionCard';
+import ReportStatus from 'utils/ReportStatus'
+import currentUser from 'utils/AppUser'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,14 +47,32 @@ const ReportInteractionHistory = props => {
     const { reportId, currentUserId } = props;
     const classes = useStyles();
     const [activeStep, setActiveStep] = React.useState(0);
+    const [roles, setRoles] = useState({});    
+
+    const loadInteractions = () => {
+      api.get('/report-interaction-history/report/' + reportId)
+      .then((result) => {
+          setInteractions(result.data)
+          setActiveStep(result.data.length - 1)
+          console.log(result.data)
+      })
+    }
 
     useEffect(() => {
-        api.get('/report-interaction-history/report/' + reportId)
-            .then((result) => {
-                setInteractions(result.data)
-                setActiveStep(result.data.length - 1)
-                console.log(result.data)
-            })        
+
+        
+        currentUser().then(user => {
+          setRoles({
+            ...roles,
+            loaded: true,
+            admin: user.roles.includes('admin'),
+            coordinator: user.roles.includes('coordinator'),
+            moderator: user.roles.includes('moderator'),
+            city_hall: user.roles.includes('city_hall'),
+            user: user.roles.includes('user')
+          })
+        })
+        loadInteractions()        
     }, []);
 
     const [interactions, setInteractions] = useState([]);    
@@ -69,12 +89,28 @@ const ReportInteractionHistory = props => {
     setActiveStep(0);
   };
 
+  const reopenReport = () => {
+
+    const reason = prompt("Informa o motivo da reabertura", "");
+
+    const request = {
+      userId: currentUserId,
+      reportStatusId: ReportStatus.Aprovado(),
+      description: reason
+    }
+    api.post(`/report/${reportId}/status-update`, request)
+      .then((result) => {
+        loadInteractions()
+      })
+  }
+
   return (
     <div className={classes.root}>
       <Stepper  nonlinear activeStep={activeStep} orientation="vertical">          
         {interactions.map(interaction => (
           <Step key={interaction.id}>
-            <StepLabel>{interaction.newReportStatus.description}</StepLabel>
+            <StepLabel>{interaction.newReportStatus.description}
+            </StepLabel>
             <StepContent>
                 <InteractionCard currentUserId={currentUserId} interaction={interaction}></InteractionCard>
               <div className={classes.actionsContainer}>
@@ -96,6 +132,24 @@ const ReportInteractionHistory = props => {
                   >
                     Próximo
                   </Button>
+                  {
+                    (ReportStatus.Finalizada() == interaction.newReportStatusId
+                    || ReportStatus.Negado() == interaction.newReportStatusId)
+                    &&
+                    roles.moderator
+                    &&
+                    (activeStep === interactions.length - 1)
+                    &&
+                  
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={reopenReport}
+                      className={classes.button}
+                    >
+                      Reabrir
+                    </Button>
+                  }                  
                 </div>
               </div>
             </StepContent>

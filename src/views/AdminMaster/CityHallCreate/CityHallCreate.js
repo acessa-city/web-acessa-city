@@ -17,6 +17,7 @@ import {
   SnackbarContent
 } from '@material-ui/core';
 import api from 'utils/API';
+import currentUser from 'utils/AppUser';
 import { useForm, ErrorMessage } from 'react-hook-form'
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -28,7 +29,10 @@ const useStyles = makeStyles((theme) => ({
 
 
 const CityHallCreate = props => {
-  const { className,onCreatePrefecture, ...rest } = props;
+  const { className,onCreatePrefecture,prefecturesId, ...rest } = props;
+
+
+  console.log("AQUIII ola ola " , prefecturesId);
 
   const classes = useStyles();
 
@@ -71,7 +75,7 @@ const CityHallCreate = props => {
       zipCode: '',
       number: '',
       cityId: '',
-      stateId: ''
+      state: ''
     })
   }
 
@@ -108,6 +112,28 @@ const CityHallCreate = props => {
     console.log(values);
   }
 
+  const[controlePrefecture, setControlePrefecture] = useState('');
+
+  const carregarPrefecture = (id) => {
+    api.get(`/city-hall/${id}`).then((result) => {
+     
+      setValues({
+        ...values,
+        name: result.data.name,
+        cnpj: result.data.cnpj,
+        email: result.data.email,
+        address: result.data.address,
+        neighborhood: result.data.neighborhood,
+        zipCode: result.data.zipCode, 
+        number: result.data.number, 
+        state: result.data.city.cityState.id,
+      });
+
+    }).catch((erro) => {
+      console.log('erro', erro);
+    })
+  }
+
   React.useEffect(() => {
     api.get('/state').then((result) => {
       console.log(result);
@@ -121,6 +147,20 @@ const CityHallCreate = props => {
         })
       }
     })
+
+    if (!prefecturesId) {
+      currentUser().then((result) => {
+        carregarPrefecture(result.id);
+      }).catch((erro) => {
+        console.log("erro", erro)
+      })
+      setControlePrefecture(false);
+    } else {
+      carregarPrefecture(prefecturesId);
+      setControlePrefecture(true);
+    }
+
+
   }, [])
 
   const handleStateChange = (event) => {
