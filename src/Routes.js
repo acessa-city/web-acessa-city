@@ -30,7 +30,8 @@ import {
   ModeratorCoordinatorList as ModeratorCoordinatorListView,
   ReportMap as ReportMapView,
   CreateReport as CreateReportView,
-  HistoricReport as HistoricReportView
+  HistoricReport as HistoricReportView,
+  MainReportMap as MainReportMapView
 
 
 } from './views';
@@ -282,6 +283,13 @@ const Routes = () => {
           exact
           layout={MainLayout}
           path="/historico-de-denuncias"
+          permission={true}
+        />
+        <RouteWithLayout
+          component={MainReportMapView}
+          exact
+          layout={MainLayout}
+          path="/mapa-principal"
           permission={true}
         />
         <Route

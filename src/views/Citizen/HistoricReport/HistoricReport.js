@@ -49,7 +49,8 @@ const HistoricReport = () => {
 
   // Listar os dados  na tela
   const listDenunciations = () => {
-    API.get('/report'
+    /*Passar o ID do usuário PRIMEIRO GET DE DENUNCIAS*/
+    API.get('/report?userId=8d4e6519-f440-4272-9c88-45d04f7f447e'
     ).then(response => {
       const listDenunciations2 = response.data;
       console.log(listDenunciations2);
@@ -82,7 +83,8 @@ const HistoricReport = () => {
     }
     /* PASSAR O STATUS POR MEIO DE UMA VARIAVEL */
     console.log("filtro aqui" + JSON.stringify(filtro))
-    API.get(`/report?${stringFiltro}`,
+    /*Passar o ID do usuário*/
+    API.get(`/report?userId=8d4e6519-f440-4272-9c88-45d04f7f447e${stringFiltro}`,
     ).then(response => {
       const filterDenunciation = response.data;
       setDenunciations(filterDenunciation);
