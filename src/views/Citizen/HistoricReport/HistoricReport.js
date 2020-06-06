@@ -43,7 +43,7 @@ const HistoricReport = () => {
 
 
   React.useEffect(() => {
-    
+
   }, [])
 
 
@@ -77,8 +77,12 @@ const HistoricReport = () => {
       stringFiltro += '&neighborhood=' + filtro.neighborhood
     }
 
+    if (filtro.status) {
+      stringFiltro += '&status=' + filtro.status
+    }
+    /* PASSAR O STATUS POR MEIO DE UMA VARIAVEL */
     console.log("filtro aqui" + JSON.stringify(filtro))
-    API.get(`/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010${stringFiltro}`,
+    API.get(`/report?${stringFiltro}`,
     ).then(response => {
       const filterDenunciation = response.data;
       setDenunciations(filterDenunciation);
@@ -117,11 +121,11 @@ const HistoricReport = () => {
       setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true);
     })
-  } 
+  }
 
   ///Lista de status
   const listStatus = () => {
-    API.get('/category'
+    API.get('/report-status'
     ).then(response => {
       const reportStatus1 = response.data;
       setReportStatus(reportStatus1);
@@ -131,7 +135,7 @@ const HistoricReport = () => {
       setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true);
     })
-  } 
+  }
 
   // Atualizar os dados na tela
   useEffect(() => {
@@ -144,15 +148,15 @@ const HistoricReport = () => {
   return (
     <div className={classes.root}>
       {/* <DenunciationsToolbar save={save} /> */}
-      <DenunciationsToolbar 
-      denunciationsSlect={denunciationsSlect} 
-      categories={categories} 
-      filter={filter} 
-      filterAprove={filterAprove}
-      reportStatus={reportStatus}
-       />
+      <DenunciationsToolbar
+        denunciationsSlect={denunciationsSlect}
+        categories={categories}
+        reportStatus={reportStatus}
+        filter={filter}
+        filterAprove={filterAprove}
+      />
       <div className={classes.content}>
-        <DenunciationsTable statusProgressDenunciation={statusProgressDenunciation} denunciations={denunciations}/>
+        <DenunciationsTable statusProgressDenunciation={statusProgressDenunciation} denunciations={denunciations} />
       </div>
       <Dialog open={openDialog} onClose={e => setOpenDialog(false)}>
         <DialogTitle>Atenção</DialogTitle>

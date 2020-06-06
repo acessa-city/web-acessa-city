@@ -46,8 +46,11 @@ import GoogleMapReact from 'google-map-react';
 const styles = makeStyles(theme => ({
   gridButton: {
     position: "absolute",
-    marginTop: "-675px",
-    alignSelf: "center"
+    marginTop: -500,
+    textAlign: 'right',
+    //marginTop: "-35%",
+    marginLeft: 5,
+    //alignSelf: "center"
   },
   gridForm: {
     position: "absolute",
@@ -86,7 +89,7 @@ const styles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    //overflow: 'scroll'
+    overflow: 'scroll'
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
@@ -127,23 +130,6 @@ const ReportMap = props => {
     setLocationsInProgress([]);
     setLocationsInAnalysis([]);
   }
-
-  const limpaEstadoApproved = () => {
-    setLocationsApproved([]);
-  }
-
-  const limpaEstadoFinished = () => {
-    setLocationsFinished([]);
-  }
-
-  const limpaEstadoInProgress = () => {
-    locationsInProgress([]);
-  }
-
-  const limpaEstadoInAnalysis = () => {
-    locationsInAnalysis([]);
-  }
-
   const filterBoth = () => {
     API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c'
     ).then(response => {
@@ -172,7 +158,7 @@ const ReportMap = props => {
       /* setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true); */
     })
-    API.get('/report?status=52ccae2e-af86-4fcc-82ea-9234088dbedf' /*MOSTRANDO AS NEGADAS (ALTERAR PARA ENCERRADAS)*/
+    API.get('/report?status=ee6dda1a-51e2-4041-9d21-7f5c8f2e94b0' /*MOSTRANDO AS NEGADAS (ALTERAR PARA ENCERRADAS)*/
     ).then(response => {
       const report = response.data
       setLocationsFinished(report)
@@ -203,14 +189,11 @@ const ReportMap = props => {
   }, [])
 
   const filterFinished = () => {
-    API.get('/report?status=c37d9588-1875-44dd-8cf1-6781de7533c3'
+    API.get('/report?status=ee6dda1a-51e2-4041-9d21-7f5c8f2e94b0'
     ).then(response => {
       const report = response.data
-      /* limpaTodos(); */
+      limpaTodos();
       setLocationsFinished(report)
-      limpaEstadoInProgress();
-      limpaEstadoApproved();
-      limpaEstadoInAnalysis();
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
@@ -218,15 +201,12 @@ const ReportMap = props => {
     })
   }
 
-  const filtroApproved = () => {
+  const filterApproved = () => {
     API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
     ).then(response => {
       const report = response.data
-      /* limpaTodos(); */
+      limpaTodos();
       setLocationsApproved(report)
-      limpaEstadoInProgress();
-      limpaEstadoFinished();
-      limpaEstadoInAnalysis();
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
@@ -234,15 +214,12 @@ const ReportMap = props => {
     })
   }
 
-  const filtroInAnalysis = () => {
+  const filterInAnalysis = () => {
     API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c'
     ).then(response => {
       const report = response.data
       limpaTodos();
       setLocationsInAnalysis(report)
-     /*  limpaEstadoInProgress();
-      limpaEstadoFinished();
-      limpaEstadoApproved(); */
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
@@ -250,22 +227,18 @@ const ReportMap = props => {
     })
   }
 
-  const filtroInProgress = () => {
+  const filterInProgress = () => {
     API.get('/report?status=c37d9588-1875-44dd-8cf1-6781de7533c3'
     ).then(response => {
       const report = response.data
-      /* limpaTodos(); */
-      setLocationsInAnalysis(report)
-      limpaEstadoFinished();
-      limpaEstadoApproved();
-      limpaEstadoInAnalysis();
+      limpaTodos();
+      setLocationsInProgress(report)
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true); */
     })
   }
-
 
   const style = styles();
 
@@ -332,51 +305,44 @@ const ReportMap = props => {
         defaultCenter={defaultProps.center}
         defaultZoom={defaultProps.zoom}
       >
-        {locationsAproved.map(locationsMap => (
-          console.log(locationsMap),
+        {locationsAproved.map(locationsMapAproved => (
           <RoomIcon
-            onClick={() => handleOpen(locationsMap.id)}
-            key={locationsMap.id}
+            onClick={() => handleOpen(locationsMapAproved.id)}
+            key={locationsMapAproved.id}
             className={style.markerApproved}
-            lat={locationsMap.latitude}
-            lng={locationsMap.longitude}
+            lat={locationsMapAproved.latitude}
+            lng={locationsMapAproved.longitude}
           />
 
         ))}
-        {locationsFinished.map(locationsMap => (
-          console.log(locationsMap),
+        {locationsFinished.map(locationsMapFinished => (
           <RoomIcon
-            onClick={() => handleOpen(locationsMap.id)}
-            key={locationsMap.id}
+            onClick={() => handleOpen(locationsMapFinished.id)}
+            key={locationsMapFinished.id}
             className={style.markerFinished}
-            lat={locationsMap.latitude}
-            lng={locationsMap.longitude}
+            lat={locationsMapFinished.latitude}
+            lng={locationsMapFinished.longitude}
           />
 
         ))}
-        {locationsInProgress.map(locationsMap => (
-          console.log(locationsMap),
+        {locationsInProgress.map(locationsMapProgress => (
           <RoomIcon
-            onClick={() => handleOpen(locationsMap.id)}
-            key={locationsMap.id}
+            onClick={() => handleOpen(locationsMapProgress.id)}
+            key={locationsMapProgress.id}
             className={style.markerProgress}
-            lat={locationsMap.latitude}
-            lng={locationsMap.longitude}
+            lat={locationsMapProgress.latitude}
+            lng={locationsMapProgress.longitude}
           />
         ))}
-        {locationsInAnalysis.map(locationsMap => (
-          console.log(locationsMap),
+        {locationsInAnalysis.map(locationsMapAnalysis => (
           <RoomIcon
-            onClick={() => handleOpen(locationsMap.id)}
-            key={locationsMap.id}
+            onClick={() => handleOpen(locationsMapAnalysis.id)}
+            key={locationsMapAnalysis.id}
             className={style.markerAnalysis}
-            lat={locationsMap.latitude}
-            lng={locationsMap.longitude}
+            lat={locationsMapAnalysis.latitude}
+            lng={locationsMapAnalysis.longitude}
           />
         ))}
-        <RoomIcon />
-        <RoomIcon className={style.marker} lat={-22.893186} lng={-47.166818} />
-
       </GoogleMapReact>
 
       <Grid
@@ -401,17 +367,17 @@ const ReportMap = props => {
           >Encerradas</Button>{/* ALTERAR PARA FILTRAR POR ENCERRADO */}
           <Button
             text="My Marker"
-            onClick={filtroApproved}
+            onClick={filterApproved}
             className={style.button1}
           >Aprovadas</Button>
           <Button
             text="My Marker"
-            onClick={filtroInAnalysis}
+            onClick={filterInAnalysis}
             className={style.button1}
           >Em análise</Button>
           <Button
             text="My Marker"
-            onClick={filtroInProgress}
+            onClick={filterInProgress}
             className={style.button1}
           >Em progresso</Button>
           <Button
