@@ -290,45 +290,6 @@ const DenunciationsToolbar = props => {
               <Button onClick={submitLimpar}  variant="contained" >Limpar</Button>
             </FormControl>
           </Grid>
-          
-
-          <Grid item xs={12} sm={2}>
-            {progressStatus &&
-              <div
-                style={{
-                  float: 'right',
-                }}
-              >
-                <FormControl margin="dense">
-                  <Button
-                    onClick={submitEmProgresso}
-                    style={{
-                      background: 'green',
-                    }}
-                    variant="contained" color="secondary"> Aprovadas <CheckIcon /></Button>
-                </FormControl>
-              </div>
-            }
-
-            {progressStatus == false &&
-
-              <div
-                style={{
-                  float: 'right',
-                }}
-              >
-                <FormControl margin="dense">
-                  <Button
-                    onClick={submitEmProgresso2}
-                    style={{
-                      background: 'red',
-                    }}
-                    variant="contained" color="secondary"> Denúncias </Button>
-                </FormControl>
-              </div>
-
-            }
-          </Grid>
         </Grid>
 
       </div >
