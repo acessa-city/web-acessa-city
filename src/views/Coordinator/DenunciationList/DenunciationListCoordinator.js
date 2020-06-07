@@ -9,7 +9,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Button
+  Button,
+  CircularProgress,
+  Snackbar,
+  SnackbarContent,
+  Backdrop
 } from '@material-ui/core';
 
 import API from '../../../utils/API';
@@ -21,7 +25,11 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     marginTop: theme.spacing(2)
-  }
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 }));
 
 const DenunciationListCoordinator = () => {
@@ -131,8 +139,10 @@ const DenunciationListCoordinator = () => {
 
   // Listar os dados  na tela
   const listDenunciations = () => {
+    setOpenValidador(true)
     API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
     ).then(response => {
+      setOpenValidador(false)
       const listDenunciations2 = response.data;
       console.log(listDenunciations2);
       setDenunciations(listDenunciations2);
@@ -168,17 +178,32 @@ const DenunciationListCoordinator = () => {
       stringFiltro += '&status=' + '96afa0df-8ad9-4a44-a726-70582b7bd010'
     }
 
-    console.log("filtro aqui" + JSON.stringify(filtro))
+   setOpenValidador(true)
     API.get(`/report?${stringFiltro}`,
     ).then(response => {
-      const filterDenunciation = response.data;
-      setDenunciations(filterDenunciation);
-      setMensagem('Filtro realizado com sucesso!');
-      setOpenDialog(true);
+
+      if (response.data.length > 0) {
+        setOpenValidador(false)
+        const filterDenunciation = response.data;
+        setDenunciations(filterDenunciation)
+
+      } else {
+        setOpenValidador(false)
+        const filterDenunciation = response.data;
+        setDenunciations(filterDenunciation)
+        setErrors(["Nenhum resultado encontrado!"])
+        setErrorsStatus(true)
+        setTimeout(() => {
+          setErrors([]);
+        }, 10000);
+        
+      }
+
     }).catch(erro => {
       console.log(erro);
       setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true);
+
     })
   }
 
@@ -223,6 +248,13 @@ const DenunciationListCoordinator = () => {
   }
 
 
+  const filterLimpar = (filtroAprovadas)=>{
+
+    setDenunciations(filtroAprovadas)
+
+  }
+
+
   ///Lista de categorias
   ///Listar os dados  na tela co comentarios
 
@@ -250,10 +282,54 @@ const DenunciationListCoordinator = () => {
   }, []);
 
 
+
+  /////Errros///////
+  const handleSnackClick = () => {
+    setErrors([]);
+  }
+  const [errors, setErrors] = useState([]);
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };
+
+  const erros = () => {
+    if (errorsStatus == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'orange',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent autoHideDuration={1}
+              style={{
+                background: 'red',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>}
+            />
+          ))}
+        </div>)
+    }
+  }
+
+
+
+
   return (
     <div className={classes.root}>
       {/* <DenunciationsToolbar save={save} /> */}
-      <DenunciationsToolbar denunciationsSlect={denunciationsSlect} categories={categories} filter={filter} filterAprove={filterAprove} />
+      <DenunciationsToolbar denunciationsSlect={denunciationsSlect} categories={categories} filter={filter} filterAprove={filterAprove} filterLimpar={filterLimpar}/>
       <div className={classes.content}>
         <DenunciationsTable statusProgressDenunciation={statusProgressDenunciation} denunciations={denunciations} coodenadores={coodenadores} envioCoordenador={envioCoordenador} envioDeny={envioDeny} envioProgress={envioProgress} enviorEncerrar={enviorEncerrar} />
       </div>
@@ -266,6 +342,15 @@ const DenunciationListCoordinator = () => {
           <Button onClick={e => setOpenDialog(false)}>Fechar</Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar open={errors.length} onClick={handleSnackClick}>
+        {erros()}
+      </Snackbar>
+      <Backdrop
+        style={{ zIndex: 99999999 }}
+        className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 };

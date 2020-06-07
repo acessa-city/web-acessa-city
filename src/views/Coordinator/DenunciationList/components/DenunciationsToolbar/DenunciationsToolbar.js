@@ -32,13 +32,17 @@ import {
   Box,
   Paper,
   Rows,
-  TableContainer
+  TableContainer,
+  CircularProgress,
+  Snackbar,
+  SnackbarContent,
+  Backdrop
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import SearchIcon from '@material-ui/icons/Search';
 import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import API from '../../../../../utils/API';
 
 // import { SearchInput } from 'components';  //chamar botão de pesquisa
 
@@ -70,6 +74,10 @@ const useStyles = makeStyles(theme => ({
     overflow: 'scroll'
 
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 
 }));
 
@@ -86,89 +94,75 @@ const DenunciationsToolbar = props => {
   const [denunciationData, setDenunciationData] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [mensagem, setMensagem] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };
+
 
   const classes = useStyles();
 
-  
 
+  const [values, setValues] = useState({
+    category: '',
+    status: '',
+    street: '',
+    neighborhood: '',
+    date: ''
+  });
 
-  const handleData = (sender) => {
-    setDenunciationData({
-      ...denunciationData,
-      data: sender
-    })
-  }
+  const handleChangeFilter = event => {
+    setValues({
+      ...values,
+      [event.target.name]: event.target.value
+    });
+  };
 
-  const handleStreet = (sender) => {
-    setDenunciationStreet({
-      ...denunciationStreet,
-      street: sender
-    })
-  }
-  const handleNeighborhood = (sender) => {
-    setDenunciationNeighborhood({
-      ...denunciationNeighborhood,
-      neighborhood: sender
-    })
-  }
-
-
+ 
   const submit = (event) => {
     event.preventDefault();
     //Filtro geral
     const filtro = {
-      category: denunciationCategory,
-      setDenunciationData: denunciationStreet.street,
-      neighborhood: denunciationNeighborhood.neighborhood,
-      creationDate: denunciationData.data,
-      status: reportStatusValue
+      category: values.category,
+      street: values.street,
+      neighborhood: values.neighborhood,
+      creationDate: values.date,
+      status: values.status
     }
     props.filter(filtro);
 
   }
 
-
-
-  const submitLimpar = (event) => {
+  
+const filterLimpar = (event) => {
     event.preventDefault();
+    setOpenValidador(true)
+    API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
+    ).then(response => {
+      setOpenValidador(false)
+      const listDenunciationsAprovadas = response.data;
+      props.filterLimpar(listDenunciationsAprovadas);
+    }).catch(erro => {
+      console.log(erro);
+      setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true);
+    })
 
-    setReportStatusValue('');
-    setDenunciationCategory('');
-    setDenunciationStreet({});
-    setDenunciationNeighborhood('');
-    setDenunciationData('');
-  }
+    limparForm();
+}
 
 
-  const [progressStatus, setProgressStatus] = React.useState(true);
+const limparForm = () => {
+  setValues({
+    category: '',
+    status: '',
+    street: '',
+    neighborhood: '',
+    date: ''
+  })
+}
 
-  //Filtro denúncias em progresso
-  const submitEmProgresso = (event) => {
-    event.preventDefault();
 
-    const filtroAprove = {
-      id: 'c37d9588-1875-44dd-8cf1-6781de7533c3',
-      statusProgress: false,
-    }
-    props.filterAprove(filtroAprove);
-    setProgressStatus(false)
-    setMensagem('Denúncias em progresso!');
-    setOpenDialog(true);
-
-  }
-
-  const submitEmProgresso2 = (event) => {
-    event.preventDefault();
-
-    const filtroAprove = {
-      id: '96afa0df-8ad9-4a44-a726-70582b7bd010',
-      statusProgress: true,
-    }
-    props.filterAprove(filtroAprove);
-    setProgressStatus(true)
-    setMensagem('Denúncias não aprovadas!');
-    setOpenDialog(true);
-  }
 
   return (
     <div {...rest} className={clsx(classes.root, className)}>
@@ -181,8 +175,11 @@ const DenunciationsToolbar = props => {
               <InputLabel htmlFor="age-native-simple">Categoria</InputLabel>
               <Select
                 native
-                value={denunciationCategory}
-                onChange={e => setDenunciationCategory(e.target.value)}
+                value={values.category}
+                onChange={handleChangeFilter}
+                inputProps={{
+                  name: 'category',
+                }}
               >
                 <option aria-label="None" value="" />
                 {categories.map(denunciationCategory => {
@@ -200,14 +197,17 @@ const DenunciationsToolbar = props => {
               <InputLabel htmlFor="age-native-simple">Status</InputLabel>
               <Select
                 native
-                value={reportStatusValue}
-                onChange={e => setReportStatusValue(e.target.value)}
+                value={values.status}
+                onChange={handleChangeFilter}
+                inputProps={{
+                  name: 'status',
+                }}
               >
-                <option aria-label="None" value="" />                
-                  
-                    <option value={'96afa0df-8ad9-4a44-a726-70582b7bd010'}>Aprovadas</option>
-                    <option value={'52ccae2e-af86-4fcc-82ea-9234088dbedf'}>Negadas</option>
-                    <option value={'c37d9588-1875-44dd-8cf1-6781de7533c3'}>Em progresso</option>
+                <option aria-label="None" value="" />
+
+                <option value={'96afa0df-8ad9-4a44-a726-70582b7bd010'}>Aprovadas</option>
+                <option value={'52ccae2e-af86-4fcc-82ea-9234088dbedf'}>Negadas</option>
+                <option value={'c37d9588-1875-44dd-8cf1-6781de7533c3'}>Em progresso</option>
               </Select>
             </FormControl>
 
@@ -248,8 +248,11 @@ const DenunciationsToolbar = props => {
                 fullWidth
                 id="standard-rua"
                 label="Rua"
-                value={denunciationStreet.street}
-                onChange={e => handleStreet(e.target.value)}
+                value={values.street}
+                onChange={handleChangeFilter}
+                inputProps={{
+                  name: 'street',
+                }}
               />
             </div>
           </Grid>
@@ -260,21 +263,27 @@ const DenunciationsToolbar = props => {
                 fullWidth
                 id="standard-bairro"
                 label="Bairro"
-                value={denunciationNeighborhood.neighborhood}
-                onChange={e => handleNeighborhood(e.target.value)}
+                value={values.neighborhood}
+                onChange={handleChangeFilter}
+                inputProps={{
+                  name: 'neighborhood',
+                }}
               />
             </div>
           </Grid>
           <Grid item xs={12} sm={2}>
             <TextField
-              onChange={e => handleData(e.target.value)}
+              onChange={handleChangeFilter}
               id="date"
               label="Data"
               type="date"
               className={classes.textField}
-              value={denunciationData.data}
+              value={values.date}
               InputLabelProps={{
                 shrink: true,
+              }}
+              inputProps={{
+                name: 'date',
               }}
             />
           </Grid>
@@ -287,22 +296,19 @@ const DenunciationsToolbar = props => {
 
           <Grid item xs={12} sm={1}>
             <FormControl margin="dense" fullWidth>
-              <Button onClick={submitLimpar}  variant="contained" >Limpar</Button>
+              <Button onClick={filterLimpar} variant="contained" >Limpar</Button>
             </FormControl>
           </Grid>
         </Grid>
 
       </div >
 
-      <Dialog open={openDialog} onClose={e => setOpenDialog(false)}>
-        <DialogTitle>Atenção</DialogTitle>
-        <DialogContent>
-          {mensagem}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={e => setOpenDialog(false)}>Fechar</Button>
-        </DialogActions>
-      </Dialog>
+      <Backdrop
+        style={{ zIndex: 99999999 }}
+        className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
     </div >
   );
 };

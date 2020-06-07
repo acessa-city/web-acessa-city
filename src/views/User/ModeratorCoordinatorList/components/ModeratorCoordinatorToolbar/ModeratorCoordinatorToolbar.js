@@ -11,7 +11,10 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Backdrop
+  Backdrop,
+  CircularProgress,
+  Snackbar,
+  SnackbarContent,
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
@@ -66,7 +69,10 @@ const useStyles = makeStyles(theme => ({
     marginTop: 10,
   },
   //FIM modal
-
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 }));
 
 const ModeratorCoordinatorToolbar = props => {
@@ -76,6 +82,11 @@ const ModeratorCoordinatorToolbar = props => {
 
   //Modal Cadastrar Usuários
   const [openModal, setOpenModal] = React.useState(false);
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };
+
 
   const handleOpen = () => {
     setOpenModal(true);
@@ -113,9 +124,7 @@ const ModeratorCoordinatorToolbar = props => {
 
   const handleClickFilter = (event) => {
     event.preventDefault();
-      
     props.filter(values);
-
   }
 
 
@@ -232,6 +241,10 @@ const ModeratorCoordinatorToolbar = props => {
         {/* // FIM Modal CADASTRAR USUÀRIO*/}
 
       </div >
+
+      <Backdrop className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div >
   );
 };
