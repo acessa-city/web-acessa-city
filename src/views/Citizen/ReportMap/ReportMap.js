@@ -12,6 +12,7 @@ import Videocam from '@material-ui/icons/Videocam';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import VideoPlayer from 'react-simple-video-player';
+import ReportStatus from 'utils/ReportStatus';
 
 import {
   Card,
