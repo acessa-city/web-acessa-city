@@ -209,8 +209,8 @@ const MainReportMap = props => {
 
   const defaultProps = {
     center: {
-      lat: -22.89205,
-      lng: -47.0616
+      lat: latitude,
+      lng: longitude
     },
     zoom: 18
   };
