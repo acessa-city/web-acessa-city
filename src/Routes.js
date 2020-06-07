@@ -283,10 +283,10 @@ const Routes = () => {
           path="/historico-de-denuncias"
           permission={true}
         />
-        <RouteWithLayout
+        <Route
           component={MainReportMapView}
           exact
-          layout={MainLayout}
+          layout={MinimalLayout}
           path="/mapa-principal"
           permission={true}
         />
