@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/styles';
 import RoomIcon from '@material-ui/icons/Room';
 import Report from 'components/Report';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import ReportStatus from 'utils/ReportStatus';
 
 
 import {
@@ -144,7 +145,7 @@ const ReportMap = props => {
   }
   const filterBoth = (props) => {
     if (user == '') {
-      API.get(`/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c&userId=${props}`
+      API.get(`/report?status=`+ ReportStatus.EmAnalise() +`&userId=${props}`
       ).then(response => {
         const report = response.data
         setLocationsInAnalysis(report)
@@ -154,7 +155,7 @@ const ReportMap = props => {
         setOpenDialog(true); */
       })
     }else{
-      API.get(`/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c&userId=${user}`
+      API.get(`/report?status=` + ReportStatus.EmAnalise() +`&userId=${user}`
     ).then(response => {
       const report = response.data
       setLocationsInAnalysis(report)
@@ -165,7 +166,7 @@ const ReportMap = props => {
     })
     }
 
-    API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
+    API.get('/report?status=' + ReportStatus.Aprovado()
     ).then(response => {
       const report = response.data
       setLocationsApproved(report)
@@ -174,7 +175,7 @@ const ReportMap = props => {
       /* setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true); */
     })
-    API.get('/report?status=c37d9588-1875-44dd-8cf1-6781de7533c3'
+    API.get('/report?status=' + ReportStatus.EmProgresso()
     ).then(response => {
       const report = response.data
       setLocationsInProgress(report)
@@ -183,7 +184,7 @@ const ReportMap = props => {
       /* setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true); */
     })
-    API.get('/report?status=ee6dda1a-51e2-4041-9d21-7f5c8f2e94b0'
+    API.get('/report?status=' + ReportStatus.Finalizada()
     ).then(response => {
       const report = response.data
       setLocationsFinished(report)
@@ -218,7 +219,7 @@ const ReportMap = props => {
   }, [])
 
   const filterFinished = () => {
-    API.get('/report?status=ee6dda1a-51e2-4041-9d21-7f5c8f2e94b0'
+    API.get('/report?status=' + ReportStatus.Finalizada()
     ).then(response => {
       const report = response.data
       limpaTodos();
@@ -231,7 +232,7 @@ const ReportMap = props => {
   }
 
   const filterApproved = () => {
-    API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
+    API.get('/report?status=' + ReportStatus.Aprovado()
     ).then(response => {
       const report = response.data
       limpaTodos();
@@ -244,7 +245,7 @@ const ReportMap = props => {
   }
 
   const filterInAnalysis = () => {
-    API.get(`/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c&userId=${user}`
+    API.get(`/report?status=` + ReportStatus.EmAnalise() +`&userId=${user}`
     ).then(response => {
       const report = response.data
       limpaTodos();
@@ -257,7 +258,7 @@ const ReportMap = props => {
   }
 
   const filterInProgress = () => {
-    API.get('/report?status=c37d9588-1875-44dd-8cf1-6781de7533c3'
+    API.get('/report?status=' + ReportStatus.EmProgresso()
     ).then(response => {
       const report = response.data
       limpaTodos();
@@ -325,10 +326,6 @@ const ReportMap = props => {
     setOpen(false);
   };
   /* FIM MODAL */
-
-
-
-
 
   /* INICIO MODAL  DENUCNIAS*/
 

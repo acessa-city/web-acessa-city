@@ -26,7 +26,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
-import ReportStatus from 'utils/ReportStatus'
+import ReportStatus from 'utils/ReportStatus';
 
 const styles = makeStyles(theme => ({
   gridButton: {
@@ -117,7 +117,7 @@ const MainReportMap = props => {
       threshold: 0,
       target: window ? window() : undefined,
     });
-  
+
     return React.cloneElement(children, {
       elevation: trigger ? 4 : 0,
     });
@@ -133,7 +133,7 @@ const MainReportMap = props => {
   const [idReportModal, setidReportModal] = useState('');
 
   const carregarAprovadas = () => {
-    API.get('/report?status='+ReportStatus.Aprovado()
+    API.get('/report?status=' + ReportStatus.Aprovado()
     ).then(response => {
       const report = response.data
       setLocationsApproved(report)
@@ -144,7 +144,7 @@ const MainReportMap = props => {
     })
   }
   const carregarFinalizadas = () => {
-    API.get('/report?status='+ReportStatus.Finalizada()
+    API.get('/report?status=' + ReportStatus.Finalizada()
     ).then(response => {
       const report = response.data
       setLocationsFinished(report)
@@ -155,7 +155,7 @@ const MainReportMap = props => {
     })
   }
   const carregarEmProgresso = () => {
-    API.get('/report?status='+ReportStatus.EmProgresso()
+    API.get('/report?status=' + ReportStatus.EmProgresso()
     ).then(response => {
       const report = response.data
       setLocationsInProgress(report)
@@ -187,7 +187,7 @@ const MainReportMap = props => {
       }
     )
     carregarTodas();
-  }, []) 
+  }, [])
 
   const style = styles();
 
@@ -295,106 +295,106 @@ const MainReportMap = props => {
       <ElevationScroll {...props}>
         <AppBar>
           <Toolbar>
-          <FormGroup row>            
-            <FormControlLabel
-              control={<Checkbox checked={finalizadas} onChange={handleFinalizadas} />}
-              label="Denúncias finalizadas"
-            />
-            <FormControlLabel
-              control={<Checkbox checked={emProgresso} onChange={handleEmProgresso} />}
-              label="Denúncias em progresso"
-            />
-            <FormControlLabel
-              control={<Checkbox checked={aprovadas} onChange={handleAprovadas} />}
-              label="Denúncias aprovadas"
-            />            
-          </FormGroup>
-          </Toolbar>          
+            <FormGroup row>
+              <FormControlLabel
+                control={<Checkbox checked={finalizadas} onChange={handleFinalizadas} />}
+                label="Denúncias finalizadas"
+              />
+              <FormControlLabel
+                control={<Checkbox checked={emProgresso} onChange={handleEmProgresso} />}
+                label="Denúncias em progresso"
+              />
+              <FormControlLabel
+                control={<Checkbox checked={aprovadas} onChange={handleAprovadas} />}
+                label="Denúncias aprovadas"
+              />
+            </FormGroup>
+          </Toolbar>
         </AppBar>
       </ElevationScroll>
       <div style={{ height: '100vh', width: '100%' }}>
-      <GoogleMapReact
-        bootstrapURLKeys={'AIzaSyDBxtpy4QlnhPfGK7mF_TnbLXooEXVPy_0'}
-        defaultCenter={defaultProps.center}
-        defaultZoom={defaultProps.zoom}
-      >
-        {locationsAproved.map(locationsMapAproved => (
-          <RoomIcon
-            onClick={() => handleOpen(locationsMapAproved.id)}
-            key={locationsMapAproved.id}
-            className={style.markerApproved}
-            lat={locationsMapAproved.latitude}
-            lng={locationsMapAproved.longitude}
-          />
-
-        ))}
-        {locationsFinished.map(locationsMapFinished => (
-          <RoomIcon
-            onClick={() => handleOpen(locationsMapFinished.id)}
-            key={locationsMapFinished.id}
-            className={style.markerFinished}
-            lat={locationsMapFinished.latitude}
-            lng={locationsMapFinished.longitude}
-          />
-
-        ))}
-        {locationsInProgress.map(locationsMapProgress => (
-          <RoomIcon
-            onClick={() => handleOpen(locationsMapProgress.id)}
-            key={locationsMapProgress.id}
-            className={style.markerProgress}
-            lat={locationsMapProgress.latitude}
-            lng={locationsMapProgress.longitude}
-          />
-        ))}
-      </GoogleMapReact>
-
-      <Grid
-        className={style.gridButton}
-        item
-        lg={7}
-        xs={12}
-      >
-        <div style={{ textAlign: 'left', width: 10 }}>
-          <Button
-            href='/sign-in'
-            className={style.button1}
-          >Denúnciar</Button>
-        </div>
-      </Grid>
-
-      {/* MODAL */}
-      <div>
-        <Modal
-          aria-labelledby="transition-modal-title"
-          aria-describedby="transition-modal-description"
-          className={style.modal}
-          open={open}
-          onClose={handleClose}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
+        <GoogleMapReact
+          bootstrapURLKeys={'AIzaSyDBxtpy4QlnhPfGK7mF_TnbLXooEXVPy_0'}
+          defaultCenter={defaultProps.center}
+          defaultZoom={defaultProps.zoom}
         >
-          <Fade in={open}>
-            style={{
-              overflow: 'scroll',
-              height: '80%'
-            }}
-            {/* DENTRO DO MODAL */}
-            <div className={style.paper}>
-              {/* Passar o id da denúncia para reportId vvvvvvvvvvvv */}
-              <Report reportId={idReportModal}></Report>
-              <Button onClick={handleClose}>Voltar</Button>
-            </div>
-          </Fade>
-        </Modal>
+          {locationsAproved.map(locationsMapAproved => (
+            <RoomIcon
+              onClick={() => handleOpen(locationsMapAproved.id)}
+              key={locationsMapAproved.id}
+              className={style.markerApproved}
+              lat={locationsMapAproved.latitude}
+              lng={locationsMapAproved.longitude}
+            />
+
+          ))}
+          {locationsFinished.map(locationsMapFinished => (
+            <RoomIcon
+              onClick={() => handleOpen(locationsMapFinished.id)}
+              key={locationsMapFinished.id}
+              className={style.markerFinished}
+              lat={locationsMapFinished.latitude}
+              lng={locationsMapFinished.longitude}
+            />
+
+          ))}
+          {locationsInProgress.map(locationsMapProgress => (
+            <RoomIcon
+              onClick={() => handleOpen(locationsMapProgress.id)}
+              key={locationsMapProgress.id}
+              className={style.markerProgress}
+              lat={locationsMapProgress.latitude}
+              lng={locationsMapProgress.longitude}
+            />
+          ))}
+        </GoogleMapReact>
+
+        <Grid
+          className={style.gridButton}
+          item
+          lg={7}
+          xs={12}
+        >
+          <div style={{ textAlign: 'left', width: 10 }}>
+            <Button
+              href='/sign-in'
+              className={style.button1}
+            >Denúnciar</Button>
+          </div>
+
+
+          {/* MODAL */}
+          <div>
+            <Modal
+              aria-labelledby="transition-modal-title"
+              aria-describedby="transition-modal-description"
+              className={style.modal}
+              open={open}
+              onClose={handleClose}
+              closeAfterTransition
+              BackdropComponent={Backdrop}
+              BackdropProps={{
+                timeout: 500,
+              }}
+            >
+              <Fade in={open}>                 
+                {/* DENTRO DO MODAL */}
+                <div style={{
+                  overflow: 'scroll',
+                  height: '80%'
+                }} className={style.paper}>
+                  {/* Passar o id da denúncia para reportId vvvvvvvvvvvv */}
+                  <Report reportId={idReportModal}></Report>
+                  <Button onClick={handleClose}>Voltar</Button>
+                </div>
+              </Fade>
+            </Modal>
+          </div>
+        </Grid>
+        {/* FIM MODAL */}
       </div>
-      {/* FIM MODAL */}
-    </div>      
       <Toolbar />
-    </React.Fragment>    
+    </React.Fragment>
   )
 }
 
