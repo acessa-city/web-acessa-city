@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import moment from 'moment';
+import currentUser from 'utils/AppUser'
 
 import { DenunciationsToolbar, DenunciationsTable } from './components';
 
@@ -27,6 +28,10 @@ const useStyles = makeStyles(theme => ({
 const HistoricReport = () => {
   const classes = useStyles();
 
+  /*  const [user, setUser] = useState({
+     userId:''
+   }) */
+  const [user, setUser] = useState([])
   const [reportStatus, setReportStatus] = useState([]);
   const [denunciations, setDenunciations] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -36,20 +41,10 @@ const HistoricReport = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [mensagem, setMensagem] = useState('');
 
-
-  const [user, setUser] = useState({
-    userId: ''
-  })
-
-
-  React.useEffect(() => {
-    
-  }, [])
-
-
   // Listar os dados  na tela
-  const listDenunciations = () => {
-    API.get('/report'
+  const listDenunciations = (props) => {
+    API.get(`/report?userId=${props}`
+      /*  API.get(`/report?userId=1f6cc301-79a8-41bc-9e54-8bbe236efdb3` */
     ).then(response => {
       const listDenunciations2 = response.data;
       console.log(listDenunciations2);
@@ -76,9 +71,16 @@ const HistoricReport = () => {
     if (filtro.neighborhood) {
       stringFiltro += '&neighborhood=' + filtro.neighborhood
     }
-
+    if (filtro.creationDate) {
+      stringFiltro += '&date=' + filtro.creationDate
+    }
+    if (filtro.status) {
+      stringFiltro += '&status=' + filtro.status
+    }
+    /* PASSAR O STATUS POR MEIO DE UMA VARIAVEL */
     console.log("filtro aqui" + JSON.stringify(filtro))
-    API.get(`/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010${stringFiltro}`,
+    /*Passar o ID do usuário*/
+    API.get(`/report?userId=${user}${stringFiltro}`,
     ).then(response => {
       const filterDenunciation = response.data;
       setDenunciations(filterDenunciation);
@@ -117,11 +119,11 @@ const HistoricReport = () => {
       setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true);
     })
-  } 
+  }
 
   ///Lista de status
   const listStatus = () => {
-    API.get('/category'
+    API.get('/report-status'
     ).then(response => {
       const reportStatus1 = response.data;
       setReportStatus(reportStatus1);
@@ -131,28 +133,37 @@ const HistoricReport = () => {
       setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true);
     })
-  } 
+  }
 
+
+  const monstrarId = () => {
+    console.log("MEU ID" + user.userId)
+  }
   // Atualizar os dados na tela
   useEffect(() => {
+    currentUser().then(result => {
+      setUser(result.id)
+      listDenunciations(result.id);
+    })
     listStatus();
-    listDenunciations();
     listCategory();
+    monstrarId();
   }, []);
+
 
 
   return (
     <div className={classes.root}>
       {/* <DenunciationsToolbar save={save} /> */}
-      <DenunciationsToolbar 
-      denunciationsSlect={denunciationsSlect} 
-      categories={categories} 
-      filter={filter} 
-      filterAprove={filterAprove}
-      reportStatus={reportStatus}
-       />
+      <DenunciationsToolbar
+        denunciationsSlect={denunciationsSlect}
+        categories={categories}
+        reportStatus={reportStatus}
+        filter={filter}
+        filterAprove={filterAprove}
+      />
       <div className={classes.content}>
-        <DenunciationsTable statusProgressDenunciation={statusProgressDenunciation} denunciations={denunciations}/>
+        <DenunciationsTable statusProgressDenunciation={statusProgressDenunciation} denunciations={denunciations} />
       </div>
       <Dialog open={openDialog} onClose={e => setOpenDialog(false)}>
         <DialogTitle>Atenção</DialogTitle>
@@ -163,6 +174,7 @@ const HistoricReport = () => {
           <Button onClick={e => setOpenDialog(false)}>Fechar</Button>
         </DialogActions>
       </Dialog>
+      <Button onClick={monstrarId}>Mostrar id</Button>
     </div>
   );
 };

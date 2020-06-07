@@ -14,7 +14,7 @@ export const asyncLogin = token => {
   return new Promise((resolve, reject) => {
     localStorage.setItem(TOKEN_KEY, token);    
     API.post('/auth').then(result => {
-      resolve()
+      resolve(result)
     })
     .catch(error => {
       reject()

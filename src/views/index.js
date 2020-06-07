@@ -25,5 +25,6 @@ export { default as ModeratorCoordinatorList } from './User/ModeratorCoordinator
 export { default as ReportMap } from './Citizen/ReportMap';
 export { default as CreateReport } from './Citizen/CreateReport';
 export { default as HistoricReport } from './Citizen/HistoricReport';
+export { default as MainReportMap } from './MainMap/MainReportMap';
 
 

@@ -30,7 +30,8 @@ import {
   ModeratorCoordinatorList as ModeratorCoordinatorListView,
   ReportMap as ReportMapView,
   CreateReport as CreateReportView,
-  HistoricReport as HistoricReportView
+  HistoricReport as HistoricReportView,
+  MainReportMap as MainReportMapView
 
 
 } from './views';
@@ -46,9 +47,7 @@ const Routes = () => {
   });
 
   useEffect(() => {
-    console.log(22);
     currentUser().then(user => {
-      console.log('Routes: UserRoles::::', user.roles.includes('admin'))
       setRoles({
         ...roles,
         loaded: true,
@@ -282,6 +281,13 @@ const Routes = () => {
           exact
           layout={MainLayout}
           path="/historico-de-denuncias"
+          permission={true}
+        />
+        <Route
+          component={MainReportMapView}
+          exact
+          layout={MinimalLayout}
+          path="/mapa-principal"
           permission={true}
         />
         <Route

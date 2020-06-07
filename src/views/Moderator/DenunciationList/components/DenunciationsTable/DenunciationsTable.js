@@ -429,6 +429,7 @@ const DenunciationsTable = props => {
                   <TableCell>Bairro</TableCell>
                   <TableCell>Categoria</TableCell>
                   <TableCell>Datas</TableCell>
+                  <TableCell>Status</TableCell>
                   <TableCell>Cometários</TableCell>
 
                 </TableRow>
@@ -442,6 +443,7 @@ const DenunciationsTable = props => {
                       <TableCell>{denunciation.neighborhood}</TableCell>
                       <TableCell>{denunciation.category.name}</TableCell>
                       <TableCell>{moment(denunciation.creationDate).format('DD/MM/YYYY')}</TableCell>
+                      <TableCell onClick={() => handleOpen(denunciation.id)}>{(denunciation.reportStatus.description)}</TableCell>
                       <TableCell onClick={() => handleOpenComments(denunciation)}><div style={{
                         textAlign: 'center',
                       }}><ForumIcon /></div></TableCell>

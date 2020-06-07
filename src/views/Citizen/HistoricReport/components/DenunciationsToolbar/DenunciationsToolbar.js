@@ -89,7 +89,7 @@ const DenunciationsToolbar = props => {
 
   const classes = useStyles();
 
-  
+
 
 
   const handleData = (sender) => {
@@ -121,17 +121,16 @@ const DenunciationsToolbar = props => {
       setDenunciationData: denunciationStreet.street,
       neighborhood: denunciationNeighborhood.neighborhood,
       creationDate: denunciationData.data,
+      status: reportStatusValue,
     }
     props.filter(filtro);
 
   }
 
-
-
   const submitLimpar = (event) => {
     event.preventDefault();
 
-    
+
     setDenunciationCategory('');
     setDenunciationStreet({});
     setDenunciationNeighborhood('');
@@ -177,7 +176,7 @@ const DenunciationsToolbar = props => {
 
           <Grid item xs={12} sm={2}>
             <FormControl className={classes.formControl} fullWidth>
-              <InputLabel htmlFor="age-native-simple">Categorias</InputLabel>
+              <InputLabel htmlFor="age-native-simple">Categoria</InputLabel>
               <Select
                 native
                 value={denunciationCategory}
@@ -192,7 +191,7 @@ const DenunciationsToolbar = props => {
                 }
               </Select>
             </FormControl>
-            
+
           </Grid>
 
           <Grid item xs={12} sm={2}>
@@ -204,48 +203,18 @@ const DenunciationsToolbar = props => {
                 onChange={e => setReportStatusValue(e.target.value)}
               >
                 <option aria-label="None" value="" />
-                {reportStatus.map(statusReport => {
+                {reportStatus.map(reportStatusValue => {
                   return (
-                    <option value={statusReport.id}>{statusReport.name}</option>
+                    <option value={reportStatusValue.id}>{reportStatusValue.description}</option>
                   )
                 })
                 }
               </Select>
             </FormControl>
-            
+
           </Grid>
 
-          
 
-          {/* <Grid item xs={12} sm={2}>
-            <FormControl variant="outlined" margin="dense" fullWidth>
-              <InputLabel>Rua:</InputLabel>
-              <Select native label="Endereço" value={denunciationStreet} onChange={e => setDenunciationStreet(e.target.value)}>
-                <option aria-label="None" value="" />
-                {denunciationsSlect.map(denunciationStreet => {
-                  return (
-                    <option value={denunciationStreet.street}>{denunciationStreet.street}</option>
-                  )
-                })
-                }
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} sm={2}>
-            <FormControl variant="outlined" margin="dense" fullWidth>
-              <InputLabel>Bairro:</InputLabel>
-              <Select native label="Bairro" value={denunciationNeighborhood} onChange={e => setDenunciationNeighborhood(e.target.value)}>
-                <option aria-label="None" value="" />
-                {denunciationsSlect.map(denunciationNeighborhood => {
-                  return (
-                    <option value={denunciationNeighborhood.neighborhood}>{denunciationNeighborhood.neighborhood}</option>
-                  )
-                })
-                }
-              </Select>
-            </FormControl>
-          </Grid> */}
           <Grid item xs={12} sm={2}>
             <div>
               <TextField
@@ -291,50 +260,10 @@ const DenunciationsToolbar = props => {
 
           <Grid item xs={12} sm={1}>
             <FormControl margin="dense" fullWidth>
-              <Button onClick={submitLimpar}  variant="contained" >Limpar</Button>
+              <Button onClick={submitLimpar} variant="contained" >Limpar</Button>
             </FormControl>
           </Grid>
-          
-
-          <Grid item xs={12} sm={2}>
-            {progressStatus &&
-              <div
-                style={{
-                  float: 'right',
-                }}
-              >
-                <FormControl margin="dense">
-                  <Button
-                    onClick={submitEmProgresso}
-                    style={{
-                      background: 'green',
-                    }}
-                    variant="contained" color="secondary"> Aprovadas <CheckIcon /></Button>
-                </FormControl>
-              </div>
-            }
-
-            {progressStatus == false &&
-
-              <div
-                style={{
-                  float: 'right',
-                }}
-              >
-                <FormControl margin="dense">
-                  <Button
-                    onClick={submitEmProgresso2}
-                    style={{
-                      background: 'red',
-                    }}
-                    variant="contained" color="secondary"> Denúncias </Button>
-                </FormControl>
-              </div>
-
-            }
-          </Grid>
         </Grid>
-
       </div >
 
       <Dialog open={openDialog} onClose={e => setOpenDialog(false)}>

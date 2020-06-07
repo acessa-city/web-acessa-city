@@ -38,6 +38,7 @@ const DenunciationsToolbar = props => {
 
   const [descricao, setDescricao] = useState('');
   const [categoria, setCategoria] = useState('');
+  const [reportStatusValue, setReportStatusValue] = useState('');
   const [denunciationCategory, setDenunciationCategory] = useState('');
   const [denunciationStreet, setDenunciationStreet] = useState('');
   const [denunciationNeighborhood, setDenunciationNeighborhood] = useState('');
@@ -45,6 +46,14 @@ const DenunciationsToolbar = props => {
 
   const classes = useStyles();
 
+
+  const handleData = (sender) => {
+    setDenunciationData({
+      ...denunciationData,
+      data: sender
+    })
+  }
+  
   const submit = (event) => {
     event.preventDefault();
 
@@ -53,6 +62,7 @@ const DenunciationsToolbar = props => {
       street: denunciationStreet,
       neighborhood: denunciationNeighborhood,
       creationDate: setDenunciationData,
+      status: reportStatusValue
     }
     props.filter(filtro);
     setDenunciationStreet('');
@@ -72,8 +82,8 @@ const DenunciationsToolbar = props => {
 
           <Grid item xs={12} sm={2}>
 
-            <FormControl variant="outlined" margin="dense" fullWidth>
-              <InputLabel>Categoria:</InputLabel>
+            <FormControl className={classes.formControl} fullWidth>
+              <InputLabel>Categoria</InputLabel>
               <Select native label="Categoria" value={denunciationCategory} onChange={e => setDenunciationCategory(e.target.value)}>
                 <option aria-label="None" value="" />
 
@@ -87,10 +97,27 @@ const DenunciationsToolbar = props => {
             </FormControl>
 
           </Grid>
+          <Grid item xs={12} sm={2}>
+            <FormControl className={classes.formControl} fullWidth>
+              <InputLabel htmlFor="age-native-simple">Status</InputLabel>
+              <Select
+                native
+                value={reportStatusValue}
+                onChange={e => setReportStatusValue(e.target.value)}
+              >
+                <option aria-label="None" value="" />
+
+                <option value={'48cf5f0f-40c9-4a79-9627-6fd22018f72c'}>Em análise</option>
+                <option value={'52ccae2e-af86-4fcc-82ea-9234088dbedf'}>Negadas</option>
+
+              </Select>
+            </FormControl>
+
+          </Grid>
 
           <Grid item xs={12} sm={2}>
-            <FormControl variant="outlined" margin="dense" fullWidth>
-              <InputLabel>Rua:</InputLabel>
+            <FormControl className={classes.formControl} fullWidth>
+              <InputLabel>Rua</InputLabel>
               <Select native label="Endereço" value={denunciationStreet} onChange={e => setDenunciationStreet(e.target.value)}>
                 <option aria-label="None" value="" />
                 {denunciationsSlect.map(denunciationStreet => {
@@ -104,8 +131,8 @@ const DenunciationsToolbar = props => {
           </Grid>
 
           <Grid item xs={12} sm={2}>
-            <FormControl variant="outlined" margin="dense" fullWidth>
-              <InputLabel>Bairro:</InputLabel>
+            <FormControl className={classes.formControl} fullWidth>
+              <InputLabel>Bairro</InputLabel>
               <Select native label="Bairro" value={denunciationNeighborhood} onChange={e => setDenunciationNeighborhood(e.target.value)}>
                 <option aria-label="None" value="" />
                 {denunciationsSlect.map(denunciationNeighborhood => {
@@ -119,23 +146,22 @@ const DenunciationsToolbar = props => {
           </Grid>
 
           <Grid item xs={12} sm={2}>
-            <FormControl variant="outlined" margin="dense" fullWidth>
-              <InputLabel>Data:</InputLabel>
-              <Select native label="Data" value={denunciationData} onChange={e => setDenunciationData(e.target.value)}>
-                <option aria-label="None" value="" />
-                {denunciationsSlect.map(denunciationData => {
-                  return (
-                    <option value={denunciationData.creationDate}>{moment(denunciationData.creationDate).format('DD/MM/YYYY')}</option>
-                  )
-                })
-                }
-              </Select>
-            </FormControl>
+            <TextField
+              onChange={e => handleData(e.target.value)}
+              id="date"
+              label="Data"
+              type="date"
+              className={classes.textField}
+              value={denunciationData.data}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
           </Grid>
 
           <Grid item xs={12} sm={2}>
             <FormControl margin="dense" fullWidth>
-              <Button onClick={submit} variant="contained" color="secondary">Adicionar</Button>
+              <Button onClick={submit} variant="contained" color="secondary">Filtrar</Button>
             </FormControl>
           </Grid>
 

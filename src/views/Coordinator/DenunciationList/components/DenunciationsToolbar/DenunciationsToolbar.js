@@ -79,6 +79,7 @@ const DenunciationsToolbar = props => {
 
   const [descricao, setDescricao] = useState('');
   const [categoria, setCategoria] = useState('');
+  const [reportStatusValue, setReportStatusValue] = useState('');
   const [denunciationCategory, setDenunciationCategory] = useState('');
   const [denunciationStreet, setDenunciationStreet] = useState('');
   const [denunciationNeighborhood, setDenunciationNeighborhood] = useState('');
@@ -120,6 +121,7 @@ const DenunciationsToolbar = props => {
       setDenunciationData: denunciationStreet.street,
       neighborhood: denunciationNeighborhood.neighborhood,
       creationDate: denunciationData.data,
+      status: reportStatusValue
     }
     props.filter(filtro);
 
@@ -130,7 +132,7 @@ const DenunciationsToolbar = props => {
   const submitLimpar = (event) => {
     event.preventDefault();
 
-    
+    setReportStatusValue('');
     setDenunciationCategory('');
     setDenunciationStreet({});
     setDenunciationNeighborhood('');
@@ -176,7 +178,7 @@ const DenunciationsToolbar = props => {
 
           <Grid item xs={12} sm={2}>
             <FormControl className={classes.formControl} fullWidth>
-              <InputLabel htmlFor="age-native-simple">Categorias</InputLabel>
+              <InputLabel htmlFor="age-native-simple">Categoria</InputLabel>
               <Select
                 native
                 value={denunciationCategory}
@@ -191,6 +193,24 @@ const DenunciationsToolbar = props => {
                 }
               </Select>
             </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={2}>
+            <FormControl className={classes.formControl} fullWidth>
+              <InputLabel htmlFor="age-native-simple">Status</InputLabel>
+              <Select
+                native
+                value={reportStatusValue}
+                onChange={e => setReportStatusValue(e.target.value)}
+              >
+                <option aria-label="None" value="" />                
+                  
+                    <option value={'96afa0df-8ad9-4a44-a726-70582b7bd010'}>Aprovadas</option>
+                    <option value={'52ccae2e-af86-4fcc-82ea-9234088dbedf'}>Negadas</option>
+                    <option value={'c37d9588-1875-44dd-8cf1-6781de7533c3'}>Em progresso</option>
+              </Select>
+            </FormControl>
+
           </Grid>
 
           {/* <Grid item xs={12} sm={2}>
@@ -269,45 +289,6 @@ const DenunciationsToolbar = props => {
             <FormControl margin="dense" fullWidth>
               <Button onClick={submitLimpar}  variant="contained" >Limpar</Button>
             </FormControl>
-          </Grid>
-          
-
-          <Grid item xs={12} sm={2}>
-            {progressStatus &&
-              <div
-                style={{
-                  float: 'right',
-                }}
-              >
-                <FormControl margin="dense">
-                  <Button
-                    onClick={submitEmProgresso}
-                    style={{
-                      background: 'green',
-                    }}
-                    variant="contained" color="secondary"> Aprovadas <CheckIcon /></Button>
-                </FormControl>
-              </div>
-            }
-
-            {progressStatus == false &&
-
-              <div
-                style={{
-                  float: 'right',
-                }}
-              >
-                <FormControl margin="dense">
-                  <Button
-                    onClick={submitEmProgresso2}
-                    style={{
-                      background: 'red',
-                    }}
-                    variant="contained" color="secondary"> Denúncias </Button>
-                </FormControl>
-              </div>
-
-            }
           </Grid>
         </Grid>
 
