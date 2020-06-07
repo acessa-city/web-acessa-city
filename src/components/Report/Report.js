@@ -88,15 +88,32 @@ const Report = props => {
         <Card className={classes.root}>
             {media.hasMedia &&
                 <Carousel>
-                {
-                    media.photos.map(item =>
-                        <CardMedia
-                            className={classes.media}
-                            image={item}
-                            title={item}
-                        />
-                    )                    
-                }
+                 {
+                        media.photos.map(item => (
+                            <div>
+                                {item.includes('.mp4') &&
+                                    <video controls
+                                        width='100%'
+                                        height='auto'
+                                    >
+                                        <source src={item} />
+                                    </video>
+                                }
+
+                                {!item.includes('.mp4') &&
+
+                                    <CardMedia
+                                        width='100%'
+                                        height='auto'
+                                        className={classes.media}
+                                        image={item}
+                                        title={item}
+                                    />
+
+                                }
+                            </div>
+                        ))
+                    }
                 </Carousel>
             }
             <CardContent>
