@@ -226,7 +226,7 @@ const Routes = () => {
 
         {/* ROTAS PARA TODOS */}
 
-        <RouteWithLayout
+        <Route
           component={SignUpView}
           exact
           layout={MinimalLayout}
