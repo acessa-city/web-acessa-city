@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component, Fragment } from 'react';
 import { Switch, Route } from 'react-router-dom'
 import Icon from '@material-ui/core/Icon'
 import { makeStyles } from '@material-ui/styles';
 import RoomIcon from '@material-ui/icons/Room';
 import Report from 'components/Report';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import ReportStatus from 'utils/ReportStatus';
-
+import PropTypes from 'prop-types';
+import IconButton from '@material-ui/core/IconButton';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import Videocam from '@material-ui/icons/Videocam';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import VideoPlayer from 'react-simple-video-player';
 
 import {
   Card,
@@ -26,7 +31,13 @@ import {
   TextField,
   Grid,
   Box,
-  Avatar
+  Avatar,
+  Select,
+  FormControl,
+  InputLabel,
+  CircularProgress,
+  Snackbar,
+  SnackbarContent,
 } from '@material-ui/core';
 import Camera, { idealResolution } from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
@@ -121,6 +132,17 @@ const styles = makeStyles(theme => ({
       borderRight: "solid 1px #cccccc"
     }
   },
+  input: {
+    display: 'none'
+  },
+  gridList: {
+    width: 500,
+    height: 450,
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 
 
 }));
@@ -199,8 +221,6 @@ const ReportMap = props => {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log(position.coords.latitude);
-        console.log(position.coords.longitude);
         const { latitude, longitude } = position.coords;
         setLongitude(longitude);
         setLatitude(latitude);
@@ -335,41 +355,356 @@ const ReportMap = props => {
     setOpenDenuncias(true);
   };
 
+
+
+
+
+  ////////Fechar Modal e limpar //////
   const handleCloseDenuncias = () => {
     setOpenDenuncias(false);
+    limparForm();
+    limparMidia();
+    setMidiaStatusPhotos(false);
+    setMidiaStatusVideo(false);
   };
   /* FIM MODAL */
 
-  var fileUploadInput = React.createRef();
 
-  const showFileUpload = (e) => {
-    fileUploadInput.current.click();
+  const limparForm = () => {
+    setValues({
+      title: '',
+      description: '',
+      categoria: ''
+    })
   }
 
-  const updatePhoto = photoUrl => {
-
-    // const update = {
-    //   userId: user.id,
-    //   photoURL: photoUrl
-    // }
-
-    // api.put('/user/update-photo-profile', update)
-    //   .then(response => {
-    //     setUser(response.data)
-    //   })
+  const limparMidia = () => {
+    setMidia({
+      images: [],
+      videos: []
+    })
   }
 
-  const uploadFileImg = (e) => {
-    s3(e.target.files[0])
-      .then((result) => {
-        const photo = result.fotoUrl
-        updatePhoto(photo)
 
-      }).catch((erro) => {
+  //////////Lista de MIDIAS ///////////
+  const [midia, setMidia] = useState({
+    images: [],
+    videos: []
+  });
 
+  const [midiaStatusPhotos, setMidiaStatusPhotos] = React.useState(false);
+  const [midiaStatusVideo, setMidiaStatusVideo] = React.useState(false);
+
+  const validarTamanho = (maxSize, size, photo) => {
+    if ((size / 1024) > maxSize) {
+      if (photo) {
+        alert("Tamanho muito grande de imagem!")
+      } else {
+        alert("Tamanho muito grande de video!")
+      }
+      return false;
+    }
+
+    return true;
+
+  }
+
+  const [arrayMidia, setarrayMidia] = useState({
+    total: [],
+  });
+
+  const handleCapture = ({ target }) => {
+
+    const name = target.accept.includes('image') ? 'images' : 'videos';
+
+    for (let i = 0; i < target.files.length; i++) {
+
+      const fileReader = new FileReader();
+
+      const totalMidia = arrayMidia.total
+
+      totalMidia.push(target.files[i])
+
+      fileReader.readAsDataURL(target.files[i]);
+
+      fileReader.onload = (e) => {
+
+        if (name == 'images') {
+
+          if (validarTamanho(2048, target.files[i].size, true)) {
+            setMidiaStatusPhotos(true)
+            const imagem = {
+              base64: e.target.result,
+              fileLocal: target.files[i],
+              pathAmazon: ''
+            }
+            const imagens = midia.images
+            imagens.push(imagem)
+            setMidia({
+              ...midia,
+              images: imagens
+            });
+
+          }
+
+        } else {
+
+          if (validarTamanho(102040, target.files[i].size, false)) {
+
+            setMidiaStatusVideo(true)
+            const video = {
+              base64: e.target.result,
+              fileLocal: target.files[i],
+              pathAmazon: ''
+            }
+            const imagens = midia.videos
+            imagens.push(video)
+            setMidia({
+              ...midia,
+              videos: imagens
+            });
+          }
+
+
+        }
+
+      }
+
+    }
+
+  };
+
+
+  //////Salvar Denuncia//////
+
+  const [values, setValues] = useState({
+    title: '',
+    description: '',
+    categoria: ''
+  });
+
+  const handleChangeDenuncia = event => {
+    setValues({
+      ...values,
+      [event.target.name]: event.target.value
+    });
+  };
+
+  const handleEnvio = (event) => {
+    event.preventDefault();
+    currentUser().then((result) => {
+      const denuncia = {
+        userId: result.id,
+        categoryId: values.categoria,
+        urgencyLevelId: "553b0d79-20c1-49f3-8c2d-820128a293af",
+        reportStatusId: "48cf5f0f-40c9-4a79-9627-6fd22018f72c",
+        title: values.title,
+        description: values.description,
+        latitude: latitude.toFixed(4),
+        longitude: longitude.toFixed(4),
+        accuracy: 1.9,
+      }
+      setOpenValidador(true)
+      API.post('/report', denuncia
+      ).then(response => {
+        console.log("teste", arrayMidia)
+        if (arrayMidia.total.length > 0) {
+          const idDenuncia = response.data.id;
+
+          for (let i = 0; i < arrayMidia.total.length; i++) {
+            s3(arrayMidia.total[i])
+              .then((result) => {
+                
+                const JsonAttachment = {
+                  reportId: idDenuncia,
+                  mediaType: arrayMidia.total[i].type,
+                  url: result.fotoUrl
+                }
+                API.post('/report-attachment', JsonAttachment
+                ).then(response => {
+                  setOpenValidador(false)
+
+                  setErrors(["Denúncia enviada com Sucesso!"])
+                  setErrorsStatus(true)
+                  setTimeout(() => {
+                    setErrors([]);
+                  }, 10000);
+                  limparForm();
+                  limparMidia();
+                }).catch((aError) => {
+                  limparForm();
+                  limparMidia();
+                  setMidiaStatusPhotos(false);
+                  setMidiaStatusVideo(false);
+                  if (aError.response.status == 400) {
+                    setOpenValidador(false)
+                    console.log(aError.response.data.errors)
+                    setErrors(aError.response.data.errors)
+
+                    setTimeout(() => {
+                      setErrors([]);
+                    }, 10000);
+                    limparForm();
+                    limparMidia();
+                  }
+                  else if (aError.response.status == 500) {
+                    setErrors([
+                      "Erro servidor"
+                    ])
+
+                    setTimeout(() => {
+                      setErrors([]);
+                    }, 10000);
+                    limparForm();
+                    limparMidia();
+                  }
+                  setErrorsStatus(false)
+                  setOpenValidador(false)
+
+                })
+
+              }).catch((aError) => {
+                if (aError.response.status == 400) {
+                  setOpenValidador(false)
+                  console.log(aError.response.data.errors)
+                  setErrors(aError.response.data.errors)
+
+                  setTimeout(() => {
+                    setErrors([]);
+                  }, 10000);
+                  limparForm();
+                  limparMidia();
+                }
+                else if (aError.response.status == 500) {
+                  setErrors([
+                    "Erro servidor"
+                  ])
+
+                  setTimeout(() => {
+                    setErrors([]);
+                  }, 10000);
+                  limparForm();
+                  limparMidia();
+                }
+                setErrorsStatus(false)
+                setOpenValidador(false)
+              })
+          }
+        
+        } else {
+            console.log("entreiiieieieieii aqui")
+          setOpenValidador(false)
+          setErrors(["Denúncia criada com Sucesso!"])
+          setErrorsStatus(true)
+          setTimeout(() => {
+            setErrors([]);
+          }, 10000);
+          limparForm();
+          limparMidia();
+
+         
+        }
+
+
+      }).catch((aError) => {
+
+        if (aError.response.status == 400) {
+          setOpenValidador(false)
+          console.log(aError.response.data.errors)
+          setErrors(aError.response.data.errors)
+
+          setTimeout(() => {
+            setErrors([]);
+          }, 10000);
+        }
+        else if (aError.response.status == 500) {
+          setErrors([
+            "A campos vazios"
+          ])
+
+          setTimeout(() => {
+            setErrors([]);
+          }, 10000);
+        }
+        setErrorsStatus(false)
+        setOpenValidador(false)
       })
+
+    })
+
   }
 
+  /////////Lista Categoria/////////
+  const [categories, setCategories] = useState([]);
+
+  const listCategory = () => {
+    API.get('/category'
+    ).then(response => {
+      const listCategory2 = response.data;
+      setCategories(listCategory2);
+    }).catch(erro => {
+      console.log(erro);
+    })
+  }
+
+  //////useEffect////////
+  useEffect(() => {
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setLongitude(longitude);
+        setLatitude(latitude);
+      },
+
+      (error) => {
+        console.log("ERRO! " + error.message)
+      }
+    )
+    filterBoth();
+    listCategory();
+
+  }, [])
+
+
+  /////Errros///////
+  const handleSnackClick = () => {
+    setErrors([]);
+  }
+  const [errors, setErrors] = useState([]);
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };
+  const erros = () => {
+    if (errorsStatus == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'green',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent autoHideDuration={1}
+              style={{
+                background: 'red',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>}
+            />
+          ))}
+        </div>)
+    }
+  }
 
 
   return (
@@ -480,7 +815,7 @@ const ReportMap = props => {
             {/* DENTRO DO MODAL */}
             <div style={{
               overflow: 'scroll',
-              height: '80%'
+              height: '100%'
             }}
               className={style.paper}>
               {/* Passar o id da denúncia para reportId vvvvvvvvvvvv */}
@@ -513,7 +848,11 @@ const ReportMap = props => {
         >
           <Fade in={openDenuncias}>
             {/* DENTRO DO MODAL */}
-            <div className={style.paper}>
+            <div style={{
+              overflow: 'scroll',
+              height: '80%'
+            }}
+              className={style.paper}>
               <Card>
                 <form
                   autoComplete="off"
@@ -531,8 +870,8 @@ const ReportMap = props => {
                     >
                       <Grid
                         item
-                        lg={12}
-                        md={12}
+                        lg={6}
+                        md={6}
                         xl={12}
                         xs={12}
                       >
@@ -541,27 +880,41 @@ const ReportMap = props => {
                           helperText="Digite o título da denúncia"
                           label="Título"
                           margin="dense"
-                          name="titulo"
+                          name="title"
                           required
+                          onChange={handleChangeDenuncia}
+                          value={values.title}
                           variant="outlined"
                         />
                       </Grid>
 
-
-
                       <Grid
                         item
-                        lg={12}
-                        md={12}
+                        lg={6}
+                        md={6}
                         xl={12}
                         xs={12}
                       >
-
-                        <TextareaAutosize style={{ width: '100%', fontSize: '15px', borderRadius: '4px', padding: '5px 13px 10px 13px' }} rowsMin={3} aria-label="empty textarea" placeholder="Descreva sua denúncia*" />
-
+                        <FormControl variant="outlined" margin="dense" fullWidth>
+                          <InputLabel>Categoria:</InputLabel>
+                          <Select native label="Categoria"
+                            value={values.categoria}
+                            onChange={handleChangeDenuncia}
+                            inputProps={{
+                              name: 'categoria',
+                            }}
+                          >
+                            <option aria-label="None" value="" />
+                            {categories.map(categorie => {
+                              return (
+                                <option value={categorie.id}>{categorie.name}</option>
+                              )
+                            })
+                            }
+                          </Select>
+                        </FormControl>
                       </Grid>
 
-
                       <Grid
                         item
                         lg={12}
@@ -570,23 +923,108 @@ const ReportMap = props => {
                         xs={12}
                       >
 
-                        <input
-                          onChange={uploadFileImg}
-                          type="file"
-                          id="my_file"
-                          accept="image/*"
-                          style={{ display: "none" }}
-                          ref={fileUploadInput}
+                        <TextareaAutosize style={{ width: '100%', fontSize: '15px', borderRadius: '4px', padding: '5px 13px 10px 13px' }}
+                          rowsMin={3}
+                          aria-label="empty textarea"
+                          name="description"
+                          onChange={handleChangeDenuncia}
+                          value={values.description}
+                          placeholder="Descreva sua denúncia*"
                         />
-                        <div style={{ textAlign: 'center' }}>
-                          <Avatar
-                            className={style.avatar}
-                            onClick={showFileUpload}
-                          />
-                        </div>
+
                       </Grid>
 
-
+                      <Grid
+                        item
+                        lg={6}
+                        md={6}
+                        xl={12}
+                        xs={12}
+                        style={{
+                          textAlign: 'center'
+                        }}
+                      >
+                        {midiaStatusPhotos &&
+                          <GridList
+                            style={{
+                              width: "100%",
+                              height: "170px"
+                            }}
+                            cellHeight={160} className={style.gridList} cols={3}>
+                            {midia.images.map((midias) => (
+                              <GridListTile key={midias.fileLocal.name} cols={midias.cols || 1}>
+                                <img src={midias.base64} />
+                              </GridListTile>
+                            ))}
+                          </GridList>
+                        }
+                        <Fragment>
+                          <input
+                            accept="image/*"
+                            className={style.input}
+                            id="icon-button-photo"
+                            onChange={handleCapture}
+                            multiple
+                            type="file"
+                          />
+                          <label htmlFor="icon-button-photo">
+                            <IconButton
+                              style={{
+                                textAlign: 'center'
+                              }}
+                              color="primary" component="span">
+                              <PhotoCamera />
+                            </IconButton>
+                          </label>
+                        </Fragment>
+                      </Grid>
+                      <Grid
+                        item
+                        lg={6}
+                        md={6}
+                        xl={12}
+                        xs={12}
+                        style={{
+                          textAlign: 'center'
+                        }}
+                      >
+                        {midiaStatusVideo &&
+                          <GridList
+                            style={{
+                              width: "100%",
+                              height: "170px"
+                            }}
+                            cellHeight={160} className={style.gridList} cols={3}>
+                            {midia.videos.map((videos) => (
+                              <GridListTile key={videos.fileLocal.name} cols={videos.cols || 1}>
+                                <video controls
+                                  width='100%'
+                                  height='auto'
+                                >
+                                  <source src={videos.base64} />
+                                </video>
+                              </GridListTile>
+                            ))}
+                          </GridList>
+                        }
+                        < Fragment >
+                          <input
+                            accept="video/*"
+                            capture="camcorder"
+                            className={style.input}
+                            id="icon-button-video"
+                            onChange={handleCapture}
+                            multiple
+                            type="file"
+                          />
+                          <label htmlFor="icon-button-video">
+                            <IconButton
+                              color="primary" component="span">
+                              <Videocam />
+                            </IconButton>
+                          </label>
+                        </Fragment>
+                      </Grid>
 
 
 
@@ -603,13 +1041,16 @@ const ReportMap = props => {
                     >
                       <Button
                         color="primary"
+                        onClick={handleCloseDenuncias}
                         variant="contained"
-                        style={{ background: 'green' }}
+                        style={{
+                          background: 'red'
+                        }}
+
                       >
-                        Enviar
+                        Fechar
                      </Button>
                     </Grid>
-
 
                     <Grid
                       item
@@ -620,15 +1061,11 @@ const ReportMap = props => {
                     >
                       <Button
                         color="primary"
-                        onClick={handleCloseDenuncias}
                         variant="contained"
-                        style={{
-                          background: 'red',
-                          float: 'right'
-                        }}
-
+                        onClick={handleEnvio}
+                        style={{ background: 'green', float: 'right' }}
                       >
-                        Fechar
+                        Enviar
                      </Button>
                     </Grid>
                   </CardActions>
@@ -641,8 +1078,16 @@ const ReportMap = props => {
       </div>
       {/* FIM MODAL */}
 
+      <Snackbar open={errors.length} onClick={handleSnackClick}>
+        {erros()}
+      </Snackbar>
+      <Backdrop
+        style={{ zIndex: 99999999 }}
+        className={style.backdrop} open={openValidador} onClick={handleCloseValidador}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
 
-    </div>
+    </div >
   )
 }
 

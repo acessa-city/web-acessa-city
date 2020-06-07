@@ -18,7 +18,7 @@
         mensagem: '',
         fotoUrl: '',
       }
-      let allowedFileTypes = ["image/png", "image/jpeg", "image/gif"];
+      let allowedFileTypes = ["image/png", "image/jpeg", "image/gif","video/mp4"];
 
       if (allowedFileTypes.indexOf(filePath.type) > -1) {
 
