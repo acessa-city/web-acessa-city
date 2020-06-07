@@ -176,7 +176,7 @@ const DenunciationsToolbar = props => {
 
           <Grid item xs={12} sm={2}>
             <FormControl className={classes.formControl} fullWidth>
-              <InputLabel htmlFor="age-native-simple">Categorias</InputLabel>
+              <InputLabel htmlFor="age-native-simple">Categoria</InputLabel>
               <Select
                 native
                 value={denunciationCategory}

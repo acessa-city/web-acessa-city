@@ -124,7 +124,7 @@ const styles = makeStyles(theme => ({
 
 const MainReportMap = props => {
 
-  const [locationsInAnalysis, setLocationsInAnalysis] = useState([]);
+
   const [locationsInProgress, setLocationsInProgress] = useState([]);
   const [locationsAproved, setLocationsApproved] = useState([]);
   const [locationsFinished, setLocationsFinished] = useState([]);
@@ -134,15 +134,6 @@ const MainReportMap = props => {
   const [idReportModal, setidReportModal] = useState('');
 
   const filterBoth = () => {
-    API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c'
-    ).then(response => {
-      const report = response.data
-      setLocationsInAnalysis(report)
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
     API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
     ).then(response => {
       const report = response.data
@@ -189,7 +180,7 @@ const MainReportMap = props => {
     )
     filterBoth();
 
-  }, []) 
+  }, [])
 
   const style = styles();
 
@@ -330,15 +321,6 @@ const MainReportMap = props => {
             lng={locationsMapProgress.longitude}
           />
         ))}
-        {locationsInAnalysis.map(locationsMapAnalysis => (
-          <RoomIcon
-            onClick={() => handleOpen(locationsMapAnalysis.id)}
-            key={locationsMapAnalysis.id}
-            className={style.markerAnalysis}
-            lat={locationsMapAnalysis.latitude}
-            lng={locationsMapAnalysis.longitude}
-          />
-        ))}
       </GoogleMapReact>
 
       <Grid
@@ -370,6 +352,10 @@ const MainReportMap = props => {
           }}
         >
           <Fade in={open}>
+            style={{
+              overflow: 'scroll',
+              height: '80%'
+            }}
             {/* DENTRO DO MODAL */}
             <div className={style.paper}>
               {/* Passar o id da denúncia para reportId vvvvvvvvvvvv */}

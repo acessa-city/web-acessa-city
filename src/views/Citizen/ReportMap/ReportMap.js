@@ -90,9 +90,8 @@ const styles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    /* overflow: 'hidden', */
-    overflow: 'scroll'
-    
+    overflow: 'hidden',
+    overflow: 'scroll',
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
@@ -100,6 +99,8 @@ const styles = makeStyles(theme => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
     overflow: 'hidden',
+    overflow: 'scroll',
+    heigth: '100%'
   },
   avatar: {
     height: 100,
@@ -125,6 +126,7 @@ const styles = makeStyles(theme => ({
 
 const ReportMap = props => {
 
+  const [user, setUser] = useState('')
   const [locationsInAnalysis, setLocationsInAnalysis] = useState([]);
   const [locationsInProgress, setLocationsInProgress] = useState([]);
   const [locationsAproved, setLocationsApproved] = useState([]);
@@ -140,8 +142,19 @@ const ReportMap = props => {
     setLocationsInProgress([]);
     setLocationsInAnalysis([]);
   }
-  const filterBoth = () => {
-    API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c'
+  const filterBoth = (props) => {
+    if (user == '') {
+      API.get(`/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c&userId=${props}`
+      ).then(response => {
+        const report = response.data
+        setLocationsInAnalysis(report)
+      }).catch(erro => {
+        console.log(erro);
+        /* setMensagem('Ocorreu um erro', erro);
+        setOpenDialog(true); */
+      })
+    }else{
+      API.get(`/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c&userId=${user}`
     ).then(response => {
       const report = response.data
       setLocationsInAnalysis(report)
@@ -150,6 +163,8 @@ const ReportMap = props => {
       /* setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true); */
     })
+    }
+
     API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
     ).then(response => {
       const report = response.data
@@ -168,7 +183,7 @@ const ReportMap = props => {
       /* setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true); */
     })
-    API.get('/report?status=ee6dda1a-51e2-4041-9d21-7f5c8f2e94b0' /*MOSTRANDO AS NEGADAS (ALTERAR PARA ENCERRADAS)*/
+    API.get('/report?status=ee6dda1a-51e2-4041-9d21-7f5c8f2e94b0'
     ).then(response => {
       const report = response.data
       setLocationsFinished(report)
@@ -194,7 +209,11 @@ const ReportMap = props => {
         console.log("ERRO! " + error.message)
       }
     )
-    filterBoth();
+
+    currentUser().then(result => {
+      setUser(result.id)
+      filterBoth(result.id);
+    })
 
   }, [])
 
@@ -210,7 +229,7 @@ const ReportMap = props => {
       setOpenDialog(true); */
     })
   }
- 
+
   const filterApproved = () => {
     API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
     ).then(response => {
@@ -225,7 +244,7 @@ const ReportMap = props => {
   }
 
   const filterInAnalysis = () => {
-    API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c'
+    API.get(`/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c&userId=${user}`
     ).then(response => {
       const report = response.data
       limpaTodos();
@@ -462,7 +481,11 @@ const ReportMap = props => {
         >
           <Fade in={open}>
             {/* DENTRO DO MODAL */}
-            <div className={style.paper}>
+            <div style={{
+              overflow: 'scroll',
+              height: '80%'
+            }}
+              className={style.paper}>
               {/* Passar o id da denúncia para reportId vvvvvvvvvvvv */}
               <Report reportId={idReportModal}></Report>
               <Button onClick={handleClose}>Voltar</Button>
@@ -558,11 +581,11 @@ const ReportMap = props => {
                           style={{ display: "none" }}
                           ref={fileUploadInput}
                         />
-                        <div style={{textAlign: 'center'}}>
-                        <Avatar
-                          className={style.avatar}
-                          onClick={showFileUpload}
-                        />
+                        <div style={{ textAlign: 'center' }}>
+                          <Avatar
+                            className={style.avatar}
+                            onClick={showFileUpload}
+                          />
                         </div>
                       </Grid>
 

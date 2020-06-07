@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import moment from 'moment';
+import currentUser from 'utils/AppUser'
 
 import { DenunciationsToolbar, DenunciationsTable } from './components';
 
@@ -41,8 +42,8 @@ const HistoricReport = () => {
   const [mensagem, setMensagem] = useState('');
 
   // Listar os dados  na tela
-  const listDenunciations = () => {
-    API.get(`/report?userId=${user.userId}`
+  const listDenunciations = (props) => {
+    API.get(`/report?userId=${props}`
       /*  API.get(`/report?userId=1f6cc301-79a8-41bc-9e54-8bbe236efdb3` */
     ).then(response => {
       const listDenunciations2 = response.data;
@@ -70,14 +71,16 @@ const HistoricReport = () => {
     if (filtro.neighborhood) {
       stringFiltro += '&neighborhood=' + filtro.neighborhood
     }
-
+    if (filtro.creationDate) {
+      stringFiltro += '&date=' + filtro.creationDate
+    }
     if (filtro.status) {
       stringFiltro += '&status=' + filtro.status
     }
     /* PASSAR O STATUS POR MEIO DE UMA VARIAVEL */
     console.log("filtro aqui" + JSON.stringify(filtro))
     /*Passar o ID do usuário*/
-    API.get(`/report?userId=${user.userId}${stringFiltro}`,
+    API.get(`/report?userId=${user}${stringFiltro}`,
     ).then(response => {
       const filterDenunciation = response.data;
       setDenunciations(filterDenunciation);
@@ -132,28 +135,18 @@ const HistoricReport = () => {
     })
   }
 
-  function onChange(firebaseUser) {
-    if (firebaseUser) {
-      firebaseUser.getIdTokenResult().then((token) => {
-        const claims = token.claims;
-        setUser({
-          ...user,
-          userId: claims.app_user_id
-        })
-      })
-    } else {
-      // No user is signed in.
-    }
-  }
+
   const monstrarId = () => {
-    console.log("MEU ID"+ user.userId)
+    console.log("MEU ID" + user.userId)
   }
   // Atualizar os dados na tela
   useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged(onChange);
+    currentUser().then(result => {
+      setUser(result.id)
+      listDenunciations(result.id);
+    })
     listStatus();
     listCategory();
-    listDenunciations(user.userId);
     monstrarId();
   }, []);
 
