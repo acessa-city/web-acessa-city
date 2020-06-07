@@ -186,8 +186,20 @@ const MainReportMap = props => {
         console.log("ERRO! " + error.message)
       }
     )
-    carregarTodas();
-  }, [])
+    carregarTodas();    
+    const interval = setInterval(() => {
+      if (emProgresso) {
+        carregarEmProgresso();
+      }
+      if (aprovadas) {
+        carregarAprovadas();
+      }
+      if (finalizadas) {
+        carregarFinalizadas();
+      }
+    }, 10000);
+    return () => interval;         
+  }, []) 
 
   const style = styles();
 
