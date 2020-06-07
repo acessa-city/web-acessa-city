@@ -27,6 +27,10 @@ const useStyles = makeStyles(theme => ({
 const HistoricReport = () => {
   const classes = useStyles();
 
+  /*  const [user, setUser] = useState({
+     userId:''
+   }) */
+  const [user, setUser] = useState([])
   const [reportStatus, setReportStatus] = useState([]);
   const [denunciations, setDenunciations] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -36,21 +40,10 @@ const HistoricReport = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [mensagem, setMensagem] = useState('');
 
-
-  const [user, setUser] = useState({
-    userId: ''
-  })
-
-
-  React.useEffect(() => {
-
-  }, [])
-
-
   // Listar os dados  na tela
   const listDenunciations = () => {
-    /*Passar o ID do usuário PRIMEIRO GET DE DENUNCIAS*/
-    API.get('/report?userId=8d4e6519-f440-4272-9c88-45d04f7f447e'
+    API.get(`/report?userId=${user.userId}`
+      /*  API.get(`/report?userId=1f6cc301-79a8-41bc-9e54-8bbe236efdb3` */
     ).then(response => {
       const listDenunciations2 = response.data;
       console.log(listDenunciations2);
@@ -84,7 +77,7 @@ const HistoricReport = () => {
     /* PASSAR O STATUS POR MEIO DE UMA VARIAVEL */
     console.log("filtro aqui" + JSON.stringify(filtro))
     /*Passar o ID do usuário*/
-    API.get(`/report?userId=8d4e6519-f440-4272-9c88-45d04f7f447e${stringFiltro}`,
+    API.get(`/report?userId=${user.userId}${stringFiltro}`,
     ).then(response => {
       const filterDenunciation = response.data;
       setDenunciations(filterDenunciation);
@@ -139,12 +132,31 @@ const HistoricReport = () => {
     })
   }
 
+  function onChange(firebaseUser) {
+    if (firebaseUser) {
+      firebaseUser.getIdTokenResult().then((token) => {
+        const claims = token.claims;
+        setUser({
+          ...user,
+          userId: claims.app_user_id
+        })
+      })
+    } else {
+      // No user is signed in.
+    }
+  }
+  const monstrarId = () => {
+    console.log("MEU ID"+ user.userId)
+  }
   // Atualizar os dados na tela
   useEffect(() => {
+    const unsubscribe = firebase.auth().onAuthStateChanged(onChange);
     listStatus();
-    listDenunciations();
     listCategory();
+    listDenunciations(user.userId);
+    monstrarId();
   }, []);
+
 
 
   return (
@@ -169,6 +181,7 @@ const HistoricReport = () => {
           <Button onClick={e => setOpenDialog(false)}>Fechar</Button>
         </DialogActions>
       </Dialog>
+      <Button onClick={monstrarId}>Mostrar id</Button>
     </div>
   );
 };

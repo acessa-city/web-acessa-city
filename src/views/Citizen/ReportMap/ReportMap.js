@@ -90,8 +90,9 @@ const styles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    /* overflow: 'hidden', */
     overflow: 'scroll'
+    
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
@@ -209,7 +210,7 @@ const ReportMap = props => {
       setOpenDialog(true); */
     })
   }
-
+ 
   const filterApproved = () => {
     API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
     ).then(response => {
@@ -356,7 +357,7 @@ const ReportMap = props => {
 
 
   return (
-    <div style={{ height: '100vh', width: '100%' }}>
+    <div style={{ height: '100%', width: '100%' }}>
       <GoogleMapReact
         bootstrapURLKeys={'AIzaSyDBxtpy4QlnhPfGK7mF_TnbLXooEXVPy_0'}
         defaultCenter={defaultProps.center}
