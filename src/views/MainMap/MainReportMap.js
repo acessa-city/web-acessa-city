@@ -4,37 +4,11 @@ import Icon from '@material-ui/core/Icon'
 import { makeStyles } from '@material-ui/styles';
 import RoomIcon from '@material-ui/icons/Room';
 import Report from 'components/Report';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-
-
 import {
-  Card,
-  Form,
-  CardActions,
-  CardHeader,
-  CardContent,
   Button,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Tooltip,
-  Typography,
-  TextField,
   Grid,
-  Box,
-  Avatar
 } from '@material-ui/core';
-import Camera, { idealResolution } from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
-import {
-  BrowserView,
-  MobileView,
-  isBrowser,
-  isMobile,
-} from "react-device-detect";
 //MODAL
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -42,8 +16,17 @@ import Fade from '@material-ui/core/Fade';
 
 import API from '../../utils/API';
 import s3 from 'utils/AWS-S3'
-import currentUser from 'utils/AppUser';
 import GoogleMapReact from 'google-map-react';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import useScrollTrigger from '@material-ui/core/useScrollTrigger';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Checkbox from '@material-ui/core/Checkbox';
+import Container from '@material-ui/core/Container';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import ReportStatus from 'utils/ReportStatus'
 
 const styles = makeStyles(theme => ({
   gridButton: {
@@ -124,7 +107,23 @@ const styles = makeStyles(theme => ({
 
 const MainReportMap = props => {
 
+  function ElevationScroll(props) {
+    const { children, window } = props;
+    // Note that you normally won't need to set the window ref as useScrollTrigger
+    // will default to window.
+    // This is only being set here because the demo is in an iframe.
+    const trigger = useScrollTrigger({
+      disableHysteresis: true,
+      threshold: 0,
+      target: window ? window() : undefined,
+    });
+  
+    return React.cloneElement(children, {
+      elevation: trigger ? 4 : 0,
+    });
+  }
 
+  const [locationsInAnalysis, setLocationsInAnalysis] = useState([]);
   const [locationsInProgress, setLocationsInProgress] = useState([]);
   const [locationsAproved, setLocationsApproved] = useState([]);
   const [locationsFinished, setLocationsFinished] = useState([]);
@@ -133,8 +132,8 @@ const MainReportMap = props => {
   const [latitude, setLatitude] = useState('');
   const [idReportModal, setidReportModal] = useState('');
 
-  const filterBoth = () => {
-    API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
+  const carregarAprovadas = () => {
+    API.get('/report?status='+ReportStatus.Aprovado()
     ).then(response => {
       const report = response.data
       setLocationsApproved(report)
@@ -143,16 +142,9 @@ const MainReportMap = props => {
       /* setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true); */
     })
-    API.get('/report?status=c37d9588-1875-44dd-8cf1-6781de7533c3'
-    ).then(response => {
-      const report = response.data
-      setLocationsInProgress(report)
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
-    API.get('/report?status=ee6dda1a-51e2-4041-9d21-7f5c8f2e94b0' /*MOSTRANDO AS NEGADAS (ALTERAR PARA ENCERRADAS)*/
+  }
+  const carregarFinalizadas = () => {
+    API.get('/report?status='+ReportStatus.Finalizada()
     ).then(response => {
       const report = response.data
       setLocationsFinished(report)
@@ -162,9 +154,25 @@ const MainReportMap = props => {
       setOpenDialog(true); */
     })
   }
+  const carregarEmProgresso = () => {
+    API.get('/report?status='+ReportStatus.EmProgresso()
+    ).then(response => {
+      const report = response.data
+      setLocationsInProgress(report)
+    }).catch(erro => {
+      console.log(erro);
+      /* setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true); */
+    })
+  }
+
+  const carregarTodas = () => {
+    carregarAprovadas();
+    carregarFinalizadas();
+    carregarEmProgresso()
+  }
 
   useEffect(() => {
-
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position.coords.latitude);
@@ -178,9 +186,8 @@ const MainReportMap = props => {
         console.log("ERRO! " + error.message)
       }
     )
-    filterBoth();
-
-  }, [])
+    carregarTodas();
+  }, []) 
 
   const style = styles();
 
@@ -239,12 +246,6 @@ const MainReportMap = props => {
   };
   /* FIM MODAL */
 
-
-
-
-
-  /* INICIO MODAL  DENUCNIAS*/
-
   const [openDenuncias, setOpenDenuncias] = React.useState(false);
 
   const handleOpenDenuncias = props => {
@@ -256,37 +257,62 @@ const MainReportMap = props => {
   };
   /* FIM MODAL */
 
-  var fileUploadInput = React.createRef();
+  const handleFinalizadas = (event) => {
+    setFinalizadas(event.target.checked);
+    if (finalizadas) {
+      setLocationsFinished([])
+    } else {
+      carregarFinalizadas();
+    }
+  };
 
-  const showFileUpload = (e) => {
-    fileUploadInput.current.click();
+  const handleEmProgresso = (event) => {
+    setEmProgresso(event.target.checked);
+    if (emProgresso) {
+      setLocationsInProgress([])
+    } else {
+      carregarEmProgresso();
+    }
   }
 
-  const updatePhoto = photoUrl => {
-
-    // const update = {
-    //   userId: user.id,
-    //   photoURL: photoUrl
-    // }
-
-    // api.put('/user/update-photo-profile', update)
-    //   .then(response => {
-    //     setUser(response.data)
-    //   })
+  const handleAprovadas = (event) => {
+    setAprovadas(event.target.checked)
+    if (aprovadas) {
+      setLocationsApproved([])
+    } else {
+      carregarAprovadas();
+    }
   }
+  const [finalizadas, setFinalizadas] = React.useState(true);
+  const [emProgresso, setEmProgresso] = React.useState(true);
+  const [aprovadas, setAprovadas] = React.useState(true);
 
-  const uploadFileImg = (e) => {
-    s3(e.target.files[0])
-      .then((result) => {
-        const photo = result.fotoUrl
-        updatePhoto(photo)
 
-      }).catch((erro) => {
-
-      })
-  }
   return (
-    <div style={{ height: '100vh', width: '100%' }}>
+
+    <React.Fragment>
+      {/* <CssBaseline /> */}
+      <ElevationScroll {...props}>
+        <AppBar>
+          <Toolbar>
+          <FormGroup row>            
+            <FormControlLabel
+              control={<Checkbox checked={finalizadas} onChange={handleFinalizadas} />}
+              label="Denúncias finalizadas"
+            />
+            <FormControlLabel
+              control={<Checkbox checked={emProgresso} onChange={handleEmProgresso} />}
+              label="Denúncias em progresso"
+            />
+            <FormControlLabel
+              control={<Checkbox checked={aprovadas} onChange={handleAprovadas} />}
+              label="Denúncias aprovadas"
+            />            
+          </FormGroup>
+          </Toolbar>          
+        </AppBar>
+      </ElevationScroll>
+      <div style={{ height: '100vh', width: '100%' }}>
       <GoogleMapReact
         bootstrapURLKeys={'AIzaSyDBxtpy4QlnhPfGK7mF_TnbLXooEXVPy_0'}
         defaultCenter={defaultProps.center}
@@ -366,7 +392,9 @@ const MainReportMap = props => {
         </Modal>
       </div>
       {/* FIM MODAL */}
-    </div>
+    </div>      
+      <Toolbar />
+    </React.Fragment>    
   )
 }
 
