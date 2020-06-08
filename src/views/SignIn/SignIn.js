@@ -184,7 +184,7 @@ const SignIn = props => {
             if (user) {
               user.getIdTokenResult().then((token) => {
                 asyncLogin(token.token).then(result => {
-                  window.location = '/'
+                  window.location = '/';
                 })
                 .catch(error => {
                   console.log(error)
@@ -198,6 +198,34 @@ const SignIn = props => {
       }).catch((error) => {
         console.log(error)
       })     
+  }
+
+  const hanldeFacebookSignin = event => {
+    event.preventDefault();
+
+    const facebookProvider = new firebase.auth.FacebookAuthProvider;
+    
+    firebase.auth().signInWithPopup(facebookProvider)
+    .then((result) => {          
+      firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            user.getIdTokenResult().then((token) => {
+              asyncLogin(token.token).then(result => {
+                window.location = '/';
+              })
+              .catch(error => {
+                console.log(error)
+              })
+            })
+            .catch(error => {
+
+            })
+          }
+      })
+    }).catch((error) => {
+      console.log(error)
+    })  
+    
   }
 
   const logout = event => {
@@ -305,7 +333,7 @@ const SignIn = props => {
                   <Grid item>
                     <Button
                       color="primary"
-                      onClick={handleSignIn}
+                      onClick={hanldeFacebookSignin}
                       size="large"
                       variant="contained"
                     >
