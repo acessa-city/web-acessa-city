@@ -1026,9 +1026,6 @@ const ReportMap = props => {
                           </label>
                         </Fragment>
                       </Grid>
-
-
-
                     </Grid>
                   </CardContent>
                   <Divider />

@@ -20,7 +20,10 @@ import {
   Typography,
   CardHeader,
   TablePagination,
-  Box
+  Box,
+  Divider,
+  Snackbar,
+  SnackbarContent,
 } from '@material-ui/core';
 
 //Modal
@@ -43,13 +46,13 @@ import SendIcon from '@material-ui/icons/Send';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ForumIcon from '@material-ui/icons/Forum';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-
+import CloseIcon from '@material-ui/icons/Close';
 import { Button, TextField, Grid, Select, MenuItem, FormControl, InputLabel } from '@material-ui/core';
 import firebase from 'firebase/app'
 
 
 import API from '../../../../../utils/API';
-import { ReportCommentaries } from '../../../../../components/';
+import Report from '../../../../../components/Report';
 import { getInitials } from 'helpers';
 
 const useStyles = makeStyles(theme => ({
@@ -95,10 +98,9 @@ const useStyles = makeStyles(theme => ({
     marginTop: 50
   },
   media: {
-    width: '450px',
     height: '280px'
   },
-
+  
 }));
 
 //Abrir opções dos 3 pontinho
@@ -165,9 +167,21 @@ const DenunciationsTable = props => {
       reportId: openModalDenunciations.denunciations.id
 
     }
-    props.envioCoordenador(coordenadores);
-    setOpenAprove(false);
-    setOpen(false);
+
+    if (coodenador.id.length > 0) {
+      props.envioCoordenador(coordenadores);
+      setCoodenador({ id: '' })
+      setOpenAprove(false);
+      setOpen(false);
+    } else {
+      setErrors([
+        "Selecione um coordenador"
+      ])
+      setErrorsStatus(false)
+      setTimeout(() => {
+        setErrors([]);
+      }, 1000);
+    }
 
   }
 
@@ -180,6 +194,7 @@ const DenunciationsTable = props => {
   };
 
   const handleCloseAprove = () => {
+    setCoodenador({ id: '' })
     setOpenAprove(false);
   };
 
@@ -192,6 +207,7 @@ const DenunciationsTable = props => {
   };
 
   const handleCloseDeny = () => {
+    setDeny({ message: '', userId: '' });
     setOpenDeny(false);
   };
 
@@ -242,10 +258,21 @@ const DenunciationsTable = props => {
       description: deny.message
 
     }
-    props.envioDeny(denyDenunciations);
-    setDeny({ message: '', userId: '' });
-    setOpenDeny(false);
-    setOpen(false);
+
+    if (deny.message == '') {
+      setErrors([
+        "Decreva o motivo da negação"
+      ])
+      setErrorsStatus(false)
+      setTimeout(() => {
+        setErrors([]);
+      }, 1000);
+    } else {
+      props.envioDeny(denyDenunciations);
+      setDeny({ message: '', userId: '' });
+      setOpenDeny(false);
+      setOpen(false);
+    }
 
   }
 
@@ -298,6 +325,7 @@ const DenunciationsTable = props => {
   };
 
   const handleClose = () => {
+
     setOpen(false);
   };
 
@@ -437,16 +465,118 @@ const DenunciationsTable = props => {
     }
   }
 
+
+  /////Errros///////
+  const handleSnackClick = () => {
+    setErrors([]);
+  }
+  const [errors, setErrors] = useState([]);
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [errorsStatus2, setErrorsStatus2] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };
+
+  const erros = () => {
+    if (errorsStatus == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'orange',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else if (errorsStatus2 == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'green',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent autoHideDuration={1}
+              style={{
+                background: 'red',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>}
+            />
+          ))}
+        </div>)
+    }
+  }
+
+
   return (
     <Card
       {...rest}
       className={clsx(classes.root, className)}
     >
-      {openComments &&
-        <ReportCommentaries open={openComments} close={tratarClose} reportId={openModalDenunciations.denunciations.id}>
 
-        </ReportCommentaries>
+      {openComments &&
+
+        //{/* // De comentarios */}
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          className={classes.modal}
+          open={openComments}
+          onClose={tratarClose}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={openComments}>
+            <div style={{
+              overflow: 'scroll',
+              height: '100%'
+            }}
+              className={classes.paper}>
+
+              <div style={{
+                textAlign: 'right'
+              }}>
+
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  onClick={tratarClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </div>
+              <Report reportId={openModalDenunciations.denunciations.id}>
+              </Report>
+
+              <CardActions>
+                <Grid md={12} xl={12} xs={12}>
+                  <Button style={{ float: 'right', background: '#2979ff', color: '#fff' }} onClick={tratarClose}>
+                    Fechar
+                    </Button>
+                </Grid>
+              </CardActions>
+
+            </div>
+          </Fade>
+        </Modal>
       }
+
       <CardContent className={classes.content}>
         <PerfectScrollbar>
           <div className={classes.inner}>
@@ -483,7 +613,7 @@ const DenunciationsTable = props => {
                 }
 
                 {open &&
-
+                  //Modal da denuncia
                   <Modal
                     aria-labelledby="transition-modal-title"
                     aria-describedby="transition-modal-description"
@@ -499,88 +629,110 @@ const DenunciationsTable = props => {
                   >
                     {/* Modal da Dereita */}
                     <Fade in={open}>
-                      <div className={classes.paper}>
-                        <Card className={classes.root}
-                          style={{
-                            textAlign: 'center',
-                            maxWidth: 500,
-                            maxHeight: 500,
-                          }}>
+                      <div style={{
+                        overflow: 'scroll',
+                        height: '100%'
+                      }}
+                        className={classes.paper}>
 
-                          <CardHeader title={openModalDenunciations.denunciations.title} />
-                          {openModalDenunciations.denunciations.attachments.length > 0 &&
-                            <Carousel>
-                              {openModalDenunciations.denunciations.attachments.map(item => (
-                                <div>
-                                  {item.url.includes('.mp4') &&
-                                    <video controls
-                                      width='100%'
-                                      height='auto'
-                                    >
-                                      <source src={item.url} />
-                                    </video>
-                                  }
+                        <div style={{
+                          textAlign: 'right'
+                        }}>
 
-                                  {!item.url.includes('.mp4') &&
+                          <IconButton
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            onClick={handleClose}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </div>
 
-                                    <CardMedia
-                                     // onClick={handleOpenPreview}
-                                     onClick={()=>window.open(item.url,"_blank")}
-                                      className={classes.media}
-                                      image={item.url}
-                                    />
-
-                                  }
-                                </div>
-                              ))}
-                            </Carousel>
-                          }
-
-                        </Card>
                         <Card className={classes.root}
                           style={{
                             maxWidth: 700
                           }}
                         >
                           <CardContent>
+                            <div style={{ textAlign: 'center' }} >
+                              <Typography gutterBottom variant="h3" component="h2">
+                                {openModalDenunciations.denunciations.title}
+                              </Typography>
+                            </div>
+                            {openModalDenunciations.denunciations.attachments.length > 0 &&
+                              <Carousel>
+                                {openModalDenunciations.denunciations.attachments.map(item => (
+                                  <div>
+                                    {item.url.includes('.mp4') &&
+                                      <video controls
+                                        width='100%'
+                                        height='auto'
+                                      >
+                                        <source src={item.url} />
+                                      </video>
+                                    }
+
+                                    {!item.url.includes('.mp4') &&
+
+                                      <CardMedia
+                                        onClick={() => window.open(item.url, "_blank")}
+                                        className={classes.media}
+                                        image={item.url}
+                                      />
+
+                                    }
+                                  </div>
+                                ))}
+                              </Carousel>
+                            }
                             <div>
-                              <CardHeader title="Descrição:" />
-                              <div>
-                                <Typography align="justify">{openModalDenunciations.denunciations.description}</Typography>
-                              </div>
+                              <Typography gutterBottom variant="h3" component="h2">
+                                Descrição:
+                              </Typography>
+                            </div>
+                            <div>
+                              <Typography align="justify">{openModalDenunciations.denunciations.description}</Typography>
                             </div>
                           </CardContent>
+                          <Divider />
+                          <CardActions>
+
+                            <Grid item md={6} xs={6}>
+                              <Button
+                                onClick={handleOpenAprove}
+                                mx={200}
+                                color="primary"
+                                align="right"
+                                disabled={false}
+                                width="10px"
+                                size="large"
+                                type="submit"
+                                variant="contained"
+                                className={classes.button}
+                              >
+                                Aprovar
+                          </Button>
+                            </Grid>
+                            <Grid item md={6} xs={6}>
+                              <Button
+                                style={{ float: 'right' }}
+                                onClick={handleOpenDeny}
+                                mx={200}
+                                color="primary"
+                                align="right"
+                                disabled={false}
+                                width="10px"
+                                size="large"
+                                type="submit"
+                                variant="contained"
+                                className={classes.button}
+                              >
+                                Negar
+                            </Button>
+                            </Grid>
+                          </CardActions>
                         </Card>
-                        <Box className={classes.root}>
-                          <Button
-                            onClick={handleOpenAprove}
-                            mx={200}
-                            color="primary"
-                            align="right"
-                            disabled={false}
-                            width="10px"
-                            size="large"
-                            type="submit"
-                            variant="contained"
-                            className={classes.button}
-                          >
-                            Aprovar
-                                </Button>
-                          <Button
-                            onClick={handleOpenDeny}
-                            mx={200}
-                            color="primary"
-                            align="right"
-                            disabled={false}
-                            width="10px"
-                            size="large"
-                            type="submit"
-                            variant="contained"
-                            className={classes.button}
-                          >
-                            Negar
-                                </Button>
-                        </Box>
                       </div>
                     </Fade>
                   </Modal>
@@ -609,7 +761,7 @@ const DenunciationsTable = props => {
                         <Grid item xs={12} sm={12}>
                           <InputLabel>Selecione um coordenador:</InputLabel>
                         </Grid>
-                        <Grid item xs={12} sm={8}>
+                        <Grid item xs={12} sm={12}>
 
                           <FormControl variant="outlined" margin="dense" fullWidth>
                             <InputLabel>Coodenadores:</InputLabel>
@@ -625,11 +777,12 @@ const DenunciationsTable = props => {
                           </FormControl>
 
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+      
                           <FormControl margin="dense" fullWidth>
-                            <Button onClick={submit} variant="contained" color="secondary">Enviar</Button>
+                          <Grid item md={12} xs={12}>
+                            <Button style={{ float: 'right' }} o onClick={submit} variant="contained" color="secondary">Enviar</Button>
+                          </Grid>
                           </FormControl>
-                        </Grid>
                       </Grid>
                     </div>
                   </Fade>
@@ -656,43 +809,32 @@ const DenunciationsTable = props => {
                         <Grid item xs={12} sm={12}>
                           <InputLabel>Descreva o motivo da negação:</InputLabel>
                         </Grid>
+                
+                        <Grid
+                        item
+                        lg={12}
+                        md={12}
+                        xl={12}
+                        xs={12}
+                      >
 
-                        {/* <Grid item xs={12} sm={8}>
+                        <TextareaAutosize style={{ width: '100%', fontSize: '15px', borderRadius: '4px', padding: '5px 13px 10px 13px' }}
+                          rowsMin={3}
+                          aria-label="empty textarea"
+                          name="description"
+                          onChange={e => handleDenyChange(e.target.value)}
+                          value={deny.message}
+                          placeholder="Descreva o motivo dessa negação.*"
+                        />
 
-                                <FormControl variant="outlined" margin="dense" fullWidth>
-                                  <InputLabel>Coodenadores:</InputLabel>
-                                  <Select native label="Coodenadores" value={coodenador} onChange={e => setCoodenador(e.target.value)}>
-                                    <option aria-label="None" value="" />
-                                    {coodenadores.map(listCoodenadores => {
-                                      return (
-                                        <option value={listCoodenadores.name}>{listCoodenadores.name}</option>
-                                      )
-                                    })
-                                    }
-                                  </Select>
-                                </FormControl>
+                      </Grid>
 
-                              </Grid> */}
-
-                        <Grid item md={12} xs={12}>
-                          <TextField
-                            onChange={e => handleDenyChange(e.target.value)}
-                            fullWidth
-                            helperText="Descreva o motivo dessa negação."
-                            label="Descrição da negação"
-                            margin="dense"
-                            name="descricao"
-                            required
-                            value={deny.message}
-                            variant="outlined"
-                          />
-                        </Grid>
-
-                        <Grid item xs={12} sm={4}>
                           <FormControl margin="dense" fullWidth>
-                            <Button onClick={submitDeny} variant="contained" color="secondary">Enviar</Button>
+                            <Grid item md={12} xs={12}>
+                              <Button style={{ float: 'right' }} onClick={submitDeny} variant="contained" color="secondary">Enviar</Button>
+                            </Grid>
                           </FormControl>
-                        </Grid>
+
 
                       </Grid>
                     </div>
@@ -704,6 +846,9 @@ const DenunciationsTable = props => {
           </div>
         </PerfectScrollbar>
       </CardContent>
+      <Snackbar open={errors.length} onClick={handleSnackClick}>
+        {erros()}
+      </Snackbar>
     </Card>
   );
 };

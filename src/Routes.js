@@ -85,8 +85,6 @@ const Routes = () => {
           path="/category"
         />
 
-
-
         <RouteWithLayout
           component={ProductListView}
           exact
@@ -152,14 +150,6 @@ const Routes = () => {
           permission={roles.moderator}
         />
 
-        <RouteWithLayout
-          component={CommentsView}
-          exact
-          layout={MainLayout}
-          path="/comentarios-moderador"
-          permission={roles.moderator}
-        />
-
         {/* FIM Rotas do Moderador */}
 
 
@@ -175,13 +165,6 @@ const Routes = () => {
           permission={roles.coordinator}
         />
 
-        <RouteWithLayout
-          component={CommentsCoordinatorView}
-          exact
-          layout={MainLayout}
-          path="/comentarios"
-          permission={roles.coordinator}
-        />
         <RouteWithLayout
           component={CategoryListView}
           exact

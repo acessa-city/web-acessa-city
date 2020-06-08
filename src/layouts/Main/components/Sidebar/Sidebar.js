@@ -162,12 +162,6 @@ const Sidebar = props => {
         icon: <PersonAddIcon />
       },
    
-      // {
-      //   title: 'Gerenciar Cood/Mod',
-      //   href: '/novo-usuario',
-      //   icon: <PersonAddIcon />
-      // },
-
     )
   }
 
@@ -177,11 +171,6 @@ const Sidebar = props => {
         title: 'Denúcias',
         href: '/denuncias',
         icon: <RecordVoiceOverIcon />
-      },
-      {
-        title: 'Comentários',
-        href: '/comentarios',
-        icon: <Forum />
       },
       {
         title: 'Gerenciar Cat/Sub',
@@ -200,12 +189,6 @@ const Sidebar = props => {
         href: '/denuncias-moderador',
         icon: <RecordVoiceOverIcon />
       },
-      {
-        title: 'Comentários',
-        href: '/comentarios-moderador',
-        icon: <Forum />
-      },
-
     )
   }
 

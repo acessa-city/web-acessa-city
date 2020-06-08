@@ -208,6 +208,8 @@ const limparForm = () => {
                 <option value={'96afa0df-8ad9-4a44-a726-70582b7bd010'}>Aprovadas</option>
                 <option value={'52ccae2e-af86-4fcc-82ea-9234088dbedf'}>Negadas</option>
                 <option value={'c37d9588-1875-44dd-8cf1-6781de7533c3'}>Em progresso</option>
+                <option value={'ee6dda1a-51e2-4041-9d21-7f5c8f2e94b0'}>Finalizadas</option>
+                
               </Select>
             </FormControl>
 

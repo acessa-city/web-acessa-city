@@ -39,7 +39,7 @@ const DenunciationListCoordinator = () => {
   const [categories, setCategories] = useState([]);
   const [denunciationsSlect, setDenunciationsSelect] = useState([]);
   const [coodenadores, setCoordenadores] = useState([]);
-  const [statusProgressDenunciation, setStatusProgressDenunciation] = useState(true);
+  const [statusProgressDenunciation, setStatusProgressDenunciation] = useState(['96afa0df-8ad9-4a44-a726-70582b7bd010']);
   const [openDialog, setOpenDialog] = useState(false);
   const [mensagem, setMensagem] = useState('');
 
@@ -78,22 +78,24 @@ const DenunciationListCoordinator = () => {
   }
 
 
-  //Negar denuncia
-  const envioDeny = (deny) => {
-
-    deny.userId = user.id;
-    console.log("deny" + JSON.stringify(deny))
-    API.post(`/report/${deny.denunciationsId}/status-update`, deny
-
-    ).then(response => {
-      listDenunciations();
-      setMensagem('Denúncia negada!');
-      setOpenDialog(true);
-
-    }).catch(erro => {
-      console.log(erro);
-    })
-  }
+    //Negar denuncia
+    const envioDeny = (deny) => {
+      console.log("deny" + JSON.stringify(deny))
+      API.post(`/report/${deny.denunciationsId}/status-update`, deny
+  
+      ).then(response => {
+        listDenunciations();
+        setErrors(["Denúncia negada com sucesso!"])
+        setErrorsStatus2(true)
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
+  
+      }).catch(erro => {
+        console.log(erro);
+      })
+    }
+  
 
   const [user, setUser] = useState({
     userId: ''
@@ -182,6 +184,8 @@ const DenunciationListCoordinator = () => {
     API.get(`/report?${stringFiltro}`,
     ).then(response => {
 
+      setStatusProgressDenunciation(filtro.status);
+
       if (response.data.length > 0) {
         setOpenValidador(false)
         const filterDenunciation = response.data;
@@ -195,7 +199,7 @@ const DenunciationListCoordinator = () => {
         setErrorsStatus(true)
         setTimeout(() => {
           setErrors([]);
-        }, 10000);
+        }, 2000);
         
       }
 
@@ -209,7 +213,7 @@ const DenunciationListCoordinator = () => {
 
   //filtrar Aprovados
   const filterAprove = (aprove) => {
-    setStatusProgressDenunciation(aprove.statusProgress) //manar status se é denuncian ão aprovadas ou aprovaas
+  
     API.get(`/report?status=${aprove.id}`,
     ).then(response => {
       const filterAprove2 = response.data;
@@ -238,8 +242,12 @@ const DenunciationListCoordinator = () => {
     API.post(`/report/start-progress`, progressJson
     ).then(response => {
       listDenunciations();
-      setMensagem("Denuncia em Progresso");
-      setOpenDialog(true);
+      setErrors(["Denúncia está em progresso!"])
+      setErrorsStatus2(true)
+      setTimeout(() => {
+        setErrors([]);
+      }, 2000);
+
     }).catch(erro => {
       console.log(erro);
       setMensagem('Ocorreu um erro', erro);
@@ -289,6 +297,7 @@ const DenunciationListCoordinator = () => {
   }
   const [errors, setErrors] = useState([]);
   const [errorsStatus, setErrorsStatus] = useState('');
+  const [errorsStatus2, setErrorsStatus2] = useState('');
   const [openValidador, setOpenValidador] = React.useState(false);
   const handleCloseValidador = () => {
     setOpenValidador(false);
@@ -302,6 +311,18 @@ const DenunciationListCoordinator = () => {
             <SnackbarContent
               style={{
                 background: 'orange',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    }else if (errorsStatus2 == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'green',
                 textAlign: 'center'
               }}
               message={<h3>{error}</h3>} />
@@ -322,9 +343,6 @@ const DenunciationListCoordinator = () => {
         </div>)
     }
   }
-
-
-
 
   return (
     <div className={classes.root}>

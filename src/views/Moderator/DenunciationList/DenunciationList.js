@@ -45,7 +45,7 @@ const DenunciationList = () => {
 
   //Enviar coodenador 
   const envioCoordenador = (update) => {
-
+    console.log("Update", update);
     API.post(`/report/${update.reportId}/coordinator-update`, update
     ).then(response => {
       const newCoodenador = response.data;
@@ -55,20 +55,20 @@ const DenunciationList = () => {
         description: 'Aprovação de Moderador'
       }
       API.post(`/report/${update.reportId}/status-update`, param
-
       ).then(responseStatus => {
-
         listDenunciations();
-        setMensagem('Denuncia enviada para o coodenador com sucesso!');
-        setOpenDialog(true);
+        setErrors(["Denúncia Enviada para o coordenador com sucesso!"])
+        setErrorsStatus2(true)
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
 
-      }).catch(erro => {
-
+      }).catch((aError) => {
       })
       console.log(newCoodenador)
       //setDenunciations(  [...denunciations, newDenunciation])
-    }).catch(erro => {
-      console.log(erro);
+    }).catch((aError) => {
+     
     })
   }
 
@@ -82,8 +82,11 @@ const DenunciationList = () => {
 
     ).then(response => {
       listDenunciations();
-      setMensagem('Denúncia negada!');
-      setOpenDialog(true);
+      setErrors(["Denúncia negada com sucesso!"])
+      setErrorsStatus2(true)
+      setTimeout(() => {
+        setErrors([]);
+      }, 2000);
 
     }).catch(erro => {
       console.log(erro);
@@ -138,6 +141,9 @@ const DenunciationList = () => {
     API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c'
     ).then(response => {
       setOpenValidador(false)
+      if (errorsStatus2 == true) {
+
+      }
       const listDenunciations2 = response.data;
       console.log(listDenunciations2);
       setDenunciations(listDenunciations2);
@@ -195,7 +201,7 @@ const DenunciationList = () => {
         setTimeout(() => {
           setErrors([]);
         }, 10000);
-        
+
       }
     }).catch(erro => {
       console.log(erro);
@@ -226,10 +232,6 @@ const DenunciationList = () => {
       setOpenDialog(true);
     })
   }
-  //encerrar dnunucias
-  const enviorEncerrar = (encerrar) => {
-    console.log("filtro aqui ecerrado" + JSON.stringify(encerrar))
-  }
 
 
   // Atualizar os dados na tela
@@ -246,6 +248,7 @@ const DenunciationList = () => {
   }
   const [errors, setErrors] = useState([]);
   const [errorsStatus, setErrorsStatus] = useState('');
+  const [errorsStatus2, setErrorsStatus2] = useState('');
   const [openValidador, setOpenValidador] = React.useState(false);
   const handleCloseValidador = () => {
     setOpenValidador(false);
@@ -259,6 +262,18 @@ const DenunciationList = () => {
             <SnackbarContent
               style={{
                 background: 'orange',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else if (errorsStatus2 == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'green',
                 textAlign: 'center'
               }}
               message={<h3>{error}</h3>} />
