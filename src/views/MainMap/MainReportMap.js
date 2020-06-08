@@ -27,6 +27,8 @@ import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import ReportStatus from 'utils/ReportStatus';
+import { ReactBingmaps } from 'react-bingmaps';
+
 
 const styles = makeStyles(theme => ({
   gridButton: {
@@ -136,6 +138,9 @@ const MainReportMap = props => {
     API.get('/report?status=' + ReportStatus.Aprovado()
     ).then(response => {
       const report = response.data
+      response.data.forEach(element => {
+        adicionarDenunciaNoMapa('yellow', element)
+      });      
       setLocationsApproved(report)
     }).catch(erro => {
       console.log(erro);
@@ -147,6 +152,9 @@ const MainReportMap = props => {
     API.get('/report?status=' + ReportStatus.Finalizada()
     ).then(response => {
       const report = response.data
+      response.data.forEach(element => {
+        adicionarDenunciaNoMapa('green', element)
+      });
       setLocationsFinished(report)
     }).catch(erro => {
       console.log(erro);
@@ -158,6 +166,9 @@ const MainReportMap = props => {
     API.get('/report?status=' + ReportStatus.EmProgresso()
     ).then(response => {
       const report = response.data
+      response.data.forEach(element => {
+        adicionarDenunciaNoMapa('blue', element)
+      });
       setLocationsInProgress(report)
     }).catch(erro => {
       console.log(erro);
@@ -166,10 +177,51 @@ const MainReportMap = props => {
     })
   }
 
+  const adicionarDenunciaNoMapa = (cor, denuncia) => {
+    const newReport = {
+      location: [denuncia.latitude, denuncia.longitude],
+      option: {
+        title: denuncia.title,
+        color: cor,
+      },
+      addHandler: {
+        type: "click",
+        callback: () => teste(denuncia.id)
+      }          
+    }
+
+    const info = denuncias.pins
+    info.push(newReport);
+    setDenuncias({
+      ...denuncias,
+      pins: info
+    })
+  }
+
+  const teste = (message) => {
+    alert(message)
+  }
+
+  const [denuncias, setDenuncias] = useState({
+    pins : [],
+  })
+
   const carregarTodas = () => {
-    carregarAprovadas();
-    carregarFinalizadas();
-    carregarEmProgresso()
+    setDenuncias({
+      pins: []
+    })
+    if (emProgresso) {
+      carregarEmProgresso();
+    }
+    if (aprovadas) {
+      carregarAprovadas();
+    }
+    if (finalizadas) {
+      carregarFinalizadas();
+    }    
+    // carregarAprovadas();
+    // carregarFinalizadas();
+    // carregarEmProgresso()
   }
 
   useEffect(() => {
@@ -186,17 +238,9 @@ const MainReportMap = props => {
         console.log("ERRO! " + error.message)
       }
     )
-    carregarTodas();    
+    carregarTodas();
     const interval = setInterval(() => {
-      if (emProgresso) {
-        carregarEmProgresso();
-      }
-      if (aprovadas) {
-        carregarAprovadas();
-      }
-      if (finalizadas) {
-        carregarFinalizadas();
-      }
+      carregarTodas();
     }, 10000);
     return () => interval;         
   }, []) 
@@ -271,29 +315,17 @@ const MainReportMap = props => {
 
   const handleFinalizadas = (event) => {
     setFinalizadas(event.target.checked);
-    if (finalizadas) {
-      setLocationsFinished([])
-    } else {
-      carregarFinalizadas();
-    }
+    carregarTodas();
   };
 
   const handleEmProgresso = (event) => {
     setEmProgresso(event.target.checked);
-    if (emProgresso) {
-      setLocationsInProgress([])
-    } else {
-      carregarEmProgresso();
-    }
+    carregarTodas();
   }
 
   const handleAprovadas = (event) => {
     setAprovadas(event.target.checked)
-    if (aprovadas) {
-      setLocationsApproved([])
-    } else {
-      carregarAprovadas();
-    }
+    carregarTodas();
   }
   const [finalizadas, setFinalizadas] = React.useState(true);
   const [emProgresso, setEmProgresso] = React.useState(true);
@@ -325,7 +357,7 @@ const MainReportMap = props => {
         </AppBar>
       </ElevationScroll>
       <div style={{ height: '100vh', width: '100%' }}>
-        <GoogleMapReact
+        {/* <GoogleMapReact
           bootstrapURLKeys={'AIzaSyDBxtpy4QlnhPfGK7mF_TnbLXooEXVPy_0'}
           defaultCenter={defaultProps.center}
           defaultZoom={defaultProps.zoom}
@@ -359,7 +391,14 @@ const MainReportMap = props => {
               lng={locationsMapProgress.longitude}
             />
           ))}
-        </GoogleMapReact>
+        </GoogleMapReact> */}
+
+        <ReactBingmaps 
+          bingmapKey = "AhB03kPUyRzwqaJu5TId4Ny9-WKbQzvOHxDrKtJaIqFEN9iLwfk5fWZD-5nZCVXv" 
+          center = {[latitude, longitude]}
+          pushPins = {denuncias.pins}
+          >          
+        </ReactBingmaps>        
 
         <Grid
           className={style.gridButton}
