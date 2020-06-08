@@ -7,13 +7,17 @@ import {
   Grid,
   Button,
   IconButton,
+  Backdrop,
+  CircularProgress,  
   TextField,
   Link,
-  FormHelperText,
-  Checkbox,
-  Typography
+  Typography,
+  Snackbar,
+  SnackbarContent  
 } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import CreateUser from 'views/User/CreateUser'
+import api from 'utils/API';
 
 const schema = {
   firstName: {
@@ -41,10 +45,6 @@ const schema = {
       maximum: 128
     }
   },
-  policy: {
-    presence: { allowEmpty: false, message: 'is required' },
-    checked: true
-  }
 };
 
 const useStyles = makeStyles(theme => ({
@@ -64,15 +64,15 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.neutral,
     height: '100%',
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
     backgroundImage: 'url(/images/auth.jpg)',
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center'
   },
   quoteInner: {
-    textAlign: 'center',
+    // textAlign: 'center',
     flexBasis: '600px'
   },
   quoteText: {
@@ -152,6 +152,25 @@ const SignUp = props => {
     errors: {}
   });
 
+  const [errors, setErrors] = useState([]);
+  const [created, setCreated] = useState(false);
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };  
+
+  const _createUser = () => {
+    const userData = {
+      email: formState.values.email,
+      emailVerified: true,
+      password: formState.values.password,
+      displayName: formState.values.firstName + ' ' + formState.values.lastName,
+      disabled: false
+    }
+    createUser(userData);
+  }
+
   useEffect(() => {
     const errors = validate(formState.values, schema);
 
@@ -181,13 +200,82 @@ const SignUp = props => {
     }));
   };
 
+  const createUser = (user) => {
+    setOpenValidador(true)
+    api.post('/user', user)
+      .then((result) => {
+        setCreated(true)
+        setOpenValidador(false)
+        setErrors([
+          "O usuário " + user.email + " foi criado com sucesso."])
+        setErrorsStatus(true)
+        setTimeout(() => {
+          history.push('/');
+        }, 7000);        
+      })
+      .catch((aError) => {
+        if (aError.response.status == 400) {
+          setOpenValidador(false)
+          console.log(aError.response.data.errors)
+          setErrors(aError.response.data.errors)
+
+          setTimeout(() => {
+            setErrors([]);
+          }, 10000);
+        }
+        else if (aError.response.status == 500) {
+          setErrors([
+            "Erro no servidor"
+          ])
+
+          setTimeout(() => {
+            setErrors([]);
+          }, 10000);
+        }
+        setErrorsStatus(false)
+        setOpenValidador(false)
+      })
+  }
+
+  const erros = () => {
+    if (errorsStatus == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'green',
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent autoHideDuration={1}
+              style={{
+                background: 'red',
+              }}
+              message={<h3>{error}</h3>}
+            />
+          ))}
+        </div>)
+    }
+
+  }  
+
+  const handleSnackClick = () => {
+    setErrors([]);
+  }  
+
   const handleBack = () => {
     history.goBack();
   };
 
   const handleSignUp = event => {
     event.preventDefault();
-    history.push('/');
+    _createUser();
   };
 
   const hasError = field =>
@@ -210,21 +298,14 @@ const SignUp = props => {
                 className={classes.quoteText}
                 variant="h1"
               >
-                Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
-                they sold out High Life.
+                Acessa City
               </Typography>
               <div className={classes.person}>
                 <Typography
                   className={classes.name}
-                  variant="body1"
+                  variant="h1"
                 >
-                  Takamaru Ayako
-                </Typography>
-                <Typography
-                  className={classes.bio}
-                  variant="body2"
-                >
-                  Manager at inVision
+                  Colaboração social em tempo real
                 </Typography>
               </div>
             </div>
@@ -251,13 +332,13 @@ const SignUp = props => {
                   className={classes.title}
                   variant="h2"
                 >
-                  Create new account
+                  Criar uma nova conta - Acessa City
                 </Typography>
                 <Typography
                   color="textSecondary"
                   gutterBottom
                 >
-                  Use your email to create new account
+                  Utilize o seu e-mail para criar uma nova conta
                 </Typography>
                 <TextField
                   className={classes.textField}
@@ -266,7 +347,7 @@ const SignUp = props => {
                   helperText={
                     hasError('firstName') ? formState.errors.firstName[0] : null
                   }
-                  label="First name"
+                  label="Nome"
                   name="firstName"
                   onChange={handleChange}
                   type="text"
@@ -280,7 +361,7 @@ const SignUp = props => {
                   helperText={
                     hasError('lastName') ? formState.errors.lastName[0] : null
                   }
-                  label="Last name"
+                  label="Sobrenome"
                   name="lastName"
                   onChange={handleChange}
                   type="text"
@@ -294,7 +375,7 @@ const SignUp = props => {
                   helperText={
                     hasError('email') ? formState.errors.email[0] : null
                   }
-                  label="Email address"
+                  label="Email"
                   name="email"
                   onChange={handleChange}
                   type="text"
@@ -308,65 +389,35 @@ const SignUp = props => {
                   helperText={
                     hasError('password') ? formState.errors.password[0] : null
                   }
-                  label="Password"
+                  label="Senha"
                   name="password"
                   onChange={handleChange}
                   type="password"
                   value={formState.values.password || ''}
                   variant="outlined"
                 />
-                <div className={classes.policy}>
-                  <Checkbox
-                    checked={formState.values.policy || false}
-                    className={classes.policyCheckbox}
-                    color="primary"
-                    name="policy"
-                    onChange={handleChange}
-                  />
-                  <Typography
-                    className={classes.policyText}
-                    color="textSecondary"
-                    variant="body1"
-                  >
-                    I have read the{' '}
-                    <Link
-                      color="primary"
-                      component={RouterLink}
-                      to="#"
-                      underline="always"
-                      variant="h6"
-                    >
-                      Terms and Conditions
-                    </Link>
-                  </Typography>
-                </div>
-                {hasError('policy') && (
-                  <FormHelperText error>
-                    {formState.errors.policy[0]}
-                  </FormHelperText>
-                )}
                 <Button
                   className={classes.signUpButton}
                   color="primary"
-                  disabled={!formState.isValid}
+                  disabled={!formState.isValid || created}
                   fullWidth
                   size="large"
                   type="submit"
                   variant="contained"
                 >
-                  Sign up now
+                  Registrar
                 </Button>
                 <Typography
                   color="textSecondary"
                   variant="body1"
                 >
-                  Have an account?{' '}
+                  Já tem uma conta?{' '}
                   <Link
                     component={RouterLink}
                     to="/sign-in"
                     variant="h6"
                   >
-                    Sign in
+                    Login
                   </Link>
                 </Typography>
               </form>
@@ -374,6 +425,14 @@ const SignUp = props => {
           </div>
         </Grid>
       </Grid>
+      <Snackbar open={errors.length} onClick={handleSnackClick}>
+        {erros()}
+      </Snackbar>
+      <Backdrop 
+      style={{ zIndex: 99999999}}
+      className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
+        <CircularProgress color="inherit" />
+      </Backdrop>      
     </div>
   );
 };

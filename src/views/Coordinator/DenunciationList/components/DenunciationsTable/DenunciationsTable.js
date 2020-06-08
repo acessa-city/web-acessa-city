@@ -444,10 +444,6 @@ console.log("tipode fltrpi", statusProgressDenunciation)
     }
   }
 
-
-
-
-
   /////Errros///////
   const handleSnackClick = () => {
     setErrors([]);

@@ -301,7 +301,7 @@ const AccountDetails = props => {
           <CardActions>
             <Button
               // disabled={!password.password || password.password != password.confirmPassword} 
-              color="primary"
+              color="secondary"
               variant="contained"
               onClick={handleClick}
             >
