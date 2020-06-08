@@ -300,7 +300,7 @@ const DenunciationsTable = props => {
     event.preventDefault();
 
     const progressAprove = {
-      
+
       denunciationsId: openModalDenunciations.denunciations.id,
       description: progress.description,
       data: progress.data
@@ -462,8 +462,8 @@ const DenunciationsTable = props => {
 
     props.enviorEncerrar(encerrar);
     setFinishDenunciation({ denunciationsId: '', description: '', data: '', });
-     setOpenAprove(false);
-     setOpen(false);
+    setOpenAprove(false);
+    setOpen(false);
 
   }
 
@@ -570,11 +570,10 @@ const DenunciationsTable = props => {
                           </CardContent>
                         </Card>
                         {statusProgressDenunciation &&
-                        <Box className={classes.root}>
+                          <Box className={classes.root}>
                             <Button
                               onClick={handleOpenAprove}
                               mx={200}
-                              color="primary"
                               align="right"
                               disabled={false}
                               width="10px"
@@ -582,13 +581,16 @@ const DenunciationsTable = props => {
                               type="submit"
                               variant="contained"
                               className={classes.button}
+                              style={{
+                                backgroundColor: '#1b5e20',
+                                color: 'white'
+                              }}
                             >
                               Aprovar
                                 </Button>
                             <Button
                               onClick={handleOpenDeny}
                               mx={200}
-                              color="primary"
                               align="right"
                               disabled={false}
                               width="10px"
@@ -596,14 +598,18 @@ const DenunciationsTable = props => {
                               type="submit"
                               variant="contained"
                               className={classes.button}
+                              style={{
+                                backgroundColor: '#c62828',
+                                color: 'white'
+                              }}
                             >
                               Negar
                                 </Button>
-                          
-                        </Box>
-                      }
-                        {statusProgressDenunciation==false &&
-                        <Box className={classes.root}>
+
+                          </Box>
+                        }
+                        {statusProgressDenunciation == false &&
+                          <Box className={classes.root}>
                             <Button
                               onClick={handleOpenAprove}
                               mx={200}
@@ -618,8 +624,8 @@ const DenunciationsTable = props => {
                             >
                               Encerrar
                                 </Button>
-                        </Box>
-                      }
+                          </Box>
+                        }
                       </div>
                     </Fade>
                   </Modal>

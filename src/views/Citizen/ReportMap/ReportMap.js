@@ -168,7 +168,7 @@ const ReportMap = props => {
   }
   const filterBoth = (props) => {
     if (user == '') {
-      API.get(`/report?status=`+ ReportStatus.EmAnalise() +`&userId=${props}`
+      API.get(`/report?status=` + ReportStatus.EmAnalise() + `&userId=${props}`
       ).then(response => {
         const report = response.data
         setLocationsInAnalysis(report)
@@ -177,16 +177,16 @@ const ReportMap = props => {
         /* setMensagem('Ocorreu um erro', erro);
         setOpenDialog(true); */
       })
-    }else{
-      API.get(`/report?status=` + ReportStatus.EmAnalise() +`&userId=${user}`
-    ).then(response => {
-      const report = response.data
-      setLocationsInAnalysis(report)
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
+    } else {
+      API.get(`/report?status=` + ReportStatus.EmAnalise() + `&userId=${user}`
+      ).then(response => {
+        const report = response.data
+        setLocationsInAnalysis(report)
+      }).catch(erro => {
+        console.log(erro);
+        /* setMensagem('Ocorreu um erro', erro);
+        setOpenDialog(true); */
+      })
     }
 
     API.get('/report?status=' + ReportStatus.Aprovado()
@@ -266,7 +266,7 @@ const ReportMap = props => {
   }
 
   const filterInAnalysis = () => {
-    API.get(`/report?status=` + ReportStatus.EmAnalise() +`&userId=${user}`
+    API.get(`/report?status=` + ReportStatus.EmAnalise() + `&userId=${user}`
     ).then(response => {
       const report = response.data
       limpaTodos();
@@ -515,7 +515,7 @@ const ReportMap = props => {
           for (let i = 0; i < arrayMidia.total.length; i++) {
             s3(arrayMidia.total[i])
               .then((result) => {
-                
+
                 const JsonAttachment = {
                   reportId: idDenuncia,
                   mediaType: arrayMidia.total[i].type,
@@ -591,9 +591,9 @@ const ReportMap = props => {
                 setOpenValidador(false)
               })
           }
-        
+
         } else {
-            console.log("entreiiieieieieii aqui")
+          console.log("entreiiieieieieii aqui")
           setOpenValidador(false)
           setErrors(["Denúncia criada com Sucesso!"])
           setErrorsStatus(true)
@@ -603,7 +603,7 @@ const ReportMap = props => {
           limparForm();
           limparMidia();
 
-         
+
         }
 
 
@@ -648,25 +648,34 @@ const ReportMap = props => {
     })
   }
 
-  //////useEffect////////
-  useEffect(() => {
-
+  const getLocationBrowser = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const { latitude, longitude } = position.coords;
-        setLongitude(longitude);
-        setLatitude(latitude);
+        const { latitude1, longitude1 } = position.coords;
+        setLongitude(longitude1);
+        setLatitude(latitude1);
       },
 
       (error) => {
         console.log("ERRO! " + error.message)
       }
     )
+  }
+
+  //////useEffect////////
+  useEffect(() => {
+
+    getLocationBrowser();
     filterBoth();
     listCategory();
 
   }, [])
 
+  const testeLocal = (lat, lng) => {   
+    setLatitude(lat) 
+    setLongitude(lng)
+    console.log("Latitude ", latitude, "Longitude ", longitude)
+  }
 
   /////Errros///////
   const handleSnackClick = () => {
@@ -714,6 +723,8 @@ const ReportMap = props => {
         bootstrapURLKeys={'AIzaSyDBxtpy4QlnhPfGK7mF_TnbLXooEXVPy_0'}
         defaultCenter={defaultProps.center}
         defaultZoom={defaultProps.zoom}
+        //onClick={(event) => {(setLatitude(event.lat) , setLongitude(event.lng))}}
+        onClick={(event) => testeLocal(event.lat, event.lng)}
       >
         {locationsAproved.map(locationsMapAproved => (
           <RoomIcon
@@ -763,7 +774,8 @@ const ReportMap = props => {
       >
         <div style={{ textAlign: 'left', width: 10 }}>
           <Button
-            onClick={handleOpenDenuncias}
+            /* onClick={handleOpenDenuncias} */
+            onClick={testeLocal}
             className={style.button1}
           >Denúnciar</Button>
           <Button

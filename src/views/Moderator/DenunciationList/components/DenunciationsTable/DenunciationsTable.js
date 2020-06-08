@@ -513,7 +513,6 @@ const DenunciationsTable = props => {
                           <Button
                             onClick={handleOpenAprove}
                             mx={200}
-                            color="primary"
                             align="right"
                             disabled={false}
                             width="10px"
@@ -521,13 +520,16 @@ const DenunciationsTable = props => {
                             type="submit"
                             variant="contained"
                             className={classes.button}
+                            style={{
+                              backgroundColor: '#1b5e20',
+                              color: 'white'
+                              }}
                           >
                             Aprovar
                                 </Button>
                           <Button
                             onClick={handleOpenDeny}
                             mx={200}
-                            color="primary"
                             align="right"
                             disabled={false}
                             width="10px"
@@ -535,6 +537,10 @@ const DenunciationsTable = props => {
                             type="submit"
                             variant="contained"
                             className={classes.button}
+                            style={{
+                              backgroundColor: '#c62828',
+                              color: 'white'
+                              }}
                           >
                             Negar
                                 </Button>

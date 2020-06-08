@@ -157,7 +157,7 @@ const CitizensToolbar = props => {
           </Grid>
           <Grid item xs={12} sm={1}>
             <FormControl margin="dense" fullWidth>
-              <Button onClick={handleClickFilter} variant="contained" color="primary">Filtrar</Button>
+              <Button onClick={handleClickFilter} variant="contained" color="secondary">Filtrar</Button>
             </FormControl>
           </Grid>
 
@@ -179,8 +179,9 @@ const CitizensToolbar = props => {
                 <Button
                   onClick={handleOpen}
                   style={{
-                    background: 'green',
-                  }}
+                    backgroundColor: '#1b5e20',
+                    color: 'white'
+                    }}
                   variant="contained" color="secondary"><AddIcon />Cadastro</Button>
               </FormControl>
             </div>

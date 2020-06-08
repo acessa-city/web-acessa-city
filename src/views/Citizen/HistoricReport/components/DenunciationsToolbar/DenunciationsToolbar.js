@@ -254,7 +254,7 @@ const DenunciationsToolbar = props => {
 
           <Grid item xs={12} sm={1}>
             <FormControl margin="dense" fullWidth>
-              <Button onClick={submit} variant="contained" color="primary">Filtrar</Button>
+              <Button onClick={submit} variant="contained" color="secondary">Filtrar</Button>
             </FormControl>
           </Grid>
 

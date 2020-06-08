@@ -299,7 +299,7 @@ const AccountDetails = props => {
           style={{ float: 'right' }}
         >
           <Button
-            color="primary"
+            color="secondary"
             variant="contained"
             onClick={handleClickAlterar}
           >

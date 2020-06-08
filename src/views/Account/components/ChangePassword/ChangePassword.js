@@ -124,7 +124,7 @@ const ChangePassword = props => {
                     <Button
                         disabled={!password.password}
                         fullWidth
-                        variant="contained" color="primary"
+                        variant="contained" color="secondary"
                         onClick={updatePassword}
                     >
                         Salvar
