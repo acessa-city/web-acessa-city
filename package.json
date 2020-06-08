@@ -47,6 +47,8 @@
     "notistack": "^0.9.16",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
+    "react-bingmaps": "^3.6.1",
+    "react-bingmaps-plus": "^3.7.2",
     "react-chartjs-2": "^2.7.6",
     "react-device-detect": "^1.12.1",
     "react-dom": "^16.8.6",

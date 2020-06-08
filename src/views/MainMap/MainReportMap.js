@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom'
-import Icon from '@material-ui/core/Icon'
+import SearchIcon from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/styles';
 import RoomIcon from '@material-ui/icons/Room';
 import Report from 'components/Report';
@@ -27,6 +27,8 @@ import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import ReportStatus from 'utils/ReportStatus';
+import { ReactBingmaps } from 'react-bingmaps';
+
 
 const styles = makeStyles(theme => ({
   gridButton: {
@@ -136,6 +138,9 @@ const MainReportMap = props => {
     API.get('/report?status=' + ReportStatus.Aprovado()
     ).then(response => {
       const report = response.data
+      response.data.forEach(element => {
+        // adicionarDenunciaNoMapa('yellow', element)
+      });      
       setLocationsApproved(report)
     }).catch(erro => {
       console.log(erro);
@@ -147,6 +152,9 @@ const MainReportMap = props => {
     API.get('/report?status=' + ReportStatus.Finalizada()
     ).then(response => {
       const report = response.data
+      response.data.forEach(element => {
+        // adicionarDenunciaNoMapa('green', element)
+      });
       setLocationsFinished(report)
     }).catch(erro => {
       console.log(erro);
@@ -155,10 +163,28 @@ const MainReportMap = props => {
     })
   }
   const carregarEmProgresso = () => {
-    API.get('/report?status=' + ReportStatus.EmProgresso()
+    API.get('/report'
     ).then(response => {
-      const report = response.data
-      setLocationsInProgress(report)
+      const reports = []
+      
+      response.data.forEach(element => {
+
+        if ((ReportStatus.EmProgresso() == element.reportStatusId) && emProgresso) {
+          reports.push(adicionarDenunciaNoMapa('blue', element))
+        }
+        else if ((ReportStatus.Finalizada() == element.reportStatusId) && finalizadas) {
+          reports.push(adicionarDenunciaNoMapa('green', element))
+        }
+        else if ((ReportStatus.Aprovado() == element.reportStatusId) && aprovadas) {
+          reports.push(adicionarDenunciaNoMapa('yellow', element))            
+        }
+
+      });
+
+      setDenuncias({
+        ...denuncias,
+        pins: reports
+      })
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
@@ -166,13 +192,49 @@ const MainReportMap = props => {
     })
   }
 
-  const carregarTodas = () => {
-    carregarAprovadas();
-    carregarFinalizadas();
-    carregarEmProgresso()
+  const adicionarDenunciaNoMapa = (cor, denuncia) => {
+    return {
+      location: [denuncia.latitude, denuncia.longitude],
+      option: {
+        title: denuncia.title,
+        color: cor,
+      },
+      addHandler: {
+        type: "click",
+        callback: () => openModalReport(denuncia.id)
+      }          
+    }
   }
 
-  useEffect(() => {
+  const openModalReport = (message) => {
+    setidReportModal(message)
+    setOpen(true);    
+  }
+
+  const [denuncias, setDenuncias] = useState({
+    pins : [],
+  })
+
+  const carregarTodas = () => {
+    // setDenuncias({
+    //   pins: []
+    // })
+    // console.log(denuncias)
+    // if (emProgresso) {
+      carregarEmProgresso();
+    // }
+    // if (aprovadas) {
+    //   carregarAprovadas();
+    // }
+    // if (finalizadas) {
+    //   carregarFinalizadas();
+    // }    
+    // carregarAprovadas();
+    // carregarFinalizadas();
+    // carregarEmProgresso()
+  }
+
+  useEffect(() => {    
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position.coords.latitude);
@@ -180,25 +242,17 @@ const MainReportMap = props => {
         const { latitude, longitude } = position.coords;
         setLongitude(longitude);
         setLatitude(latitude);
+        carregarTodas()    
       },
 
       (error) => {
         console.log("ERRO! " + error.message)
       }
-    )
-    carregarTodas();    
-    const interval = setInterval(() => {
-      if (emProgresso) {
-        carregarEmProgresso();
-      }
-      if (aprovadas) {
-        carregarAprovadas();
-      }
-      if (finalizadas) {
-        carregarFinalizadas();
-      }
-    }, 10000);
-    return () => interval;         
+    )    
+    // const interval = setInterval(() => {
+    //   carregarTodas();
+    // }, 10000);
+    // return () => interval;    
   }, []) 
 
   const style = styles();
@@ -269,31 +323,19 @@ const MainReportMap = props => {
   };
   /* FIM MODAL */
 
-  const handleFinalizadas = (event) => {
-    setFinalizadas(event.target.checked);
-    if (finalizadas) {
-      setLocationsFinished([])
-    } else {
-      carregarFinalizadas();
-    }
+  const handleFinalizadas = () => {
+    setFinalizadas(!finalizadas);
+    carregarTodas();
   };
 
-  const handleEmProgresso = (event) => {
-    setEmProgresso(event.target.checked);
-    if (emProgresso) {
-      setLocationsInProgress([])
-    } else {
-      carregarEmProgresso();
-    }
+  const handleEmProgresso = () => {
+    setEmProgresso(!emProgresso);
+    carregarTodas();
   }
 
-  const handleAprovadas = (event) => {
-    setAprovadas(event.target.checked)
-    if (aprovadas) {
-      setLocationsApproved([])
-    } else {
-      carregarAprovadas();
-    }
+  const handleAprovadas = () => {
+    setAprovadas(!aprovadas)
+    carregarTodas();
   }
   const [finalizadas, setFinalizadas] = React.useState(true);
   const [emProgresso, setEmProgresso] = React.useState(true);
@@ -309,23 +351,28 @@ const MainReportMap = props => {
           <Toolbar>
             <FormGroup row>
               <FormControlLabel
-                control={<Checkbox checked={finalizadas} onChange={handleFinalizadas} />}
+                control={<Checkbox checked={finalizadas} onClick={handleFinalizadas} />}
                 label="Denúncias finalizadas"
               />
               <FormControlLabel
-                control={<Checkbox checked={emProgresso} onChange={handleEmProgresso} />}
+                control={<Checkbox checked={emProgresso} onClick={handleEmProgresso} />}
                 label="Denúncias em progresso"
               />
               <FormControlLabel
-                control={<Checkbox checked={aprovadas} onChange={handleAprovadas} />}
+                control={<Checkbox checked={aprovadas} onClick={handleAprovadas} />}
                 label="Denúncias aprovadas"
               />
             </FormGroup>
+            <Button
+              onClick={() => carregarTodas()}
+            >
+              <SearchIcon />
+            </Button>
           </Toolbar>
         </AppBar>
       </ElevationScroll>
       <div style={{ height: '100vh', width: '100%' }}>
-        <GoogleMapReact
+        {/* <GoogleMapReact
           bootstrapURLKeys={'AIzaSyDBxtpy4QlnhPfGK7mF_TnbLXooEXVPy_0'}
           defaultCenter={defaultProps.center}
           defaultZoom={defaultProps.zoom}
@@ -359,7 +406,14 @@ const MainReportMap = props => {
               lng={locationsMapProgress.longitude}
             />
           ))}
-        </GoogleMapReact>
+        </GoogleMapReact> */}
+
+        <ReactBingmaps 
+          bingmapKey = "AhB03kPUyRzwqaJu5TId4Ny9-WKbQzvOHxDrKtJaIqFEN9iLwfk5fWZD-5nZCVXv" 
+          center = {[latitude, longitude]}
+          pushPins = {denuncias.pins}
+          >          
+        </ReactBingmaps>        
 
         <Grid
           className={style.gridButton}
