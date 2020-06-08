@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom'
-import Icon from '@material-ui/core/Icon'
+import SearchIcon from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/styles';
 import RoomIcon from '@material-ui/icons/Room';
 import Report from 'components/Report';
@@ -139,7 +139,7 @@ const MainReportMap = props => {
     ).then(response => {
       const report = response.data
       response.data.forEach(element => {
-        adicionarDenunciaNoMapa('yellow', element)
+        // adicionarDenunciaNoMapa('yellow', element)
       });      
       setLocationsApproved(report)
     }).catch(erro => {
@@ -153,7 +153,7 @@ const MainReportMap = props => {
     ).then(response => {
       const report = response.data
       response.data.forEach(element => {
-        adicionarDenunciaNoMapa('green', element)
+        // adicionarDenunciaNoMapa('green', element)
       });
       setLocationsFinished(report)
     }).catch(erro => {
@@ -163,13 +163,28 @@ const MainReportMap = props => {
     })
   }
   const carregarEmProgresso = () => {
-    API.get('/report?status=' + ReportStatus.EmProgresso()
+    API.get('/report'
     ).then(response => {
-      const report = response.data
+      const reports = []
+      
       response.data.forEach(element => {
-        adicionarDenunciaNoMapa('blue', element)
+
+        if ((ReportStatus.EmProgresso() == element.reportStatusId) && emProgresso) {
+          reports.push(adicionarDenunciaNoMapa('blue', element))
+        }
+        else if ((ReportStatus.Finalizada() == element.reportStatusId) && finalizadas) {
+          reports.push(adicionarDenunciaNoMapa('green', element))
+        }
+        else if ((ReportStatus.Aprovado() == element.reportStatusId) && aprovadas) {
+          reports.push(adicionarDenunciaNoMapa('yellow', element))            
+        }
+
       });
-      setLocationsInProgress(report)
+
+      setDenuncias({
+        ...denuncias,
+        pins: reports
+      })
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
@@ -178,7 +193,7 @@ const MainReportMap = props => {
   }
 
   const adicionarDenunciaNoMapa = (cor, denuncia) => {
-    const newReport = {
+    return {
       location: [denuncia.latitude, denuncia.longitude],
       option: {
         title: denuncia.title,
@@ -186,20 +201,14 @@ const MainReportMap = props => {
       },
       addHandler: {
         type: "click",
-        callback: () => teste(denuncia.id)
+        callback: () => openModalReport(denuncia.id)
       }          
     }
-
-    const info = denuncias.pins
-    info.push(newReport);
-    setDenuncias({
-      ...denuncias,
-      pins: info
-    })
   }
 
-  const teste = (message) => {
-    alert(message)
+  const openModalReport = (message) => {
+    setidReportModal(message)
+    setOpen(true);    
   }
 
   const [denuncias, setDenuncias] = useState({
@@ -207,24 +216,25 @@ const MainReportMap = props => {
   })
 
   const carregarTodas = () => {
-    setDenuncias({
-      pins: []
-    })
-    if (emProgresso) {
+    // setDenuncias({
+    //   pins: []
+    // })
+    // console.log(denuncias)
+    // if (emProgresso) {
       carregarEmProgresso();
-    }
-    if (aprovadas) {
-      carregarAprovadas();
-    }
-    if (finalizadas) {
-      carregarFinalizadas();
-    }    
+    // }
+    // if (aprovadas) {
+    //   carregarAprovadas();
+    // }
+    // if (finalizadas) {
+    //   carregarFinalizadas();
+    // }    
     // carregarAprovadas();
     // carregarFinalizadas();
     // carregarEmProgresso()
   }
 
-  useEffect(() => {
+  useEffect(() => {    
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position.coords.latitude);
@@ -232,17 +242,17 @@ const MainReportMap = props => {
         const { latitude, longitude } = position.coords;
         setLongitude(longitude);
         setLatitude(latitude);
+        carregarTodas()    
       },
 
       (error) => {
         console.log("ERRO! " + error.message)
       }
-    )
-    carregarTodas();
-    const interval = setInterval(() => {
-      carregarTodas();
-    }, 10000);
-    return () => interval;         
+    )    
+    // const interval = setInterval(() => {
+    //   carregarTodas();
+    // }, 10000);
+    // return () => interval;    
   }, []) 
 
   const style = styles();
@@ -313,18 +323,18 @@ const MainReportMap = props => {
   };
   /* FIM MODAL */
 
-  const handleFinalizadas = (event) => {
-    setFinalizadas(event.target.checked);
+  const handleFinalizadas = () => {
+    setFinalizadas(!finalizadas);
     carregarTodas();
   };
 
-  const handleEmProgresso = (event) => {
-    setEmProgresso(event.target.checked);
+  const handleEmProgresso = () => {
+    setEmProgresso(!emProgresso);
     carregarTodas();
   }
 
-  const handleAprovadas = (event) => {
-    setAprovadas(event.target.checked)
+  const handleAprovadas = () => {
+    setAprovadas(!aprovadas)
     carregarTodas();
   }
   const [finalizadas, setFinalizadas] = React.useState(true);
@@ -341,18 +351,23 @@ const MainReportMap = props => {
           <Toolbar>
             <FormGroup row>
               <FormControlLabel
-                control={<Checkbox checked={finalizadas} onChange={handleFinalizadas} />}
+                control={<Checkbox checked={finalizadas} onClick={handleFinalizadas} />}
                 label="Denúncias finalizadas"
               />
               <FormControlLabel
-                control={<Checkbox checked={emProgresso} onChange={handleEmProgresso} />}
+                control={<Checkbox checked={emProgresso} onClick={handleEmProgresso} />}
                 label="Denúncias em progresso"
               />
               <FormControlLabel
-                control={<Checkbox checked={aprovadas} onChange={handleAprovadas} />}
+                control={<Checkbox checked={aprovadas} onClick={handleAprovadas} />}
                 label="Denúncias aprovadas"
               />
             </FormGroup>
+            <Button
+              onClick={() => carregarTodas()}
+            >
+              <SearchIcon />
+            </Button>
           </Toolbar>
         </AppBar>
       </ElevationScroll>
