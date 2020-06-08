@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { makeStyles, withStyles } from '@material-ui/styles';
+import Carousel from 'react-material-ui-carousel'
+import CardMedia from '@material-ui/core/CardMedia';
 import {
   Card,
   CardActions,
@@ -91,7 +93,11 @@ const useStyles = makeStyles(theme => ({
   //FIM modal
   Card: {
     marginTop: 50
-  }
+  },
+  media: {
+    width: '450px',
+    height: '280px'
+  },
 
 }));
 
@@ -249,13 +255,13 @@ const DenunciationsTable = props => {
   const listComments = () => {
     API.get(`/report-commentary/report/0efd3d3e-2ff6-40e3-a7f0-6100fe403701`,
     ).then(response => {
-       const listComments2 = response.data;
-             console.log("ENTRE.LLLLLL.." + JSON.stringify(listComments2))
-             setReportComments(listComments2);
-       }).catch(erro => {
-        console.log(erro);
-      })
-    }
+      const listComments2 = response.data;
+      console.log("ENTRE.LLLLLL.." + JSON.stringify(listComments2))
+      setReportComments(listComments2);
+    }).catch(erro => {
+      console.log(erro);
+    })
+  }
 
 
   React.useEffect(() => {
@@ -310,7 +316,7 @@ const DenunciationsTable = props => {
       ...denunciations,
       denunciations: denunciationsp2
     });
-    setComments(true);               
+    setComments(true);
   };
 
   const handleCloseComments = () => {
@@ -357,7 +363,7 @@ const DenunciationsTable = props => {
   //FIM Abrir opções dos 3 pontinho
 
 
-  
+
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
@@ -368,7 +374,7 @@ const DenunciationsTable = props => {
   //   let selectedUsers;
 
   //   if (event.target.checked) {
-   
+
   //   } else {
   //     selectedUsers = [];
   //   }
@@ -408,16 +414,39 @@ const DenunciationsTable = props => {
     setRowsPerPage(event.target.value);
   };
 
+
+  ////////Midias//////////
+  const [media, setMedia] = useState({
+    hasMedia: false,
+    photos: [],
+    videos: []
+  })
+
+
+  const updateMediaLinks = attachments => {
+    const photos = media.photos;
+    if (attachments) {
+      setMedia({
+        ...media,
+        hasMedia: true
+      });
+      attachments.forEach(element => {
+        photos.push(element.url)
+      });
+      console.log("photooooo", photos)
+    }
+  }
+
   return (
     <Card
       {...rest}
       className={clsx(classes.root, className)}
     >
-    {openComments && 
-    <ReportCommentaries open={openComments} close={tratarClose} reportId={openModalDenunciations.denunciations.id}>
+      {openComments &&
+        <ReportCommentaries open={openComments} close={tratarClose} reportId={openModalDenunciations.denunciations.id}>
 
-    </ReportCommentaries>
-    }
+        </ReportCommentaries>
+      }
       <CardContent className={classes.content}>
         <PerfectScrollbar>
           <div className={classes.inner}>
@@ -478,21 +507,34 @@ const DenunciationsTable = props => {
                             maxHeight: 500,
                           }}>
 
-                          <CardContent>
-                            <div>
-                              <div>
+                          <CardHeader title={openModalDenunciations.denunciations.title} />
+                          {openModalDenunciations.denunciations.attachments.length > 0 &&
+                            <Carousel>
+                              {openModalDenunciations.denunciations.attachments.map(item => (
                                 <div>
-                                  <CardHeader title={openModalDenunciations.denunciations.title} />
-                                  {openModalDenunciations.denunciations.attachments.length > 0 &&
-                                    <img class="image" src={openModalDenunciations.denunciations.attachments[0].url} />
+                                  {item.url.includes('.mp4') &&
+                                    <video controls
+                                      width='100%'
+                                      height='auto'
+                                    >
+                                      <source src={item.url} />
+                                    </video>
+                                  }
+
+                                  {!item.url.includes('.mp4') &&
+
+                                    <CardMedia
+                                     // onClick={handleOpenPreview}
+                                     onClick={()=>window.open(item.url,"_blank")}
+                                      className={classes.media}
+                                      image={item.url}
+                                    />
+
                                   }
                                 </div>
-                              </div>
-                            </div>
-                            <div>
-                            </div>
-                          </CardContent>
-
+                              ))}
+                            </Carousel>
+                          }
 
                         </Card>
                         <Card className={classes.root}
@@ -598,8 +640,6 @@ const DenunciationsTable = props => {
                     </div>
                   </Fade>
                 </Modal>
-
-
 
                 {/* // Modal Negação */}
                 <Modal

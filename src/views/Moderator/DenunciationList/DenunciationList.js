@@ -8,7 +8,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Button
+  Button,
+  CircularProgress,
+  Snackbar,
+  SnackbarContent,
+  Backdrop
 } from '@material-ui/core';
 
 import API from '../../../utils/API';
@@ -20,7 +24,12 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     marginTop: theme.spacing(2)
-  }
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
+
 }));
 
 const DenunciationList = () => {
@@ -29,9 +38,9 @@ const DenunciationList = () => {
   const [denunciations, setDenunciations] = useState([]);
   const [denunciationsSlect, setDenunciationsSelect] = useState([]);
   const [coodenadores, setCoordenadores] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [mensagem, setMensagem] = useState('');
-
 
 
   //Enviar coodenador 
@@ -125,8 +134,10 @@ const DenunciationList = () => {
 
   // Listar os dados  na tela
   const listDenunciations = () => {
+    setOpenValidador(true)
     API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c'
     ).then(response => {
+      setOpenValidador(false)
       const listDenunciations2 = response.data;
       console.log(listDenunciations2);
       setDenunciations(listDenunciations2);
@@ -137,8 +148,6 @@ const DenunciationList = () => {
       setOpenDialog(true);
     })
   }
-
-
 
 
   //Fitrar Denuncias
@@ -164,46 +173,133 @@ const DenunciationList = () => {
     if (!filtro.status) {
       stringFiltro += '&status=' + '48cf5f0f-40c9-4a79-9627-6fd22018f72c'
     }
-    
-      API.get(`/report?category=${stringFiltro}`,
-      ).then(response => {
+
+
+    setOpenValidador(true)
+    API.get(`/report?${stringFiltro}`,
+    ).then(response => {
+
+
+
+      if (response.data.length > 0) {
+        setOpenValidador(false)
         const filterDenunciation = response.data;
-        setDenunciations(filterDenunciation);
-        setMensagem('Filtro realizado com sucesso!');
-        setOpenDialog(true);
-      }).catch(erro => {
-        console.log(erro);
-        setMensagem('Ocorreu um erro', erro);
-        setOpenDialog(true);
-      })
-    }
+        setDenunciations(filterDenunciation)
+
+      } else {
+        setOpenValidador(false)
+        const filterDenunciation = response.data;
+        setDenunciations(filterDenunciation)
+        setErrors(["Nenhum resultado encontrado!"])
+        setErrorsStatus(true)
+        setTimeout(() => {
+          setErrors([]);
+        }, 10000);
+        
+      }
+    }).catch(erro => {
+      console.log(erro);
+    })
+
+  }
 
 
 
-    // Atualizar os dados na tela
-    useEffect(() => {
-      listDenunciations();
-    }, []);
+
+  const filterLimpar = (filtroAprovadas) => {
+
+    setDenunciations(filtroAprovadas)
+
+  }
+
+  ///Lista de categorias
 
 
-    return (
-      <div className={classes.root}>
-        {/* <DenunciationsToolbar save={save} /> */}
-        <DenunciationsToolbar denunciationsSlect={denunciationsSlect} filter={filter} />
-        <div className={classes.content}>
-          <DenunciationsTable denunciations={denunciations} coodenadores={coodenadores} envioCoordenador={envioCoordenador} envioDeny={envioDeny} />
-        </div>
-        <Dialog open={openDialog} onClose={e => setOpenDialog(false)}>
-          <DialogTitle>Atenção</DialogTitle>
-          <DialogContent>
-            {mensagem}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={e => setOpenDialog(false)}>Fechar</Button>
-          </DialogActions>
-        </Dialog>
-      </div>
-    );
+  const listCategory = () => {
+    API.get('/category'
+    ).then(response => {
+      const listCategory2 = response.data;
+      setCategories(listCategory2);
+    }).catch(erro => {
+      console.log(erro);
+      setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true);
+    })
+  }
+  //encerrar dnunucias
+  const enviorEncerrar = (encerrar) => {
+    console.log("filtro aqui ecerrado" + JSON.stringify(encerrar))
+  }
+
+
+  // Atualizar os dados na tela
+  useEffect(() => {
+    listDenunciations();
+    listCategory();
+  }, []);
+
+
+
+  /////Errros///////
+  const handleSnackClick = () => {
+    setErrors([]);
+  }
+  const [errors, setErrors] = useState([]);
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
   };
 
-  export default DenunciationList;
+  const erros = () => {
+    if (errorsStatus == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'orange',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent autoHideDuration={1}
+              style={{
+                background: 'red',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>}
+            />
+          ))}
+        </div>)
+    }
+  }
+
+
+
+  return (
+    <div className={classes.root}>
+      {/* <DenunciationsToolbar save={save} /> */}
+      <DenunciationsToolbar denunciationsSlect={denunciationsSlect} categories={categories} filter={filter} filterLimpar={filterLimpar} />
+      <div className={classes.content}>
+        <DenunciationsTable denunciations={denunciations} coodenadores={coodenadores} envioCoordenador={envioCoordenador} envioDeny={envioDeny} />
+      </div>
+
+      <Snackbar open={errors.length} onClick={handleSnackClick}>
+        {erros()}
+      </Snackbar>
+      <Backdrop
+        style={{ zIndex: 99999999 }}
+        className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </div>
+  );
+};
+
+export default DenunciationList;

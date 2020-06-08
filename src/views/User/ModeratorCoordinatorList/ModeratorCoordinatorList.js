@@ -59,9 +59,11 @@ const ModeratorCoordinatorList = () => {
   // CHAMAR API DE USUARIOS
   const listUser = () => {
     currentUser().then((result) => {
-
+      
+      setOpenValidador(true)
       API.get(`/city-hall/${result.cityHallId}/users`)
         .then(response => {
+          setOpenValidador(false)
           const userList = response.data;
           setUsers(userList)
           setUsersBackup(userList)
@@ -94,12 +96,9 @@ const ModeratorCoordinatorList = () => {
 
   // FILTRAR USUÀRIOS
   const filter = (userFilter) =>{
-
-    console.log("filtro",  userFilter)
-
-  
+    setOpenValidador(true)
       const listaFiltrada = usersBackup.filter(function(user){
-
+       
         let retornaUsuario = true
         if(userFilter.roles){
           retornaUsuario = user.roles[0] == userFilter.roles
@@ -113,10 +112,22 @@ const ModeratorCoordinatorList = () => {
           retornaUsuario = retornaUsuario && user.email.toUpperCase().includes(userFilter.email.toUpperCase());
         }
         return retornaUsuario ;
+       
       })
 
-      setUsers(listaFiltrada);
-
+      if (listaFiltrada.length > 0) {
+        setUsers(listaFiltrada);
+        setOpenValidador(false)
+      } else {
+        console.log("não encontreiii")
+        setOpenValidador(false)
+        setUsers(listaFiltrada);
+        setErrors(["Nenhum resultado encontrado!"])
+        setErrorsStatus(true)
+        setTimeout(() => {
+          setErrors([]);
+        }, 10000);
+      }
   }
 
 
@@ -166,7 +177,7 @@ const ModeratorCoordinatorList = () => {
   return (
     <div className={classes.root}>
       {/* <DenunciationsToolbar save={save} /> */}
-      <ModeratorCoordinatorToolbar   filter={filter} onClearFilter={limpar} onCreateUser={onCreateUser}/>
+      <ModeratorCoordinatorToolbar  filter={filter} onClearFilter={limpar} onCreateUser={onCreateUser}/>
       <div className={classes.content}>
         <ModeratorCoordinatorTable users={users} />
       </div>
