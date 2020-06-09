@@ -142,7 +142,7 @@ const DenunciationsTable = props => {
   const { className, denunciations, coodenadores, statusProgressDenunciation, ...rest } = props;
   const classes = useStyles();
 
-console.log("tipode fltrpi", statusProgressDenunciation)
+  console.log("tipode fltrpi asasasasasas", statusProgressDenunciation)
 
   /// Salvar coodenadores
   const [coodenador, setCoodenador] = useState({
@@ -157,7 +157,6 @@ console.log("tipode fltrpi", statusProgressDenunciation)
     })
 
   }
-
 
   //Modal de Aprovação
   const [openAprove, setOpenAprove] = React.useState(false);
@@ -225,13 +224,12 @@ console.log("tipode fltrpi", statusProgressDenunciation)
     event.preventDefault();
 
     const denyDenunciations = {
-      userId: deny.userId,
-      denunciationsId: openModalDenunciations.denunciations.id,
+      reportId: openModalDenunciations.denunciations.id,
       reportStatusId: '52ccae2e-af86-4fcc-82ea-9234088dbedf',
       description: deny.message
 
     }
-    console.log("aquiiiiii o jason denuncia",denyDenunciations )
+    console.log("aquiiiiii o jason denuncia", denyDenunciations)
 
     if (deny.message == '') {
       setErrors([
@@ -427,7 +425,7 @@ console.log("tipode fltrpi", statusProgressDenunciation)
 
     }
 
-    if (progress.description == '' || progress.data =='') {
+    if (progress.description == '' || progress.data == '') {
       setErrors([
         "Preencha o campo descrição e data!"
       ])
@@ -442,6 +440,48 @@ console.log("tipode fltrpi", statusProgressDenunciation)
       setOpenAprove(false);
       setOpen(false);
     }
+  }
+
+
+  ///////ENCERRAMENTO///////
+
+  const [valuesEncerramento, setValuesEncerramento] = useState({
+    descriptionEncerramento: '',
+    dataEncerramento:''
+  });
+
+  const handleChangeEncerramento = event => {
+    setValuesEncerramento({
+      ...valuesEncerramento,
+      [event.target.name]: event.target.value
+    });
+  };
+
+  const submitEncerramento = (event) =>{
+    event.preventDefault();
+
+    const encerrar ={ 
+      reportId: openModalDenunciations.denunciations.id,
+      description: valuesEncerramento.descriptionEncerramento,
+      endDate: valuesEncerramento.dataEncerramento
+    }
+
+    if (valuesEncerramento.descriptionEncerramento == '' || valuesEncerramento.dataEncerramento == '') {
+      setErrors([
+        "Preencha o campo descrição e data!"
+      ])
+      setErrorsStatus(false)
+      setTimeout(() => {
+        setErrors([]);
+      }, 1000);
+
+    } else {
+      props.envioFinish(encerrar);
+      setValuesEncerramento({ descriptionEncerramento: '', dataEncerramento: ''});
+      setOpenAprove(false);
+      setOpen(false);
+    }
+
   }
 
   /////Errros///////
@@ -674,42 +714,81 @@ console.log("tipode fltrpi", statusProgressDenunciation)
                             </div>
                           </CardContent>
                           <Divider />
-                          <CardActions>
+                          {statusProgressDenunciation == '96afa0df-8ad9-4a44-a726-70582b7bd010' &&
+                            <CardActions>
 
-                            <Grid item md={6} xs={6}>
-                              <Button
-                                onClick={handleOpenAprove}
-                                mx={200}
-                                color="primary"
-                                align="right"
-                                disabled={false}
-                                width="10px"
-                                size="large"
-                                type="submit"
-                                variant="contained"
-                                className={classes.button}
-                              >
-                                Aprovar
-                          </Button>
-                            </Grid>
-                            <Grid item md={6} xs={6}>
-                              <Button
-                                style={{ float: 'right' }}
-                                onClick={handleOpenDeny}
-                                mx={200}
-                                color="primary"
-                                align="right"
-                                disabled={false}
-                                width="10px"
-                                size="large"
-                                type="submit"
-                                variant="contained"
-                                className={classes.button}
-                              >
-                                Negar
+                              <Grid item md={6} xs={6}>
+                                <Button
+                                  onClick={handleOpenAprove}
+                                  mx={200}
+                                  color="primary"
+                                  align="right"
+                                  disabled={false}
+                                  width="10px"
+                                  size="large"
+                                  type="submit"
+                                  variant="contained"
+                                  className={classes.button}
+                                >
+                                  Aprovar
+                              </Button>
+                              </Grid>
+                              <Grid item md={6} xs={6}>
+                                <Button
+                                  style={{ float: 'right' }}
+                                  onClick={handleOpenDeny}
+                                  mx={200}
+                                  color="primary"
+                                  align="right"
+                                  disabled={false}
+                                  width="10px"
+                                  size="large"
+                                  type="submit"
+                                  variant="contained"
+                                  className={classes.button}
+                                >
+                                  Negar
                             </Button>
-                            </Grid>
-                          </CardActions>
+                              </Grid>
+                            </CardActions>
+                          }
+                          {statusProgressDenunciation == 'c37d9588-1875-44dd-8cf1-6781de7533c3' &&
+                            <CardActions>
+                              <Grid item md={6} xs={6}>
+                                <Button
+                                  onClick={handleOpenAprove}
+                                  mx={200}
+                                  color="primary"
+                                  align="right"
+                                  disabled={false}
+                                  width="10px"
+                                  size="large"
+                                  type="submit"
+                                  variant="contained"
+                                  className={classes.button}
+                                >
+                                  Aprovar
+                              </Button>
+                              </Grid>
+                              <Grid item md={6} xs={6}>
+                                <Button
+                                  style={{ float: 'right' }}
+                                  onClick={handleOpenDeny}
+                                  mx={200}
+                                  color="primary"
+                                  align="right"
+                                  disabled={false}
+                                  width="10px"
+                                  size="large"
+                                  type="submit"
+                                  variant="contained"
+                                  className={classes.button}
+                                >
+                                  Negar
+                               </Button>
+                              </Grid>
+                            </CardActions>
+                          }
                         </Card>
                       </div>
                     </Fade>
@@ -733,30 +812,34 @@ console.log("tipode fltrpi", statusProgressDenunciation)
                   {/* Modal da Dereita */}
                   <Fade in={openAprove}>
                     <div className={classes.paper}>
-                      {statusProgressDenunciation ==' 96afa0df-8ad9-4a44-a726-70582b7bd010' &&
+                      {statusProgressDenunciation == '96afa0df-8ad9-4a44-a726-70582b7bd010' &&
                         <Grid container spacing={1}>
 
                           <Grid item xs={12} sm={12}>
-                            <InputLabel>Escolha a data de Finalização</InputLabel>
+                            <InputLabel>Descreva o motivo da Denúncia:</InputLabel>
                           </Grid>
-
-                          <Grid item xs={12} sm={12}>
-                            <TextField
+                          <Grid
+                            item
+                            lg={12}
+                            md={12}
+                            xl={12}
+                            xs={12}
+                          >
+                            <TextareaAutosize style={{ width: '100%', fontSize: '15px', borderRadius: '4px', padding: '5px 13px 10px 13px' }}
+                              rowsMin={3}
+                              aria-label="empty textarea"
+                              name="description"
                               onChange={e => handleProgress(e.target.value)}
-                              fullWidth
-                              label="Descrição do motivo"
-                              margin="dense"
-                              name="descricao"
-                              required
                               value={progress.description}
-                              variant="outlined"
+                              placeholder="Descreva o motivo da denúncia.*"
                             />
+
                           </Grid>
                           <Grid item xs={12} sm={8}>
                             <TextField
                               onChange={e => handleProgress2(e.target.value)}
                               id="date"
-                              label="Finalização"
+                              label="Data de Finalização"
                               type="date"
                               defaultValue="24-05-2017"
                               className={classes.textField}
@@ -768,7 +851,9 @@ console.log("tipode fltrpi", statusProgressDenunciation)
                           </Grid>
                           <Grid item xs={12} sm={4}>
                             <FormControl margin="dense" fullWidth>
-                              <Button onClick={submitProgress} variant="contained" color="secondary">Enviar</Button>
+                              <Grid item md={12} xs={12}>
+                                <Button style={{ float: 'right' }} onClick={submitProgress} variant="contained" color="secondary">Progresso</Button>
+                              </Grid>
                             </FormControl>
                           </Grid>
                         </Grid>
@@ -777,38 +862,48 @@ console.log("tipode fltrpi", statusProgressDenunciation)
                         <Grid container spacing={1}>
 
                           <Grid item xs={12} sm={12}>
-                            <InputLabel>Escolha a data de Finalização</InputLabel>
+                            <InputLabel>Descreva o motivo do Encerramento:</InputLabel>
                           </Grid>
 
-                          <Grid item xs={12} sm={12}>
-                            <TextField
-                            
-                              fullWidth
-                              label="Descrição do motivo"
-                              margin="dense"
-                              name="descricao"
-                              required
-                          
-                              variant="outlined"
+                          <Grid
+                            item
+                            lg={12}
+                            md={12}
+                            xl={12}
+                            xs={12}
+                          >
+                            <TextareaAutosize style={{ width: '100%', fontSize: '15px', borderRadius: '4px', padding: '5px 13px 10px 13px' }}
+                              rowsMin={3}
+                              aria-label="empty textarea"
+                              name="descriptionEncerramento"
+                              onChange={handleChangeEncerramento}
+                              value={valuesEncerramento.descriptionEncerramento}
+                              placeholder="Descreva o motivo do encerramento.*"
                             />
                           </Grid>
-                          <Grid item xs={12} sm={8}>
+
+                          <Grid item xs={12} sm={10}>
                             <TextField
-                              
+                              onChange={handleChangeEncerramento}
                               id="date"
-                              label="Finalização"
+                              label="Data de Finalização"
                               type="date"
                               defaultValue="2017-05-24"
                               className={classes.textField}
-        
+                              value={valuesEncerramento.dataEncerramento}
                               InputLabelProps={{
                                 shrink: true,
                               }}
+                              inputProps={{
+                                name: 'dataEncerramento',
+                              }}
                             />
                           </Grid>
-                          <Grid item xs={12} sm={4}>
+                          <Grid item xs={12} sm={2}>
                             <FormControl margin="dense" fullWidth>
-                              <Button variant="contained" color="secondary">Encerrar</Button>
+                              <Grid item md={12} xs={12}>
+                                <Button onClick={submitEncerramento} style={{ float: 'right' }} variant="contained" color="secondary">Encerrar</Button>
+                              </Grid>
                             </FormControl>
                           </Grid>
                         </Grid>

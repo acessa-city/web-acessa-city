@@ -174,7 +174,7 @@ const Sidebar = props => {
       },
       {
         title: 'Gerenciar Cat/Sub',
-        href: '/categorias-subcategorias',
+        href: '/categorias',
         icon: <Category />
       },
       

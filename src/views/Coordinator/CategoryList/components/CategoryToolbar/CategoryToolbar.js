@@ -32,13 +32,17 @@ import {
   Box,
   Paper,
   Rows,
-  TableContainer
+  TableContainer,
+  Divider
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import SearchIcon from '@material-ui/icons/Search';
 import Modal from '@material-ui/core/Modal';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import API from '../../../../../utils/API';
 
 // import { SearchInput } from 'components';  //chamar botão de pesquisa
 
@@ -88,7 +92,7 @@ const useStyles = makeStyles(theme => ({
 
 
 const CategoryToolbar = props => {
-  const { className, denunciationsSlect, categories, ...rest } = props;
+  const { className, categoriesSlect, ...rest } = props;
 
   const [descricao, setDescricao] = useState('');
   const [categoria, setCategoria] = useState('');
@@ -123,29 +127,65 @@ const CategoryToolbar = props => {
   }
 
 
+
+
+  const [values, setValues] = useState({
+    category: '',
+    status: '',
+    street: '',
+    neighborhood: '',
+    date: ''
+  });
+
+  const handleChangeFilter = event => {
+    setValues({
+      ...values,
+      [event.target.name]: event.target.value
+    });
+  };
+
+
   const submit = (event) => {
     event.preventDefault();
     //Filtro geral
     const filtro = {
-      category: denunciationCategory,
-      street: denunciationStreet.street,
-      neighborhood: denunciationNeighborhood.neighborhood,
-      creationDate: denunciationData.data,
+      category: values.category
     }
     props.filter(filtro);
 
   }
 
-  const [progressStatus, setProgressStatus] = React.useState(true);
 
-  //Filtro denúncias em progresso
-  const registerCategory = (event) => {
-    // event.preventDefault();
-    console.log("AQUI")
+  const filterLimpar = (event) => {
+    event.preventDefault();
 
-    //Abrir modal para cadastrar nova categoria\
+    API.get('/category'
+    ).then(response => {
 
+      const listCategory = response.data;
+      props.filterLimpar(listCategory);
+    }).catch(erro => {
+      console.log(erro);
+      setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true);
+    })
+
+    limparForm();
   }
+
+
+  const limparForm = () => {
+    setValues({
+      category: '',
+    })
+  }
+
+
+
+
+
+
+
   const [open, setOpen] = React.useState(false);
 
   const [openModalDenunciations, setOpenModalDenunciations] = useState({
@@ -174,40 +214,36 @@ const CategoryToolbar = props => {
 
           <Grid item xs={12} sm={2}>
             <FormControl className={classes.formControl} fullWidth>
-              <InputLabel htmlFor="age-native-simple">Tipo1</InputLabel>
+              <InputLabel htmlFor="age-native-simple">Categoria</InputLabel>
               <Select
                 native
-                //value={denunciationCategory}
-
-                onChange={e => setDenunciationCategory(e.target.value)}
+                value={values.category}
+                onChange={handleChangeFilter}
+                inputProps={{
+                  name: 'category',
+                }}
               >
-
-
-                {/* <option aria-label="None" value="" />
-                {categories.map(denunciationCategory => {
+                <option aria-label="None" value="" />
+                {categoriesSlect.map(category => {
                   return (
-                    <option value={denunciationCategory.id}>{denunciationCategory.name}</option>
+                    <option value={category.id}>{category.name}</option>
                   )
                 })
-                } */}
+                }
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={2}>
-            <div>
-              <TextField
-                fullWidth
-                id="standard-rua"
-                label="Titulo"
-                value={denunciationStreet.street}
-                onChange={e => handleStreet(e.target.value)}
-              />
-            </div>
-          </Grid>
 
-          <Grid item xs={12} sm={2}>
+
+          <Grid item xs={12} sm={1}>
             <FormControl margin="dense" fullWidth>
               <Button onClick={submit} variant="contained" color="secondary">Filtrar</Button>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={1}>
+            <FormControl margin="dense" fullWidth>
+              <Button onClick={filterLimpar} variant="contained" >Limpar</Button>
             </FormControl>
           </Grid>
 
@@ -259,6 +295,19 @@ const CategoryToolbar = props => {
           {/* Modal da Dereita */}
           <Fade in={open}>
             <div className={classes.paper}>
+              <div style={{
+                textAlign: 'right'
+              }}>
+
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  onClick={handleClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </div>
               <Card className={classes.root}
                 style={{
                   textAlign: 'center',
@@ -270,49 +319,10 @@ const CategoryToolbar = props => {
                   <div>
                     <CardHeader title="Categoria" />
                     <div>
-
-                      {/* Form de cadastro de nova categoria */}
-                      {/* <TextField
-                        fullWidth
-                        helperText="Selecione o tipo"
-                        label="Tipo"
-                        margin="dense"
-                        name="name"
-                        select
-                       // SelectProps={{ native: false }}
-                        //onChange={handleChange}
-                        required
-                        //value={values.name}
-                        value="Category"
-                        variant="outlined"
-                      >                         
-                          <option value="categoria">Categoria</option>
-                          <option value="subcategoria">Subcategoria</option>         
-                      </TextField> */}
-                      <FormControl className={classes.formControl}
-                      fullWidth>
-                        <InputLabel htmlFor="grouped-native-select">Tipo</InputLabel>
-                        <Select native defaultValue="" id="grouped-native-select">
-                          <option value="categoria">Categoria</option>
-                          <option value="subcategoria">Subcategoria</option>
-                        </Select>
-                      </FormControl>
                       <TextField
                         fullWidth
-                        helperText="Selecione uma categoria para vincular a subcategoria"
-                        label="Categoria"
-                        margin="dense"
-                        name="name"
-                        select
-                        //onChange={handleChange}
-                        required
-                        //value={values.name}
-                        variant="outlined"
-                      />
-                      <TextField
-                        fullWidth
-                        helperText="Informe o novo titulo"
-                        label="Titulo"
+                        helperText="Informe a categoria"
+                        label="Titulo da categoria"
                         margin="dense"
                         name="name"
                         //onChange={handleChange}
@@ -323,25 +333,25 @@ const CategoryToolbar = props => {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-              {
-                <Box className={classes.root}>
-                  <Button
-                    //onClick={handleOpenAprove}
-                    mx={200}
-                    color="secondary"
-                    align="right"
-                    disabled={false}
-                    width="10px"
-                    size="large"
-                    type="submit"
-                    variant="contained"
-                    className={classes.button}
+                <Divider />
+                <CardActions>
+                  <Grid
+                    item
+                    lg={12}
+                    md={12}
+                    xl={12}
+                    xs={12}
                   >
-                    Confirmar
-              </Button>
-                </Box>
-              }
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      style={{ background: 'green', float: 'right' }}
+                    >
+                      Confirmar
+                             </Button>
+                  </Grid>
+                </CardActions>
+              </Card>
             </div>
           </Fade>
         </Modal>
@@ -356,5 +366,7 @@ CategoryToolbar.propTypes = {
 };
 
 export default CategoryToolbar;
+
+
 
 

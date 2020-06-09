@@ -25,10 +25,12 @@ import {
   Box,
   Paper,
   Rows,
-  TableContainer
+  TableContainer,
+  Divider
 } from '@material-ui/core';
 
 //Modal
+import CloseIcon from '@material-ui/icons/Close';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
@@ -138,191 +140,25 @@ const StyledMenuItem = withStyles((theme) => ({
 //FIM Abrir opções dos 3 pontinho
 
 const CategoryTable = props => {
-  const { className, denunciations, statusProgressDenunciation, coodenadores, ...rest } = props;
+  const { className, categories, ...rest } = props;
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
   const [mensagem, setMensagem] = useState('');
-  console.log("Aquiiii stou euuuuuuuuuuuuuuu status" + JSON.stringify(statusProgressDenunciation));
 
-
-  /// Salvar coodenadores
-  const [coodenador, setCoodenador] = useState({
-    id: {}
-  });
-
-
-  const handleCoordinatorChange = (sender) => {
-
-    setCoodenador({
-      id: sender
-    })
-
-  }
-
-  const submit = (event) => {
-    event.preventDefault();
-
-    const coordenadores = {
-
-      coordinatorId: coodenador.id,
-      reportId: openModalDenunciations.denunciations.id
-
-    }
-    props.envioCoordenador(coordenadores);
-    setOpenAprove(false);
-    setOpen(false);
-
-  }
-
-
-  //Modal de Aprovação
-  const [openAprove, setOpenAprove] = React.useState(false);
-
-  const handleCloseAprove = () => {
-    setOpenAprove(false);
-  };
-
-
-  //Modal de Negação
-  const [openDeny, setOpenDeny] = React.useState(false);
-
-  const handleOpenDeny = () => {
-    setOpenDeny(true);
-  };
-
-  const handleCloseDeny = () => {
-    setOpenDeny(false);
-  };
-
-
-  /// negar uma denuncia
-
-
-  function getFirebase(user) {
-    console.log(1)
-    let uId = ''
-    if (user) {
-      console.log('' + JSON.stringify(user))
-      user.getIdTokenResult().then((result) => {
-        uId = result.claims.app_user_id
-        setDeny({
-          ...deny,
-          userId: uId
-        })
-      })
-    } else {
-
-    }
-
-  }
-
-
-  const [deny, setDeny] = useState({
-    message: '',
-    userId: ''
-  });
-
-  const handleDenyChange = (sender) => {
-    setDeny({
-      ...deny,
-      message: sender
-    })
-
-  }
-
-  const submitDeny = (event) => {
-    event.preventDefault();
-
-    const denyDenunciations = {
-      userId: deny.userId,
-      denunciationsId: openModalDenunciations.denunciations.id,
-      reportStatusId: '52ccae2e-af86-4fcc-82ea-9234088dbedf',
-      description: deny.message
-
-    }
-    props.envioDeny(denyDenunciations);
-    setDeny({ message: '', userId: '' });
-    setOpenDeny(false);
-    setOpen(false);
-  }
-
-
-  const [reportComments, setReportComments] = React.useState(false);
-  // Listar Cometarios
-  const listComments = () => {
-    API.get(`/report-commentary/report/0efd3d3e-2ff6-40e3-a7f0-6100fe403701`,
-    ).then(response => {
-      const listComments2 = response.data;
-      console.log("ENTRE.LLLLLL.." + JSON.stringify(listComments2))
-      setReportComments(listComments2);
-    }).catch(erro => {
-      console.log(erro);
-    })
-  }
-
-  React.useEffect(() => {
-    listComments();
-    // listen for auth state changes
-    const unsubscribe = firebase.auth().onAuthStateChanged(getFirebase)
-    console.log(3)
-    // unsubscribe to the listener when unmounting
-    return () => unsubscribe()
-  }, [])
-
-  //////////////////////
-
-
-  //Envio aprovação (em análise).
-  const [progress, setProgress] = useState({
-    description: '',
-    data: ''
-  });
-
-  const handleProgress = (sender) => {
-    setProgress({
-      ...progress,
-      description: sender
-    })
-  }
-
-  const handleProgress2 = (sender) => {
-    setProgress({
-      ...progress,
-      data: sender
-    })
-  }
-
-  const submitProgress = (event) => {
-    event.preventDefault();
-
-    const progressAprove = {
-      denunciationsId: openModalDenunciations.denunciations.id,
-      reportStatusId: 'c37d9588-1875-44dd-8cf1-6781de7533c3',
-      description: progress.description,
-      data: progress.data
-
-    }
-    props.envioProgress(progressAprove);
-    setProgress({ denunciationsId: '', reportStatusId: '', description: '', data: '', });
-    setOpenAprove(false);
-    setOpen(false);
-
-  }
 
 
   //Modal de envio Coordenador de fora
-  const [openModalDenunciations, setOpenModalDenunciations] = useState({
-    denunciations: {}
+  const [openCategories, setOpenCategories] = useState({
+    categories: {}
 
   });
 
   const [open, setOpen] = React.useState(false);
 
-  const handleOpen = (denunciationsp) => {
-    console.log("denunciasss" + JSON.stringify(denunciationsp))
-    setOpenModalDenunciations({
-      ...denunciations,
-      denunciations: denunciationsp
+  const handleOpen = (categoriesS) => {
+    setOpenCategories({
+      ...categories,
+      categories: categoriesS
     });
     setOpen(true);
   };
@@ -332,137 +168,7 @@ const CategoryTable = props => {
     setOpen(false);
   };
 
-  //FIM Modal de envio Coordenador
 
-
-  //modal comentario
-
-  const [openComments, setComments] = React.useState(false);
-
-
-  console.log(JSON.stringify(openComments))
-
-  const handleOpenComments = (denunciationsp2) => {
-    setOpenModalDenunciations({
-      ...denunciations,
-      denunciations: denunciationsp2
-    });
-    setComments(true);
-  };
-
-  const handleCloseComments = () => {
-    setComments(false);
-  };
-
-  ////Modal de Denuncias 3 pontinho
-  const [openDenunciation, setOpenDenunciation] = React.useState(false);
-
-  const handleOpenDenunciation = () => {
-    setOpenDenunciation(true);
-  };
-
-  const handleCloseDenunciation = () => {
-    setOpenDenunciation(false);
-  };
-
-
-
-  ////Modal Negar de Denuncias 3 pontinho
-  const [openDenunciationDeny, setOpenDenunciationDeny] = React.useState(false);
-
-  const handleOpenDenunciationDeny = () => {
-    setOpenDenunciationDeny(true);
-  };
-
-  const handleCloseDenunciationDeny = () => {
-    setOpenDenunciationDeny(false);
-  };
-  //FIM Modal de Denuncias
-
-
-
-  //Abrir opções dos 3 pontinho
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose2 = () => {
-    setAnchorEl(null);
-  };
-  //FIM Abrir opções dos 3 pontinho
-
-
-  const tratarClose = () => {
-    setComments(false)
-  }
-
-  const [progressStatus, setProgressStatus] = React.useState(true);
-
-  //Filtro denúncias em progresso
-  const submitEmProgresso = (event) => {
-    event.preventDefault();
-
-    const filtroAprove = {
-      id: 'c37d9588-1875-44dd-8cf1-6781de7533c3',
-    }
-    props.filterAprove(filtroAprove);
-    setProgressStatus(false)
-    setMensagem('Denúncias em progresso!');
-    setOpenDialog(true);
-
-  }
-
-  const submitEmProgresso2 = (event) => {
-    event.preventDefault();
-
-    const filtroAprove = {
-      id: '96afa0df-8ad9-4a44-a726-70582b7bd010',
-    }
-    props.filterAprove(filtroAprove);
-    setProgressStatus(true)
-    setMensagem('Denúncias não aprovadas!');
-    setOpenDialog(true);
-  }
-
-
-
-  //encerrar chamado
-  const [finishDenunciation, setFinishDenunciation] = useState({
-    description: '',
-    data: ''
-  });
-
-  const handleEncerrar = (sender) => {
-    setFinishDenunciation({
-      ...finishDenunciation,
-      description: sender
-    })
-  }
-
-  const handleEncerrar2 = (sender) => {
-    setFinishDenunciation({
-      ...finishDenunciation,
-      data: sender
-    })
-  }
-
-  const submitEncerrar = (event) => {
-    event.preventDefault();
-
-    const encerrar = {
-      denunciationsId: openModalDenunciations.denunciations.id,
-      description: finishDenunciation.description,
-      data: finishDenunciation.data
-    }
-
-    props.enviorEncerrar(encerrar);
-    setFinishDenunciation({ denunciationsId: '', description: '', data: '', });
-    setOpenAprove(false);
-    setOpen(false);
-
-  }
 
 
   return (
@@ -470,11 +176,6 @@ const CategoryTable = props => {
       {...rest}
       className={clsx(classes.root, className)}
     >
-      {openComments &&
-        <ReportCommentaries open={openComments} close={tratarClose} reportId={openModalDenunciations.denunciations.id}>
-
-        </ReportCommentaries>
-      }
       <CardContent className={classes.content}>
         <PerfectScrollbar>
           <div className={classes.inner}>
@@ -487,16 +188,12 @@ const CategoryTable = props => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {denunciations.map(denunciation => {
+                {categories.map(categoriessss => {
                   return (
-                    <TableRow key={denunciation.id}
+                    <TableRow key={categoriessss.id}
                       hover={true}
                     >
-                      <TableCell onClick={() => handleOpen(denunciation)}>{denunciation.name}</TableCell>
-
-                      {/*  <TableCell onClick={() => handleOpenComments(denunciation)}><div style={{
-                        textAlign: 'center',
-                      }}><ForumIcon /></div></TableCell> */}
+                      <TableCell onClick={() => handleOpen(categoriessss)}>{categoriessss.name}</TableCell>
                     </TableRow>
 
                   )
@@ -510,8 +207,8 @@ const CategoryTable = props => {
                     aria-describedby="transition-modal-description"
                     className={classes.modal}
                     open={open}
-                    onClose={handleClose}
                     closeAfterTransition
+                    onClick={handleClose}
                     BackdropComponent={Backdrop}
                     BackdropProps={{
                       timeout: 500,
@@ -521,6 +218,19 @@ const CategoryTable = props => {
                     {/* Modal da Dereita */}
                     <Fade in={open}>
                       <div className={classes.paper}>
+                        <div style={{
+                          textAlign: 'right'
+                        }}>
+
+                          <IconButton
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            onClick={handleClose}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </div>
                         <Card className={classes.root}
                           style={{
                             textAlign: 'center',
@@ -538,105 +248,38 @@ const CategoryTable = props => {
                                   label="Nome da categoria"
                                   margin="dense"
                                   name="name"
-                                  //onChange={handleChange}
                                   required
-                                  //value={values.name}
+                                  value='Infraestrutura'
                                   variant="outlined"
                                 />
-                                
+
                               </div>
                             </div>
                           </CardContent>
-                        </Card>
-                        {statusProgressDenunciation &&
-                          <Box className={classes.root}>
-                            <Button
-                              //onClick={handleOpenAprove}
-                              mx={200}
-                              color="secondary"
-                              align="right"
-                              disabled={false}
-                              width="10px"
-                              size="large"
-                              type="submit"
-                              variant="contained"
-                              className={classes.button}
+                          <Divider />
+                          <CardActions>
+                            <Grid
+                              item
+                              lg={12}
+                              md={12}
+                              xl={12}
+                              xs={12}
                             >
-                              Confirmar
-                                </Button>
-                          </Box>
-                        }
+                              <Button
+                                color="primary"
+                                variant="contained"
+                                style={{ background: 'green', float: 'right' }}
+                              >
+                                Confirmar
+                             </Button>
+                            </Grid>
+                          </CardActions>
+                        </Card>
                       </div>
                     </Fade>
                   </Modal>
                   // {/* FIM Abri Modal envio coordenador  */}
                 }
-
-
-                {/* // Modal Aprovação */}
-                <Modal
-                  aria-labelledby="transition-modal-title"
-                  aria-describedby="transition-modal-description"
-                  className={classes.modal}
-                  open={openAprove}
-                  onClose={handleCloseAprove}
-                  closeAfterTransition
-                  BackdropComponent={Backdrop}
-                  BackdropProps={{
-                    timeout: 500,
-                  }}
-                >
-                  
-                </Modal>
-
-                {/* // Modal Negação */}
-                <Modal
-                  aria-labelledby="transition-modal-title"
-                  aria-describedby="transition-modal-description"
-                  className={classes.modal}
-                  open={openDeny}
-                  onClose={handleCloseDeny}
-                  closeAfterTransition
-                  BackdropComponent={Backdrop}
-                  BackdropProps={{
-                    timeout: 500,
-                  }}
-                >
-                  <Fade in={openDeny}>
-                    <div className={classes.paper}>
-                      {statusProgressDenunciation &&
-                        <Grid container spacing={1}>
-
-                          <Grid item xs={12} sm={12}>
-                            <InputLabel>Descreva o motivo da negação:</InputLabel>
-                          </Grid>
-
-                          <Grid item md={12} xs={12}>
-                            <TextField
-                              onChange={e => handleDenyChange(e.target.value)}
-                              fullWidth
-                              helperText="Descreva o motivo dessa negação."
-                              label="Descrição da negação"
-                              margin="dense"
-                              name="descricao"
-                              required
-                              value={deny.message}
-                              variant="outlined"
-                            />
-                          </Grid>
-
-                          <Grid item xs={12} sm={4}>
-                            <FormControl margin="dense" fullWidth>
-                              <Button onClick={submitDeny} variant="contained" color="secondary">Enviar</Button>
-                            </FormControl>
-                          </Grid>
-
-                        </Grid>
-                      }
-                    </div>
-                  </Fade>
-                </Modal>
-
               </TableBody>
             </Table>
           </div>
@@ -663,3 +306,4 @@ CategoryTable.propTypes = {
 };
 
 export default CategoryTable;
+

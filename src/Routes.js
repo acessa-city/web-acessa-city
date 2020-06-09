@@ -169,7 +169,7 @@ const Routes = () => {
           component={CategoryListView}
           exact
           layout={MainLayout}
-          path="/categorias-subcategorias"
+          path="/categorias"
           permission={roles.coordinator}
         />
         {/* FIM Rotas do Coordinator */}

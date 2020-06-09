@@ -39,7 +39,7 @@ const DenunciationListCoordinator = () => {
   const [categories, setCategories] = useState([]);
   const [denunciationsSlect, setDenunciationsSelect] = useState([]);
   const [coodenadores, setCoordenadores] = useState([]);
-  const [statusProgressDenunciation, setStatusProgressDenunciation] = useState(['96afa0df-8ad9-4a44-a726-70582b7bd010']);
+  const [statusProgressDenunciation, setStatusProgressDenunciation] = useState('96afa0df-8ad9-4a44-a726-70582b7bd010');
   const [openDialog, setOpenDialog] = useState(false);
   const [mensagem, setMensagem] = useState('');
 
@@ -80,8 +80,18 @@ const DenunciationListCoordinator = () => {
 
     //Negar denuncia
     const envioDeny = (deny) => {
-      console.log("deny" + JSON.stringify(deny))
-      API.post(`/report/${deny.denunciationsId}/status-update`, deny
+     
+
+      const denyJson = {
+        userId: user.userId,
+        reportId: deny.reportId,
+        reportStatusId: deny.reportStatusId,
+        description: deny.description,
+      }
+
+      console.log("deny" + JSON.stringify(denyJson))
+ 
+      API.post(`/report/${deny.reportId}/status-update`, denyJson
   
       ).then(response => {
         listDenunciations();
@@ -142,6 +152,12 @@ const DenunciationListCoordinator = () => {
   // Listar os dados  na tela
   const listDenunciations = () => {
     setOpenValidador(true)
+
+   if(finish){
+     console.log("entreii aqui")
+   }
+
+
     API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
     ).then(response => {
       setOpenValidador(false)
@@ -277,9 +293,35 @@ const DenunciationListCoordinator = () => {
       setOpenDialog(true);
     })
   }
+
+  const[finish, setFinish] = useState(false);
   //encerrar dnunucias
-  const enviorEncerrar = (encerrar) => {
-    console.log("filtro aqui ecerrado" + JSON.stringify(encerrar))
+  const envioFinish = (finish) => {
+
+    var endDate = moment(finish.endDate).format('MM/DD/YYYY');
+
+    const endJson = {
+      reportId: finish.reportId,
+      userId: user.userId,
+      description: finish.description,
+      endDate: endDate
+    }
+
+    API.post(`/report/end-progress`, endJson
+    ).then(response => {
+      listDenunciations();
+      setErrors(["Denúncia Encerrada com sucesso!"])
+      setFinish(true)
+      setErrorsStatus2(true)
+      setTimeout(() => {
+        setErrors([]);
+      }, 2000);
+
+    }).catch(erro => {
+      console.log(erro);
+      setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true);
+    })
   }
 
 
@@ -349,7 +391,7 @@ const DenunciationListCoordinator = () => {
       {/* <DenunciationsToolbar save={save} /> */}
       <DenunciationsToolbar denunciationsSlect={denunciationsSlect} categories={categories} filter={filter} filterAprove={filterAprove} filterLimpar={filterLimpar}/>
       <div className={classes.content}>
-        <DenunciationsTable statusProgressDenunciation={statusProgressDenunciation} denunciations={denunciations} coodenadores={coodenadores} envioCoordenador={envioCoordenador} envioDeny={envioDeny} envioProgress={envioProgress} enviorEncerrar={enviorEncerrar} />
+        <DenunciationsTable statusProgressDenunciation={statusProgressDenunciation} denunciations={denunciations} coodenadores={coodenadores} envioCoordenador={envioCoordenador} envioDeny={envioDeny} envioProgress={envioProgress} envioFinish={envioFinish} />
       </div>
       <Dialog open={openDialog} onClose={e => setOpenDialog(false)}>
         <DialogTitle>Atenção</DialogTitle>

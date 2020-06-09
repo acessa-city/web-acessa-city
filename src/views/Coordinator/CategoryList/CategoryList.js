@@ -29,7 +29,7 @@ const CategoryList = () => {
 
   const [denunciations, setDenunciations] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [denunciationsSlect, setDenunciationsSelect] = useState([]);
+  const [categoriesSlect, setCategoriesSelect] = useState([]);
   const [coodenadores, setCoordenadores] = useState([]);
   const [statusProgressDenunciation, setStatusProgressDenunciation] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
@@ -135,7 +135,6 @@ const CategoryList = () => {
        const listDenunciations2 = response.data;
        console.log(listDenunciations2);
        setDenunciations(listDenunciations2);
-       setDenunciationsSelect(listDenunciations2);
        }).catch(erro => {
         console.log(erro);
         setMensagem('Ocorreu um erro', erro);
@@ -144,28 +143,12 @@ const CategoryList = () => {
   }
 
  //Fitrar Denuncias
-  const filter = (filtro) =>{
-      let stringFiltro = ''
-      if(filtro.category){
-        stringFiltro +=  '&category=' + filtro.category 
-      }
-
-      if(filtro.street){
-        stringFiltro +=  '&street=' + filtro.street 
-      }
-
-      if(filtro.neighborhood){
-        stringFiltro +=  '&neighborhood=' + filtro.neighborhood 
-      }
-      
-
-    console.log("filtro aqui" + JSON.stringify(filtro))
-    API.get(`/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010${stringFiltro}`,
+  const filter = (id) =>{
+    
+    API.get(`/category/${id.category}`
     ).then(response => {
-      const filterDenunciation = response.data;
-      setDenunciations(filterDenunciation);
-      setMensagem('Filtro realizado com sucesso!');
-      setOpenDialog(true);
+      const filterCategory = response.data;
+      setCategories(filterCategory)
        }).catch(erro => {
         console.log(erro);
         setMensagem('Ocorreu um erro', erro);
@@ -202,12 +185,23 @@ const CategoryList = () => {
     ).then(response => {
        const listCategory2 = response.data;
        setCategories(listCategory2);
+       setCategoriesSelect(listCategory2)
        }).catch(erro => {
         console.log(erro);
         setMensagem('Ocorreu um erro', erro);
         setOpenDialog(true);
       })
   }
+  
+  const filterLimpar =(categorias) => {
+
+    console.log("Filtro limpar", categorias)
+     setCategories(categorias)
+  }
+
+
+
+
   //encerrar dnunucias
   const enviorEncerrar =(encerrar) => {
     console.log("filtro aqui ecerrado" + JSON.stringify(encerrar))
@@ -224,9 +218,9 @@ const CategoryList = () => {
   return (
     <div className={classes.root}>
       {/* <DenunciationsToolbar save={save} /> */}
-       <CategoryToolbar denunciationsSlect={denunciationsSlect} categories={categories}  filter={filter} filterAprove={filterAprove} />
+       <CategoryToolbar categoriesSlect={categoriesSlect}  filter={filter} filterLimpar={filterLimpar}/>
       <div className={classes.content}>
-        <CategoryTable statusProgressDenunciation={statusProgressDenunciation} denunciations={denunciations} coodenadores={coodenadores} envioCoordenador={envioCoordenador}  envioDeny={envioDeny} envioProgress={envioProgress} enviorEncerrar={enviorEncerrar}/>
+        <CategoryTable categories={categories} />
       </div>
       <Dialog open={openDialog} onClose={ e => setOpenDialog(false)}>
         <DialogTitle>Atenção</DialogTitle>
