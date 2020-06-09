@@ -412,6 +412,7 @@ const MainReportMap = props => {
           bingmapKey = "AhB03kPUyRzwqaJu5TId4Ny9-WKbQzvOHxDrKtJaIqFEN9iLwfk5fWZD-5nZCVXv" 
           center = {[latitude, longitude]}
           pushPins = {denuncias.pins}
+          zoom = {18}
           >          
         </ReactBingmaps>        
 

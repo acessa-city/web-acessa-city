@@ -142,7 +142,7 @@ const DenunciationsTable = props => {
   const { className, denunciations, coodenadores, statusProgressDenunciation, ...rest } = props;
   const classes = useStyles();
 
-console.log("tipode fltrpi", statusProgressDenunciation)
+  console.log("tipode fltrpi", statusProgressDenunciation)
 
   /// Salvar coodenadores
   const [coodenador, setCoodenador] = useState({
@@ -231,7 +231,7 @@ console.log("tipode fltrpi", statusProgressDenunciation)
       description: deny.message
 
     }
-    console.log("aquiiiiii o jason denuncia",denyDenunciations )
+    console.log("aquiiiiii o jason denuncia", denyDenunciations)
 
     if (deny.message == '') {
       setErrors([
@@ -427,7 +427,7 @@ console.log("tipode fltrpi", statusProgressDenunciation)
 
     }
 
-    if (progress.description == '' || progress.data =='') {
+    if (progress.description == '' || progress.data == '') {
       setErrors([
         "Preencha o campo descrição e data!"
       ])
@@ -680,7 +680,6 @@ console.log("tipode fltrpi", statusProgressDenunciation)
                               <Button
                                 onClick={handleOpenAprove}
                                 mx={200}
-                                color="primary"
                                 align="right"
                                 disabled={false}
                                 width="10px"
@@ -688,6 +687,10 @@ console.log("tipode fltrpi", statusProgressDenunciation)
                                 type="submit"
                                 variant="contained"
                                 className={classes.button}
+                                style={{
+                                  backgroundColor: '#1b5e20',
+                                  color: 'white'
+                                }}
                               >
                                 Aprovar
                           </Button>
@@ -697,7 +700,6 @@ console.log("tipode fltrpi", statusProgressDenunciation)
                                 style={{ float: 'right' }}
                                 onClick={handleOpenDeny}
                                 mx={200}
-                                color="primary"
                                 align="right"
                                 disabled={false}
                                 width="10px"
@@ -705,6 +707,10 @@ console.log("tipode fltrpi", statusProgressDenunciation)
                                 type="submit"
                                 variant="contained"
                                 className={classes.button}
+                                style={{
+                                  backgroundColor: '#b71c1c',
+                                  color: 'white'
+                                  }}                                  
                               >
                                 Negar
                             </Button>
@@ -733,7 +739,7 @@ console.log("tipode fltrpi", statusProgressDenunciation)
                   {/* Modal da Dereita */}
                   <Fade in={openAprove}>
                     <div className={classes.paper}>
-                      {statusProgressDenunciation ==' 96afa0df-8ad9-4a44-a726-70582b7bd010' &&
+                      {statusProgressDenunciation == ' 96afa0df-8ad9-4a44-a726-70582b7bd010' &&
                         <Grid container spacing={1}>
 
                           <Grid item xs={12} sm={12}>
@@ -782,25 +788,25 @@ console.log("tipode fltrpi", statusProgressDenunciation)
 
                           <Grid item xs={12} sm={12}>
                             <TextField
-                            
+
                               fullWidth
                               label="Descrição do motivo"
                               margin="dense"
                               name="descricao"
                               required
-                          
+
                               variant="outlined"
                             />
                           </Grid>
                           <Grid item xs={12} sm={8}>
                             <TextField
-                              
+
                               id="date"
                               label="Finalização"
                               type="date"
                               defaultValue="2017-05-24"
                               className={classes.textField}
-        
+
                               InputLabelProps={{
                                 shrink: true,
                               }}

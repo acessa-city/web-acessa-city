@@ -50,7 +50,7 @@ const Topbar = props => {
             alt="Logo"
             src="/images/logos/logo--white.svg"
           /> */}
-          <h1>AcessaCity</h1>
+          <h1 style={{color:'white'}}>AcessaCity</h1>
         </RouterLink>
         <div className={classes.flexGrow} />
         <Hidden mdDown>
