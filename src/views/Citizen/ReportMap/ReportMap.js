@@ -12,7 +12,8 @@ import Videocam from '@material-ui/icons/Videocam';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import VideoPlayer from 'react-simple-video-player';
-import ReportStatus from 'utils/ReportStatus';
+import ReportStatus from '../../../utils/ReportStatus';
+import { ReactBingmaps } from 'react-bingmaps';
 
 import {
   Card,
@@ -148,6 +149,7 @@ const styles = makeStyles(theme => ({
 
 }));
 
+
 const ReportMap = props => {
 
   const [user, setUser] = useState('')
@@ -159,6 +161,18 @@ const ReportMap = props => {
   const [longitude, setLongitude] = useState('');
   const [latitude, setLatitude] = useState('');
   const [idReportModal, setidReportModal] = useState('');
+
+  const GetLocationHandled = (location) => {
+    let lat = location.latitude.toFixed(4)
+    let lng = location.longitude.toFixed(4)
+    setLatitude(lat)
+    setLongitude(lng)
+    console.log(lat + '' + lng)
+  }
+  const testeLocal = () => {
+    console.log(longitude + '' + latitude)
+  }
+
 
   const limpaTodos = () => {
     setLocationsApproved([]);
@@ -218,113 +232,56 @@ const ReportMap = props => {
     })
   }
 
+  /*   useEffect(() => {
+  
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLongitude(longitude);
+          setLatitude(latitude);
+        },
+  
+        (error) => {
+          console.log("ERRO! " + error.message)
+        }
+      )
+  
+      currentUser().then(result => {
+        setUser(result.id)
+        filterBoth(result.id);
+      })
+  
+    }, []) */
   useEffect(() => {
-
+    
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        console.log(position.coords.latitude);
+        console.log(position.coords.longitude);
         const { latitude, longitude } = position.coords;
         setLongitude(longitude);
         setLatitude(latitude);
+        
       },
 
       (error) => {
         console.log("ERRO! " + error.message)
       }
     )
+    listCategory();
 
     currentUser().then(result => {
       setUser(result.id)
       filterBoth(result.id);
+      carregarTodas(result.id)
     })
-
+    // const interval = setInterval(() => {
+    //   carregarTodas();
+    // }, 10000);
+    // return () => interval;    
   }, [])
 
-  const filterFinished = () => {
-    API.get('/report?status=' + ReportStatus.Finalizada()
-    ).then(response => {
-      const report = response.data
-      limpaTodos();
-      setLocationsFinished(report)
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
-  }
-
-  const filterApproved = () => {
-    API.get('/report?status=' + ReportStatus.Aprovado()
-    ).then(response => {
-      const report = response.data
-      limpaTodos();
-      setLocationsApproved(report)
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
-  }
-
-  const filterInAnalysis = () => {
-    API.get(`/report?status=` + ReportStatus.EmAnalise() + `&userId=${user}`
-    ).then(response => {
-      const report = response.data
-      limpaTodos();
-      setLocationsInAnalysis(report)
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
-  }
-
-  const filterInProgress = () => {
-    API.get('/report?status=' + ReportStatus.EmProgresso()
-    ).then(response => {
-      const report = response.data
-      limpaTodos();
-      setLocationsInProgress(report)
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
-  }
-
   const style = styles();
-
-  const [clicked, setClicked] = useState({
-    check: false
-  });
-
-  const defaultProps = {
-    center: {
-      lat: latitude,
-      lng: longitude
-    },
-    zoom: 18
-  };
-
-  function handleTakePhoto(dataUri) {
-
-    console.log('takePhoto');
-  }
-
-  function loadReport(event) {
-    event.preventDefault();
-
-    setClicked({
-      check: true
-    });
-  }
-
-  function onCreateReport(event) {
-    event.preventDefault();
-
-    setClicked({
-      check: false
-    });
-  }
 
 
   /* INICIO MODAL */
@@ -352,25 +309,6 @@ const ReportMap = props => {
 
   const [openDenuncias, setOpenDenuncias] = React.useState(false);
 
-  const handleOpenDenuncias = props => {
-    setOpenDenuncias(true);
-  };
-
-
-
-
-
-  ////////Fechar Modal e limpar //////
-  const handleCloseDenuncias = () => {
-    setOpenDenuncias(false);
-    limparForm();
-    limparMidia();
-    setMidiaStatusPhotos(false);
-    setMidiaStatusVideo(false);
-  };
-  /* FIM MODAL */
-
-
   const limparForm = () => {
     setValues({
       title: '',
@@ -385,7 +323,6 @@ const ReportMap = props => {
       videos: []
     })
   }
-
 
   //////////Lista de MIDIAS ///////////
   const [midia, setMidia] = useState({
@@ -465,16 +402,10 @@ const ReportMap = props => {
               videos: imagens
             });
           }
-
-
         }
-
       }
-
     }
-
   };
-
 
   //////Salvar Denuncia//////
 
@@ -561,9 +492,7 @@ const ReportMap = props => {
                   }
                   setErrorsStatus(false)
                   setOpenValidador(false)
-
                 })
-
               }).catch((aError) => {
                 if (aError.response.status == 400) {
                   setOpenValidador(false)
@@ -591,7 +520,6 @@ const ReportMap = props => {
                 setOpenValidador(false)
               })
           }
-
         } else {
           console.log("entreiiieieieieii aqui")
           setOpenValidador(false)
@@ -602,18 +530,12 @@ const ReportMap = props => {
           }, 10000);
           limparForm();
           limparMidia();
-
-
         }
-
-
       }).catch((aError) => {
-
         if (aError.response.status == 400) {
           setOpenValidador(false)
           console.log(aError.response.data.errors)
           setErrors(aError.response.data.errors)
-
           setTimeout(() => {
             setErrors([]);
           }, 10000);
@@ -622,7 +544,6 @@ const ReportMap = props => {
           setErrors([
             "A campos vazios"
           ])
-
           setTimeout(() => {
             setErrors([]);
           }, 10000);
@@ -630,11 +551,8 @@ const ReportMap = props => {
         setErrorsStatus(false)
         setOpenValidador(false)
       })
-
     })
-
   }
-
   /////////Lista Categoria/////////
   const [categories, setCategories] = useState([]);
 
@@ -655,28 +573,11 @@ const ReportMap = props => {
         setLongitude(longitude1);
         setLatitude(latitude1);
       },
-
       (error) => {
         console.log("ERRO! " + error.message)
       }
     )
   }
-
-  //////useEffect////////
-  useEffect(() => {
-
-    getLocationBrowser();
-    filterBoth();
-    listCategory();
-
-  }, [])
-
-  const testeLocal = (lat, lng) => {   
-    setLatitude(lat) 
-    setLongitude(lng)
-    console.log("Latitude ", latitude, "Longitude ", longitude)
-  }
-
   /////Errros///////
   const handleSnackClick = () => {
     setErrors([]);
@@ -716,55 +617,169 @@ const ReportMap = props => {
     }
   }
 
+  const carregarAprovadas = () => {
+    API.get('/report?status=' + ReportStatus.Aprovado()
+    ).then(response => {
+      const report = response.data
+      response.data.forEach(element => {
+        // adicionarDenunciaNoMapa('yellow', element)
+      });
+      setLocationsApproved(report)
+    }).catch(erro => {
+      console.log(erro);
+      /* setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true); */
+    })
+  }
+  const carregarFinalizadas = () => {
+    API.get('/report?status=' + ReportStatus.Finalizada()
+    ).then(response => {
+      const report = response.data
+      response.data.forEach(element => {
+        // adicionarDenunciaNoMapa('green', element)
+      });
+      setLocationsFinished(report)
+    }).catch(erro => {
+      console.log(erro);
+      /* setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true); */
+    })
+  }
+  const carregarEmAnlise = () => {
+    API.get(`/report?status=` + ReportStatus.EmAnalise() + `&userId=${user}`
+    ).then(response => {
+      const report = response.data
+      response.data.forEach(element => {
+        // adicionarDenunciaNoMapa('green', element)
+      });
+      setLocationsInAnalysis(report)
+    }).catch(erro => {
+      console.log(erro);
+      /* setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true); */
+    })
+  }
+  const carregarEmProgresso = (props) => {
+    API.get('/report'
+    ).then(response => {
+      const reports = []
+
+      response.data.forEach(element => {
+
+        if ((ReportStatus.EmProgresso() == element.reportStatusId) && emProgresso) {
+          reports.push(adicionarDenunciaNoMapa('blue', element))
+        }
+        else if ((ReportStatus.Finalizada() == element.reportStatusId) && finalizadas) {
+          reports.push(adicionarDenunciaNoMapa('green', element))
+        }
+        else if ((ReportStatus.Aprovado() == element.reportStatusId) && aprovadas) {
+          reports.push(adicionarDenunciaNoMapa('yellow', element))
+        }
+        else if ((ReportStatus.EmAnalise() == element.reportStatusId) && emAnalise) {
+          reports.push(adicionarDenunciaNoMapa('red', element))
+        }
+
+      });
+
+      setDenuncias({
+        ...denuncias,
+        pins: reports
+      })
+    }).catch(erro => {
+      console.log(erro);
+      /* setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true); */
+    })
+  }
+
+  const adicionarDenunciaNoMapa = (cor, denuncia) => {
+    return {
+      location: [denuncia.latitude, denuncia.longitude],
+      option: {
+        title: denuncia.title,
+        color: cor,
+      },
+      addHandler: {
+        type: "click",
+        callback: () => openModalReport(denuncia.id)
+      }
+    }
+  }
+
+  const openModalReport = (message) => {
+    setidReportModal(message)
+    setOpen(true);
+  }
+
+  const [denuncias, setDenuncias] = useState({
+    pins: [],
+  })
+
+  const carregarTodas = () => {
+    // setDenuncias({
+    //   pins: []
+    // })
+    // console.log(denuncias)
+    // if (emProgresso) {
+    carregarEmProgresso();
+    // }
+    // if (aprovadas) {
+    //   carregarAprovadas();
+    // }
+    // if (finalizadas) {
+    //   carregarFinalizadas();
+    // }    
+    // carregarAprovadas();
+    // carregarFinalizadas();
+    // carregarEmProgresso()
+  }
+
+  const handleOpenDenuncias = props => {
+    setOpenDenuncias(true);
+  };
+
+  const handleCloseDenuncias = () => {
+    setOpenDenuncias(false);
+  };
+  /* FIM MODAL */
+
+  const handleFinalizadas = () => {
+    setFinalizadas(!finalizadas);
+    carregarTodas();
+  };
+
+  const handleEmProgresso = () => {
+    setEmProgresso(!emProgresso);
+    carregarTodas();
+  }
+
+  const handleAprovadas = () => {
+    setAprovadas(!aprovadas)
+    carregarTodas();
+  }
+
+  const handleEmAnalise = () => {
+    setEmAnalise(!emAnalise)
+    carregarTodas();
+  }
+  const [finalizadas, setFinalizadas] = React.useState(true);
+  const [emProgresso, setEmProgresso] = React.useState(true);
+  const [aprovadas, setAprovadas] = React.useState(true);
+  const [emAnalise, setEmAnalise] = React.useState(true);
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      <GoogleMapReact
-        bootstrapURLKeys={'AIzaSyDBxtpy4QlnhPfGK7mF_TnbLXooEXVPy_0'}
-        defaultCenter={defaultProps.center}
-        defaultZoom={defaultProps.zoom}
-        //onClick={(event) => {(setLatitude(event.lat) , setLongitude(event.lng))}}
-        onClick={(event) => testeLocal(event.lat, event.lng)}
+
+      <ReactBingmaps
+        bingmapKey="AhB03kPUyRzwqaJu5TId4Ny9-WKbQzvOHxDrKtJaIqFEN9iLwfk5fWZD-5nZCVXv"
+        center={[latitude, longitude]}
+        zoom = {18}
+        pushPins={denuncias.pins}
+        getLocation={
+          { addHandler: "click", callback: GetLocationHandled.bind(props) }
+        }
       >
-        {locationsAproved.map(locationsMapAproved => (
-          <RoomIcon
-            onClick={() => handleOpen(locationsMapAproved.id)}
-            key={locationsMapAproved.id}
-            className={style.markerApproved}
-            lat={locationsMapAproved.latitude}
-            lng={locationsMapAproved.longitude}
-          />
-
-        ))}
-        {locationsFinished.map(locationsMapFinished => (
-          <RoomIcon
-            onClick={() => handleOpen(locationsMapFinished.id)}
-            key={locationsMapFinished.id}
-            className={style.markerFinished}
-            lat={locationsMapFinished.latitude}
-            lng={locationsMapFinished.longitude}
-          />
-
-        ))}
-        {locationsInProgress.map(locationsMapProgress => (
-          <RoomIcon
-            onClick={() => handleOpen(locationsMapProgress.id)}
-            key={locationsMapProgress.id}
-            className={style.markerProgress}
-            lat={locationsMapProgress.latitude}
-            lng={locationsMapProgress.longitude}
-          />
-        ))}
-        {locationsInAnalysis.map(locationsMapAnalysis => (
-          <RoomIcon
-            onClick={() => handleOpen(locationsMapAnalysis.id)}
-            key={locationsMapAnalysis.id}
-            className={style.markerAnalysis}
-            lat={locationsMapAnalysis.latitude}
-            lng={locationsMapAnalysis.longitude}
-          />
-        ))}
-      </GoogleMapReact>
+      </ReactBingmaps>
 
       <Grid
         className={style.gridButton}
@@ -774,7 +789,7 @@ const ReportMap = props => {
       >
         <div style={{ textAlign: 'left', width: 10 }}>
           <Button
-            /* onClick={handleOpenDenuncias} */
+            //onClick={handleOpenDenuncias}
             onClick={testeLocal}
             className={style.button1}
           >Denúnciar</Button>
@@ -784,27 +799,27 @@ const ReportMap = props => {
           >Histórico</Button>
           <Button
             text="My Marker"
-            onClick={filterFinished}
+            onClick={handleFinalizadas}
             className={style.button1}
           >Encerradas</Button>{/* ALTERAR PARA FILTRAR POR ENCERRADO */}
           <Button
             text="My Marker"
-            onClick={filterApproved}
+            onClick={handleAprovadas}
             className={style.button1}
           >Aprovadas</Button>
           <Button
             text="My Marker"
-            onClick={filterInAnalysis}
+            onClick={handleEmAnalise}
             className={style.button1}
           >Em análise</Button>
           <Button
             text="My Marker"
-            onClick={filterInProgress}
+            onClick={handleEmProgresso}
             className={style.button1}
           >Em progresso</Button>
           <Button
             text="My Marker"
-            onClick={filterBoth}
+            onClick={carregarTodas}
             className={style.button1}
           >Todas denúncias</Button>
         </div>
@@ -841,10 +856,6 @@ const ReportMap = props => {
 
       </div>
       {/* FIM MODAL */}
-
-
-
-
       {/* MODAL DENUNCIA */}
       <div>
         <Modal

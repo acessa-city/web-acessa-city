@@ -100,7 +100,7 @@ const useStyles = makeStyles(theme => ({
   media: {
     height: '280px'
   },
-  
+
 }));
 
 //Abrir opções dos 3 pontinho
@@ -702,7 +702,6 @@ const DenunciationsTable = props => {
                               <Button
                                 onClick={handleOpenAprove}
                                 mx={200}
-                                color="primary"
                                 align="right"
                                 disabled={false}
                                 width="10px"
@@ -710,6 +709,10 @@ const DenunciationsTable = props => {
                                 type="submit"
                                 variant="contained"
                                 className={classes.button}
+                                style={{
+                                  backgroundColor: '#1b5e20',
+                                  color: 'white'
+                                }}
                               >
                                 Aprovar
                           </Button>
@@ -727,6 +730,10 @@ const DenunciationsTable = props => {
                                 type="submit"
                                 variant="contained"
                                 className={classes.button}
+                                style={{
+                                  backgroundColor: '#b71c1c',
+                                  color: 'white'
+                                }}
                               >
                                 Negar
                             </Button>
@@ -777,12 +784,12 @@ const DenunciationsTable = props => {
                           </FormControl>
 
                         </Grid>
-      
-                          <FormControl margin="dense" fullWidth>
+
+                        <FormControl margin="dense" fullWidth>
                           <Grid item md={12} xs={12}>
                             <Button style={{ float: 'right' }} o onClick={submit} variant="contained" color="secondary">Enviar</Button>
                           </Grid>
-                          </FormControl>
+                        </FormControl>
                       </Grid>
                     </div>
                   </Fade>
@@ -809,31 +816,31 @@ const DenunciationsTable = props => {
                         <Grid item xs={12} sm={12}>
                           <InputLabel>Descreva o motivo da negação:</InputLabel>
                         </Grid>
-                
+
                         <Grid
-                        item
-                        lg={12}
-                        md={12}
-                        xl={12}
-                        xs={12}
-                      >
+                          item
+                          lg={12}
+                          md={12}
+                          xl={12}
+                          xs={12}
+                        >
 
-                        <TextareaAutosize style={{ width: '100%', fontSize: '15px', borderRadius: '4px', padding: '5px 13px 10px 13px' }}
-                          rowsMin={3}
-                          aria-label="empty textarea"
-                          name="description"
-                          onChange={e => handleDenyChange(e.target.value)}
-                          value={deny.message}
-                          placeholder="Descreva o motivo dessa negação.*"
-                        />
+                          <TextareaAutosize style={{ width: '100%', fontSize: '15px', borderRadius: '4px', padding: '5px 13px 10px 13px' }}
+                            rowsMin={3}
+                            aria-label="empty textarea"
+                            name="description"
+                            onChange={e => handleDenyChange(e.target.value)}
+                            value={deny.message}
+                            placeholder="Descreva o motivo dessa negação.*"
+                          />
 
-                      </Grid>
+                        </Grid>
 
-                          <FormControl margin="dense" fullWidth>
-                            <Grid item md={12} xs={12}>
-                              <Button style={{ float: 'right' }} onClick={submitDeny} variant="contained" color="secondary">Enviar</Button>
-                            </Grid>
-                          </FormControl>
+                        <FormControl margin="dense" fullWidth>
+                          <Grid item md={12} xs={12}>
+                            <Button style={{ float: 'right' }} onClick={submitDeny} variant="contained" color="secondary">Enviar</Button>
+                          </Grid>
+                        </FormControl>
 
 
                       </Grid>
