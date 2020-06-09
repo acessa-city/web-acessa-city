@@ -22,6 +22,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import Modal from '@material-ui/core/Modal';
 import Fade from '@material-ui/core/Fade';
 import CreateUser from '../../../../../views/User/CreateUser';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 
 // import { SearchInput } from 'components';  //chamar botão de pesquisa
 
@@ -192,7 +194,7 @@ const ModeratorCoordinatorToolbar = props => {
 
           <Grid item xs={12} sm={1}>
             <FormControl margin="dense" fullWidth>
-              <Button  onClick={limparForm} variant="contained" >Limpar</Button>
+              <Button onClick={limparForm} variant="contained" >Limpar</Button>
             </FormControl>
           </Grid>
 
@@ -210,8 +212,8 @@ const ModeratorCoordinatorToolbar = props => {
                   style={{
                     backgroundColor: '#1b5e20',
                     color: 'white'
-                    }}
-                  variant="contained" color="secondary"><AddIcon />Cadastro</Button>
+                  }}
+                  variant="contained" color="secondary"><AddIcon />Cadastrar</Button>
               </FormControl>
             </div>
           </Grid>
@@ -232,13 +234,25 @@ const ModeratorCoordinatorToolbar = props => {
         >
           <Fade in={openModal}>
             <div className={classes.paper}>
+              <div style={{
+                textAlign: 'right'
+              }}>
 
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  onClick={handleClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </div>
               <CreateUser onCreateUser={onCreateUser} />
 
             </div>
           </Fade>
         </Modal>
-        
+
         {/* // FIM Modal CADASTRAR USUÀRIO*/}
 
       </div >

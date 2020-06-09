@@ -32,6 +32,7 @@ import {
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import CloseIcon from '@material-ui/icons/Close';
 //Fim Modal
 
 //Icone 3 bolinhas
@@ -180,11 +181,11 @@ const ModeratorCoordinatorTable = props => {
   const handleClickDelete = (userDelete) => {
 
     API.delete(`/user/${userDelete.id}`)
-    .then(response => {
-      console.log("sucesso")
-    }).catch(erro => {
-      console.log(erro);
-    })
+      .then(response => {
+        console.log("sucesso")
+      }).catch(erro => {
+        console.log(erro);
+      })
 
   }
 
@@ -204,7 +205,12 @@ const ModeratorCoordinatorTable = props => {
                   <TableCell>Nome</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>Tipo</TableCell>
-                  <TableCell>Ações</TableCell>
+                  <TableCell
+                    style={{
+                      textAlign: 'right',
+                      padding: '0px 25px 0px 0px'
+                    }}
+                  >Ações</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -216,7 +222,9 @@ const ModeratorCoordinatorTable = props => {
                       <TableCell onClick={() => handleClickAccount(user)}>{user.firstName}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>{user.roles[0]}</TableCell>
-                      <TableCell>
+                      <TableCell style={{
+                        textAlign: 'right'
+                      }}>
                         <IconButton
                           aria-label="display more actions" edge="end" color="inherit">
                           <EditIcon
@@ -249,6 +257,22 @@ const ModeratorCoordinatorTable = props => {
               >
                 <Fade in={open}>
                   <div className={classes.paper}>
+
+                    <div style={{
+                      textAlign: 'right'
+                    }}>
+
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClose}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+
+
 
                     <AccountDetails userId={openAccount.users.id} />
 

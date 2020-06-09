@@ -447,7 +447,7 @@ const DenunciationsTable = props => {
 
   const [valuesEncerramento, setValuesEncerramento] = useState({
     descriptionEncerramento: '',
-    dataEncerramento:''
+    dataEncerramento: ''
   });
 
   const handleChangeEncerramento = event => {
@@ -457,10 +457,10 @@ const DenunciationsTable = props => {
     });
   };
 
-  const submitEncerramento = (event) =>{
+  const submitEncerramento = (event) => {
     event.preventDefault();
 
-    const encerrar ={ 
+    const encerrar = {
       reportId: openModalDenunciations.denunciations.id,
       description: valuesEncerramento.descriptionEncerramento,
       endDate: valuesEncerramento.dataEncerramento
@@ -477,7 +477,7 @@ const DenunciationsTable = props => {
 
     } else {
       props.envioFinish(encerrar);
-      setValuesEncerramento({ descriptionEncerramento: '', dataEncerramento: ''});
+      setValuesEncerramento({ descriptionEncerramento: '', dataEncerramento: '' });
       setOpenAprove(false);
       setOpen(false);
     }
@@ -582,13 +582,23 @@ const DenunciationsTable = props => {
               <Report reportId={openModalDenunciations.denunciations.id}>
               </Report>
 
-              <CardActions>
-                <Grid md={12} xl={12} xs={12}>
-                  <Button style={{ float: 'right', background: '#2979ff', color: '#fff' }} onClick={tratarClose}>
-                    Fechar
-                    </Button>
-                </Grid>
-              </CardActions>
+              <Grid
+                item
+                lg={12}
+                md={12}
+                xl={12}
+                xs={12}
+              >
+                <Button
+                  color="default"
+                  onClick={tratarClose}
+                  variant="contained"
+                  style={{ float: 'right' }}
+                >
+                  Fechar
+                             </Button>
+              </Grid>
+
 
             </div>
           </Fade>
@@ -607,7 +617,9 @@ const DenunciationsTable = props => {
                   <TableCell>Categoria</TableCell>
                   <TableCell>Datas</TableCell>
                   <TableCell>Status</TableCell>
-                  <TableCell>Cometários</TableCell>
+                  <TableCell style={{
+                        textAlign: 'center',
+                      }}>Cometários</TableCell>
 
                 </TableRow>
               </TableHead>
@@ -716,76 +728,51 @@ const DenunciationsTable = props => {
                           <Divider />
                           {statusProgressDenunciation == '96afa0df-8ad9-4a44-a726-70582b7bd010' &&
                             <CardActions>
-
                               <Grid item md={6} xs={6}>
                                 <Button
-                                  onClick={handleOpenAprove}
-                                  mx={200}
-                                  color="primary"
-                                  align="right"
-                                  disabled={false}
-                                  width="10px"
-                                  size="large"
-                                  type="submit"
-                                  variant="contained"
-                                  className={classes.button}
-                                >
-                                  Aprovar
-                              </Button>
-                              </Grid>
-                              <Grid item md={6} xs={6}>
-                                <Button
-                                  style={{ float: 'right' }}
+                                  style={{ background: '#b71c1c' }}
                                   onClick={handleOpenDeny}
                                   mx={200}
                                   color="primary"
-                                  align="right"
-                                  disabled={false}
-                                  width="10px"
-                                  size="large"
-                                  type="submit"
                                   variant="contained"
-                                  className={classes.button}
                                 >
                                   Negar
                             </Button>
                               </Grid>
+                              <Grid item md={6} xs={6}>
+                                <Button
+                                  style={{ background: '#1b5e20', float: 'right' }}
+                                  onClick={handleOpenAprove}
+                                  color="primary"
+                                  variant="contained"
+                                >
+                                  Aprovar
+                              </Button>
+                              </Grid>
+
                             </CardActions>
                           }
                           {statusProgressDenunciation == 'c37d9588-1875-44dd-8cf1-6781de7533c3' &&
                             <CardActions>
                               <Grid item md={6} xs={6}>
                                 <Button
-                                  onClick={handleOpenAprove}
-                                  mx={200}
-                                  color="primary"
-                                  align="right"
-                                  disabled={false}
-                                  width="10px"
-                                  size="large"
-                                  type="submit"
-                                  variant="contained"
-                                  className={classes.button}
-                                >
-                                  Aprovar
-                              </Button>
-                              </Grid>
-                              <Grid item md={6} xs={6}>
-                                <Button
-                                  style={{ float: 'right' }}
+                                 style={{ background: '#b71c1c' }}
                                   onClick={handleOpenDeny}
-                                  mx={200}
                                   color="primary"
-                                  align="right"
-                                  disabled={false}
-                                  width="10px"
-                                  size="large"
-                                  type="submit"
                                   variant="contained"
-                                  className={classes.button}
                                 >
                                   Negar
                                </Button>
+                              </Grid>
+                              <Grid item md={6} xs={6}>
+                                <Button
+                                 style={{ background: '#1b5e20', float: 'right' }}
+                                  onClick={handleOpenAprove}
+                                  color="primary"
+                                  variant="contained"
+                                >
+                                  Aprovar
+                              </Button>
                               </Grid>
                             </CardActions>
                           }
@@ -852,7 +839,7 @@ const DenunciationsTable = props => {
                           <Grid item xs={12} sm={4}>
                             <FormControl margin="dense" fullWidth>
                               <Grid item md={12} xs={12}>
-                                <Button style={{ float: 'right' }} onClick={submitProgress} variant="contained" color="secondary">Progresso</Button>
+                                <Button style={{ float: 'right', background: '#1b5e20' }} onClick={submitProgress} variant="contained" color="secondary">Progresso</Button>
                               </Grid>
                             </FormControl>
                           </Grid>
@@ -902,7 +889,7 @@ const DenunciationsTable = props => {
                           <Grid item xs={12} sm={2}>
                             <FormControl margin="dense" fullWidth>
                               <Grid item md={12} xs={12}>
-                                <Button onClick={submitEncerramento} style={{ float: 'right' }} variant="contained" color="secondary">Encerrar</Button>
+                                <Button onClick={submitEncerramento} style={{background: '#1b5e20', float: 'right' }} variant="contained" color="secondary">Encerrar</Button>
                               </Grid>
                             </FormControl>
                           </Grid>
@@ -956,7 +943,7 @@ const DenunciationsTable = props => {
 
                         <FormControl margin="dense" fullWidth>
                           <Grid item md={12} xs={12}>
-                            <Button style={{ float: 'right' }} onClick={submitDeny} variant="contained" color="secondary">Enviar</Button>
+                            <Button style={{ float: 'right', background: '#1b5e20' }} onClick={submitDeny} variant="contained" color="secondary">Enviar</Button>
                           </Grid>
                         </FormControl>
 

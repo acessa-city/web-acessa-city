@@ -43,6 +43,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import API from '../../../../../utils/API';
+import AddIcon from '@material-ui/icons/Add';
 
 // import { SearchInput } from 'components';  //chamar botão de pesquisa
 
@@ -234,7 +235,6 @@ const CategoryToolbar = props => {
             </FormControl>
           </Grid>
 
-
           <Grid item xs={12} sm={1}>
             <FormControl margin="dense" fullWidth>
               <Button onClick={submit} variant="contained" color="secondary">Filtrar</Button>
@@ -257,9 +257,9 @@ const CategoryToolbar = props => {
                 <Button
                   onClick={handleOpen}
                   style={{
-                    background: 'green',
+                    background: '#1b5e20',
                   }}
-                  variant="contained" color="secondary"> Cadastrar </Button>
+                  variant="contained" color="secondary">  <AddIcon/>Cadastrar</Button>
               </FormControl>
             </div>
           </Grid>
@@ -345,9 +345,10 @@ const CategoryToolbar = props => {
                     <Button
                       color="primary"
                       variant="contained"
-                      style={{ background: 'green', float: 'right' }}
+                      style={{  background: '#1b5e20', float: 'right' }}
                     >
-                      Confirmar
+
+                      Cadastrar
                              </Button>
                   </Grid>
                 </CardActions>

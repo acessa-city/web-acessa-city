@@ -131,7 +131,6 @@ const PrefecturesList = () => {
     listPrefectures();
   }, []);
 
-
   const erros = () => {
     if (errorsStatus == true) {
       return (

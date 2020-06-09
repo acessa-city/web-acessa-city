@@ -34,6 +34,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import EditIcon from '@material-ui/icons/Edit';
 //Fim Modal
 
 //Icone 3 bolinhas
@@ -184,6 +185,13 @@ const CategoryTable = props => {
                 <TableRow>
 
                   <TableCell>Categoria</TableCell>
+                  <TableCell
+                   style={{
+                    textAlign: 'right',
+                    padding: '0px 25px 0px 0px'
+                  }}
+                  
+                  >Ações</TableCell>
 
                 </TableRow>
               </TableHead>
@@ -194,6 +202,20 @@ const CategoryTable = props => {
                       hover={true}
                     >
                       <TableCell onClick={() => handleOpen(categoriessss)}>{categoriessss.name}</TableCell>
+                      <TableCell
+                        style={{
+                          textAlign: 'right'
+                        }}
+                      >
+                        <IconButton aria-label="display more actions" edge="end" color="inherit">
+                          <EditIcon onClick={() => handleOpen(categoriessss)} />  {/* onClick={handleClick}  */}
+                        </IconButton>
+                        <IconButton aria-label="display more actions" edge="end" color="inherit">
+                          <DeleteIcon/>
+                          {/* onClick={() => handleClickDelete(prefecture)}  */}
+                        </IconButton>
+
+                      </TableCell>
                     </TableRow>
 
                   )
@@ -266,11 +288,11 @@ const CategoryTable = props => {
                               xs={12}
                             >
                               <Button
-                                color="primary"
+                                color="secondary"
                                 variant="contained"
-                                style={{ background: 'green', float: 'right' }}
+                                style={{float: 'right' }}
                               >
-                                Confirmar
+                                salvar
                              </Button>
                             </Grid>
                           </CardActions>

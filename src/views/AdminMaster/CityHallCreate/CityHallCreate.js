@@ -29,10 +29,10 @@ const useStyles = makeStyles((theme) => ({
 
 
 const CityHallCreate = props => {
-  const { className,onCreatePrefecture,prefecturesId, ...rest } = props;
+  const { className, onCreatePrefecture, prefecturesId, mudarCor,mudarCor2, ...rest } = props;
 
 
-  console.log("AQUIII ola ola " , prefecturesId);
+  console.log("AQUIII ola ola ", prefecturesId);
 
   const classes = useStyles();
 
@@ -112,11 +112,11 @@ const CityHallCreate = props => {
     console.log(values);
   }
 
-  const[controlePrefecture, setControlePrefecture] = useState('');
+  const [controlePrefecture, setControlePrefecture] = useState('');
 
   const carregarPrefecture = (id) => {
     api.get(`/city-hall/${id}`).then((result) => {
-     
+
       setValues({
         ...values,
         name: result.data.name,
@@ -124,8 +124,8 @@ const CityHallCreate = props => {
         email: result.data.email,
         address: result.data.address,
         neighborhood: result.data.neighborhood,
-        zipCode: result.data.zipCode, 
-        number: result.data.number, 
+        zipCode: result.data.zipCode,
+        number: result.data.number,
         state: result.data.city.cityState.id,
       });
 
@@ -168,28 +168,28 @@ const CityHallCreate = props => {
     changeState(stateId);
   }
 
-  const campoVazio = values =>{
+  const campoVazio = values => {
     values.name === '' ||
-    values.cnpj=== ''||
-    values.email=== ''||
-    values.address=== ''||
-    values.neighborhood=== ''||
-    values.zipCode=== ''||
-    values.number=== ''||
-    values.cityId=== ''
-    ?  
-    setErrors([
-      "Existem campos vazios."
-    ]) : 
-    setErrors([
-      "A prefeitura " + values.name + ", e o usuário " +
-      values.email + " foram criados com sucesso."
-    ])
+      values.cnpj === '' ||
+      values.email === '' ||
+      values.address === '' ||
+      values.neighborhood === '' ||
+      values.zipCode === '' ||
+      values.number === '' ||
+      values.cityId === ''
+      ?
+      setErrors([
+        "Existem campos vazios."
+      ]) :
+      setErrors([
+        "A prefeitura " + values.name + ", e o usuário " +
+        values.email + " foram criados com sucesso."
+      ])
   }
   const handleClick = () => {
     setOpen(true)
     console.log(values);
-    campoVazio(values) 
+    campoVazio(values)
     var newCityHall = values;
     api.post('/city-hall', newCityHall)
       .then((result) => {
@@ -224,7 +224,7 @@ const CityHallCreate = props => {
     return (<div>
       {errors.map(error => (
         <div>
-        <SnackbarContent message={<h3>{error}</h3>} />
+          <SnackbarContent message={<h3>{error}</h3>} />
         </div>
       ))}
     </div>)
@@ -264,7 +264,7 @@ const CityHallCreate = props => {
                   onChange={handleChange}
                   required
                   value={values.name}
-                  variant="outlined"               
+                  variant="outlined"
 
                 />
               </Grid>
@@ -372,8 +372,8 @@ const CityHallCreate = props => {
                   value={values.neighborhood}
                   variant="outlined"
                 />
-              </Grid>             
-             
+              </Grid>
+
               <Grid
                 item
                 md={3}
@@ -432,13 +432,43 @@ const CityHallCreate = props => {
           </CardContent>
           <Divider />
           <CardActions>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={handleClick}
-            >
-              Cadastrar
-            </Button>
+            {mudarCor&&
+              <Grid
+                item
+                lg={12}
+                md={12}
+                xl={12}
+                xs={12}
+              >
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={handleClick}
+                  style={{ background: '#1b5e20', float: 'right' }}
+                >
+                  Cadastrar
+              </Button>
+              </Grid>
+            }
+            
+            {mudarCor2 &&
+              <Grid
+                item
+                lg={12}
+                md={12}
+                xl={12}
+                xs={12}
+              >
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  onClick={handleClick}
+                  style={{ float: 'right' }}
+                >
+                  Salvar
+              </Button>
+              </Grid>
+            }
           </CardActions>
         </form>
       </Card>

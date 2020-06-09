@@ -32,6 +32,7 @@ import {
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import CloseIcon from '@material-ui/icons/Close';
 //Fim Modal
 
 //Icone 3 bolinhas
@@ -142,7 +143,7 @@ const CitizensTable = props => {
   const classes = useStyles();
 
   console.log("Usuário", JSON.stringify(citizens))
-  
+
 
   ///ABRIR MODAL RECUPERAR SENHA
 
@@ -171,11 +172,11 @@ const CitizensTable = props => {
   const handleClickDelete = (userDelete) => {
     console.log("chegando id delete:", userDelete)
     API.delete(`/user/${userDelete.id}`)
-    .then(response => {
-      console.log("sucesso")
-    }).catch(erro => {
-      console.log(erro);
-    })
+      .then(response => {
+        console.log("sucesso")
+      }).catch(erro => {
+        console.log(erro);
+      })
 
   }
 
@@ -192,7 +193,12 @@ const CitizensTable = props => {
                 <TableRow>
                   <TableCell>Nome</TableCell>
                   <TableCell>Email</TableCell>
-                  <TableCell>Ações</TableCell>
+                  <TableCell
+                    style={{
+                      textAlign: 'right',
+                      padding: '0px 25px 0px 0px'
+                    }}
+                  >Ações</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -203,7 +209,10 @@ const CitizensTable = props => {
                     >
                       <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.firstName}</TableCell>
                       <TableCell>{citizen.email}</TableCell>
-                      <TableCell>
+                      <TableCell style={{
+                        textAlign: 'right'
+                      }}
+                      >
                         <IconButton
                           aria-label="display more actions" edge="end" color="inherit">
                           <EditIcon
@@ -236,8 +245,20 @@ const CitizensTable = props => {
               >
                 <Fade in={open}>
                   <div className={classes.paper}>
- 
-                   <AccountDetails userId={openCitizens.citizens.id} />
+                    <div style={{
+                      textAlign: 'right'
+                    }}>
+
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClose}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                    <AccountDetails userId={openCitizens.citizens.id} />
 
                   </div>
                 </Fade>

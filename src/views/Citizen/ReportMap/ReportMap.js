@@ -53,6 +53,7 @@ import {
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import CloseIcon from '@material-ui/icons/Close';
 
 import API from '../../../utils/API';
 import s3 from 'utils/AWS-S3'
@@ -253,7 +254,7 @@ const ReportMap = props => {
   
     }, []) */
   useEffect(() => {
-    
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position.coords.latitude);
@@ -261,7 +262,7 @@ const ReportMap = props => {
         const { latitude, longitude } = position.coords;
         setLongitude(longitude);
         setLatitude(latitude);
-        
+
       },
 
       (error) => {
@@ -773,7 +774,7 @@ const ReportMap = props => {
       <ReactBingmaps
         bingmapKey="AhB03kPUyRzwqaJu5TId4Ny9-WKbQzvOHxDrKtJaIqFEN9iLwfk5fWZD-5nZCVXv"
         center={[latitude, longitude]}
-        zoom = {18}
+        zoom={18}
         pushPins={denuncias.pins}
         getLocation={
           { addHandler: "click", callback: GetLocationHandled.bind(props) }
@@ -789,8 +790,7 @@ const ReportMap = props => {
       >
         <div style={{ textAlign: 'left', width: 10 }}>
           <Button
-            //onClick={handleOpenDenuncias}
-            onClick={testeLocal}
+            onClick={handleOpenDenuncias}
             className={style.button1}
           >Denúnciar</Button>
           <Button
@@ -846,9 +846,40 @@ const ReportMap = props => {
               height: '100%'
             }}
               className={style.paper}>
+
+              <div style={{
+                textAlign: 'right'
+              }}>
+
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  onClick={handleClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </div>
+
+
               {/* Passar o id da denúncia para reportId vvvvvvvvvvvv */}
               <Report reportId={idReportModal}></Report>
-              <Button onClick={handleClose}>Voltar</Button>
+              <Grid
+                    item
+                    lg={12}
+                    md={12}
+                    xl={12}
+                    xs={12}
+                  >
+                    <Button
+                      color="default"
+                      onClick={handleClose}
+                      variant="contained"
+                      style={{ float: 'right' }}
+                    >
+                      Fechar
+                             </Button>
+                  </Grid>
 
             </div>
           </Fade>
@@ -877,6 +908,19 @@ const ReportMap = props => {
               height: '80%'
             }}
               className={style.paper}>
+              <div style={{
+                textAlign: 'right'
+              }}>
+
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  onClick={handleCloseDenuncias}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </div>
               <Card>
                 <form
                   autoComplete="off"
@@ -1053,7 +1097,7 @@ const ReportMap = props => {
                   </CardContent>
                   <Divider />
                   <CardActions>
-                    <Grid
+                    {/* <Grid
                       item
                       lg={6}
                       md={6}
@@ -1071,14 +1115,14 @@ const ReportMap = props => {
                       >
                         Fechar
                      </Button>
-                    </Grid>
+                    </Grid> */}
 
                     <Grid
                       item
-                      lg={6}
-                      md={6}
-                      xl={6}
-                      xs={6}
+                      lg={12}
+                      md={12}
+                      xl={12}
+                      xs={12}
                     >
                       <Button
                         color="primary"

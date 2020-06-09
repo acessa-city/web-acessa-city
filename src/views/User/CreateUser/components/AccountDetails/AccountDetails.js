@@ -132,7 +132,7 @@ const AccountDetails = props => {
       ))}
     </div>)
   }
-  
+
   const [roles, setRoles] = useState({
     loaded: false,
   });
@@ -239,21 +239,6 @@ const AccountDetails = props => {
                   variant="outlined"
                 />
               </Grid>
-              {/* <Grid item xs={12} md={3}>
-                <TextField
-                  fullWidth
-                  error={password.password != password.confirmPassword}
-                  helperText="Confirmar senha"
-                  label="Confirmação da senha"
-                  margin="dense"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  onChange={sender => handleChange2('confirmPassword', sender)}
-                  value={password.confirmPassword}
-                  variant="outlined"
-                />
-              </Grid> */}
               <Grid
                 item
                 md={2}
@@ -290,7 +275,7 @@ const AccountDetails = props => {
                       <option aria-label="None" value="" />
                       <option value='coordinator'>Coordenador</option>
                       <option value='moderator'>Moderador</option>
-       
+
                     </Select>
                   }
                 </FormControl>
@@ -299,14 +284,22 @@ const AccountDetails = props => {
           </CardContent>
           <Divider />
           <CardActions>
-            <Button
-              // disabled={!password.password || password.password != password.confirmPassword} 
-              color="secondary"
-              variant="contained"
-              onClick={handleClick}
+            <Grid
+              item
+              lg={12}
+              md={12}
+              xl={12}
+              xs={12}
             >
-              Salvar
-            </Button>
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={handleClick}
+                style={{ background: '#1b5e20', float: 'right' }}
+              >
+                Cadastrar
+                             </Button>
+            </Grid>
           </CardActions>
         </form>
       </Card>

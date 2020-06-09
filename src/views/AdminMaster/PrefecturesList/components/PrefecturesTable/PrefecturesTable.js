@@ -32,6 +32,7 @@ import {
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import CloseIcon from '@material-ui/icons/Close';
 //Fim Modal
 
 //Icone 3 bolinhas
@@ -142,7 +143,7 @@ const PrefecturesTable = props => {
   const classes = useStyles();
 
   console.log("Usuário", JSON.stringify(prefectures))
-  
+
 
   ///ABRIR MODAL RECUPERAR SENHA
 
@@ -153,8 +154,10 @@ const PrefecturesTable = props => {
     prefectures: '',
   });
 
-  const handleClickAccount = (prefecturesL) => {
+  const[mudarCor2, setMudarCor2] = useState('');
 
+  const handleClickAccount = (prefecturesL) => {
+    setMudarCor2(true)
     console.log("sdfsddsdasddasdasda", prefecturesL)
     setOpenPrefecture({
       ...prefectures,
@@ -171,11 +174,11 @@ const PrefecturesTable = props => {
   const handleClickDelete = (userDelete) => {
 
     API.delete(`/user/${userDelete.id}`)
-    .then(response => {
-      console.log("sucesso")
-    }).catch(erro => {
-      console.log(erro);
-    })
+      .then(response => {
+        console.log("sucesso")
+      }).catch(erro => {
+        console.log(erro);
+      })
 
   }
 
@@ -193,7 +196,10 @@ const PrefecturesTable = props => {
                   <TableCell>Nome</TableCell>
                   <TableCell>CNPJ</TableCell>
                   <TableCell>Email</TableCell>
-                  <TableCell>Ações</TableCell>
+                  <TableCell style={{
+                    textAlign: 'right',
+                    padding: '0px 25px 0px 0px'
+                  }}>Ações</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -205,7 +211,9 @@ const PrefecturesTable = props => {
                       <TableCell onClick={() => handleClickAccount(prefecture)}>{prefecture.name}</TableCell>
                       <TableCell>{prefecture.cnpj}</TableCell>
                       <TableCell>{prefecture.email}</TableCell>
-                      <TableCell>
+                      <TableCell style={{
+                        textAlign: 'right'
+                      }}>
                         <IconButton
                           aria-label="display more actions" edge="end" color="inherit">
                           <EditIcon
@@ -238,8 +246,20 @@ const PrefecturesTable = props => {
               >
                 <Fade in={open}>
                   <div className={classes.paper}>
+                    <div style={{
+                      textAlign: 'right'
+                    }}>
 
-                   <CityHallCreate prefecturesId={openPrefecture.prefectures.id} />
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClose}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                    <CityHallCreate mudarCor2={mudarCor2} prefecturesId={openPrefecture.prefectures.id} />
 
                   </div>
                 </Fade>

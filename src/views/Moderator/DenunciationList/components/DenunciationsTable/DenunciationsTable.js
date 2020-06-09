@@ -563,14 +563,22 @@ const DenunciationsTable = props => {
               </div>
               <Report reportId={openModalDenunciations.denunciations.id}>
               </Report>
-
-              <CardActions>
-                <Grid md={12} xl={12} xs={12}>
-                  <Button style={{ float: 'right', background: '#2979ff', color: '#fff' }} onClick={tratarClose}>
-                    Fechar
-                    </Button>
-                </Grid>
-              </CardActions>
+              <Grid
+                item
+                lg={12}
+                md={12}
+                xl={12}
+                xs={12}
+              >
+                <Button
+                  color="default"
+                  onClick={tratarClose}
+                  variant="contained"
+                  style={{ float: 'right' }}
+                >
+                  Fechar
+                             </Button>
+              </Grid>
 
             </div>
           </Fade>
@@ -589,7 +597,9 @@ const DenunciationsTable = props => {
                   <TableCell>Categoria</TableCell>
                   <TableCell>Datas</TableCell>
                   <TableCell>Status</TableCell>
-                  <TableCell>Cometários</TableCell>
+                  <TableCell style={{
+                        textAlign: 'center',
+                      }}>Cometários</TableCell>
 
                 </TableRow>
               </TableHead>
@@ -603,9 +613,9 @@ const DenunciationsTable = props => {
                       <TableCell>{denunciation.category.name}</TableCell>
                       <TableCell>{moment(denunciation.creationDate).format('DD/MM/YYYY')}</TableCell>
                       <TableCell onClick={() => handleOpen(denunciation.id)}>{(denunciation.reportStatus.description)}</TableCell>
-                      <TableCell onClick={() => handleOpenComments(denunciation)}><div style={{
+                      <TableCell onClick={() => handleOpenComments(denunciation)} style={{
                         textAlign: 'center',
-                      }}><ForumIcon /></div></TableCell>
+                      }}><div><ForumIcon /></div></TableCell>
                     </TableRow>
 
                   )
@@ -697,46 +707,34 @@ const DenunciationsTable = props => {
                           </CardContent>
                           <Divider />
                           <CardActions>
-
-                            <Grid item md={6} xs={6}>
-                              <Button
-                                onClick={handleOpenAprove}
-                                mx={200}
-                                align="right"
-                                disabled={false}
-                                width="10px"
-                                size="large"
-                                type="submit"
-                                variant="contained"
-                                className={classes.button}
-                                style={{
-                                  backgroundColor: '#1b5e20',
-                                  color: 'white'
-                                }}
-                              >
-                                Aprovar
-                          </Button>
-                            </Grid>
-                            <Grid item md={6} xs={6}>
-                              <Button
-                                style={{ float: 'right' }}
-                                onClick={handleOpenDeny}
-                                mx={200}
-                                color="primary"
-                                align="right"
-                                disabled={false}
-                                width="10px"
-                                size="large"
-                                type="submit"
-                                variant="contained"
-                                className={classes.button}
-                                style={{
-                                  backgroundColor: '#b71c1c',
-                                  color: 'white'
-                                }}
-                              >
-                                Negar
+                            <Grid container spacing={1}>
+                              <Grid item md={6} xs={6}>
+                                <Button
+                                  onClick={handleOpenDeny}
+                                  color="primary"
+                                  variant="contained"
+                                  style={{
+                                    backgroundColor: '#b71c1c',
+                                    color: 'white',
+                                  }}
+                                >
+                                  Negar
                             </Button>
+                              </Grid>
+
+                              <Grid item md={6} xs={6}>
+                                <Button
+                                  onClick={handleOpenAprove}
+                                  variant="contained"
+                                  style={{
+                                    backgroundColor: '#1b5e20',
+                                    color: 'white',
+                                    float: 'right'
+                                  }}
+                                >
+                                  Aprovar
+                              </Button>
+                              </Grid>
                             </Grid>
                           </CardActions>
                         </Card>
@@ -787,7 +785,7 @@ const DenunciationsTable = props => {
 
                         <FormControl margin="dense" fullWidth>
                           <Grid item md={12} xs={12}>
-                            <Button style={{ float: 'right' }} o onClick={submit} variant="contained" color="secondary">Enviar</Button>
+                            <Button style={{ background: '#1b5e20', float: 'right' }} o onClick={submit} variant="contained" color="secondary">Enviar</Button>
                           </Grid>
                         </FormControl>
                       </Grid>
@@ -838,7 +836,7 @@ const DenunciationsTable = props => {
 
                         <FormControl margin="dense" fullWidth>
                           <Grid item md={12} xs={12}>
-                            <Button style={{ float: 'right' }} onClick={submitDeny} variant="contained" color="secondary">Enviar</Button>
+                            <Button style={{ float: 'right', background: '#1b5e20' }} onClick={submitDeny} variant="contained" color="secondary">Enviar</Button>
                           </Grid>
                         </FormControl>
 
