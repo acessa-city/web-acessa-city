@@ -153,12 +153,8 @@ const styles = makeStyles(theme => ({
 
 const ReportMap = props => {
 
+  const [filterSelected, setFilterSelected] = useState('');
   const [user, setUser] = useState('')
-  const [locationsInAnalysis, setLocationsInAnalysis] = useState([]);
-  const [locationsInProgress, setLocationsInProgress] = useState([]);
-  const [locationsAproved, setLocationsApproved] = useState([]);
-  const [locationsFinished, setLocationsFinished] = useState([]);
-
   const [longitude, setLongitude] = useState('');
   const [latitude, setLatitude] = useState('');
   const [idReportModal, setidReportModal] = useState('');
@@ -174,58 +170,56 @@ const ReportMap = props => {
     console.log(longitude + '' + latitude)
   }
 
-
-  const limpaTodos = () => {
-    setLocationsApproved([]);
-    setLocationsFinished([]);
-    setLocationsInProgress([]);
-    setLocationsInAnalysis([]);
-  }
+  //Carregar Todas
   const filterBoth = (props) => {
-    if (user == '') {
-      API.get(`/report?status=` + ReportStatus.EmAnalise() + `&userId=${props}`
-      ).then(response => {
-        const report = response.data
-        setLocationsInAnalysis(report)
-      }).catch(erro => {
-        console.log(erro);
-        /* setMensagem('Ocorreu um erro', erro);
-        setOpenDialog(true); */
-      })
-    } else {
-      API.get(`/report?status=` + ReportStatus.EmAnalise() + `&userId=${user}`
-      ).then(response => {
-        const report = response.data
-        setLocationsInAnalysis(report)
-      }).catch(erro => {
-        console.log(erro);
-        /* setMensagem('Ocorreu um erro', erro);
-        setOpenDialog(true); */
-      })
-    }
 
-    API.get('/report?status=' + ReportStatus.Aprovado()
+    API.get('/report'
+
     ).then(response => {
-      const report = response.data
-      setLocationsApproved(report)
+      const reports = []
+
+      response.data.forEach(element => {
+
+        if ((ReportStatus.EmProgresso() == element.reportStatusId)) {
+          reports.push(adicionarDenunciaNoMapa('#2e7d32', element))
+        }
+        else if ((ReportStatus.Finalizada() == element.reportStatusId)) {
+          reports.push(adicionarDenunciaNoMapa('#1a237e', element))
+        }
+        else if ((ReportStatus.Aprovado() == element.reportStatusId)) {
+          reports.push(adicionarDenunciaNoMapa('#795548', element))
+        }
+        else if ((ReportStatus.EmAnalise() == element.reportStatusId && element.userId == props)) {
+          reports.push(adicionarDenunciaNoMapa('#d50000', element))
+        }
+
+      });
+
+      setDenuncias({
+        ...denuncias,
+        pins: reports
+      })
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true); */
     })
-    API.get('/report?status=' + ReportStatus.EmProgresso()
-    ).then(response => {
-      const report = response.data
-      setLocationsInProgress(report)
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
+  }
+
+  const filterFinished = (todas) => {
+    setFilterSelected(2)
     API.get('/report?status=' + ReportStatus.Finalizada()
     ).then(response => {
       const report = response.data
-      setLocationsFinished(report)
+      const reportsColoridas = []
+      // todas == 1 ? console.log('nada'): setDenuncias([])      
+      response.data.forEach(element => {
+        reportsColoridas.push(adicionarDenunciaNoMapa('#1a237e', element))//azul
+      });
+      setDenuncias({
+        ...denuncias,
+        pins: reportsColoridas
+      })
     }).catch(erro => {
       console.log(erro);
       /* setMensagem('Ocorreu um erro', erro);
@@ -233,26 +227,73 @@ const ReportMap = props => {
     })
   }
 
-  /*   useEffect(() => {
-  
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setLongitude(longitude);
-          setLatitude(latitude);
-        },
-  
-        (error) => {
-          console.log("ERRO! " + error.message)
-        }
-      )
-  
-      currentUser().then(result => {
-        setUser(result.id)
-        filterBoth(result.id);
+  const filterInAnalysis = (props, todas) => {
+    setFilterSelected(4)
+    API.get('/report?status=' + ReportStatus.EmAnalise() + `&userId=${props}`
+    ).then(response => {
+      console.log("TESTE1")
+      const report = response.data
+      const reportsColoridas = []
+      // todas == 1 ? console.log('nada'): setDenuncias([])
+      response.data.forEach(element => {
+        console.log("TESTE loop")
+        reportsColoridas.push(adicionarDenunciaNoMapa('#d50000', element))//vermelho
+      });
+      setDenuncias({
+        ...denuncias,
+        pins: reportsColoridas
       })
-  
-    }, []) */
+      console.log("TESTE 2")
+    }).catch(erro => {
+      console.log(erro);
+      //setMensagem('Ocorreu um erro', erro);
+      //setOpenDialog(true);
+    })
+  }
+
+  const filterApproved = (todas) => {
+    setFilterSelected(3)
+    API.get('/report?status=' + ReportStatus.Aprovado()
+    ).then(response => {
+      const report = response.data
+      const reportsColoridas = []
+      //  todas == 1 ? console.log('nada'): setDenuncias([])
+      response.data.forEach(element => {
+        reportsColoridas.push(adicionarDenunciaNoMapa('#795548', element))//marrom
+      });
+      setDenuncias({
+        ...denuncias,
+        pins: reportsColoridas
+      })
+    }).catch(erro => {
+      console.log(erro);
+      /* setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true); */
+    })
+  }
+
+  const filterInProgress = (todas) => {
+    setFilterSelected(1)
+    console.log(filterSelected)
+    API.get('/report?status=' + ReportStatus.EmProgresso()
+    ).then(response => {
+      const report = response.data
+      const reportsColoridas = []
+      // todas == 1 ? console.log('nada'): setDenuncias([])
+      response.data.forEach(element => {
+        reportsColoridas.push(adicionarDenunciaNoMapa('#2e7d32', element))//verde
+      });
+      setDenuncias({
+        ...denuncias,
+        pins: reportsColoridas
+      })
+    }).catch(erro => {
+      console.log(erro);
+      /* setMensagem('Ocorreu um erro', erro);
+      setOpenDialog(true); */
+    })
+  }
+
   useEffect(() => {
 
     navigator.geolocation.getCurrentPosition(
@@ -262,7 +303,6 @@ const ReportMap = props => {
         const { latitude, longitude } = position.coords;
         setLongitude(longitude);
         setLatitude(latitude);
-
       },
 
       (error) => {
@@ -274,12 +314,27 @@ const ReportMap = props => {
     currentUser().then(result => {
       setUser(result.id)
       filterBoth(result.id);
-      carregarTodas(result.id)
     })
-    // const interval = setInterval(() => {
-    //   carregarTodas();
-    // }, 10000);
-    // return () => interval;    
+  /*   const interval = setInterval(() => {
+
+      if (filterSelected == 1) {
+        filterInProgress(user);
+      }
+      else if (filterSelected == 2) {
+        filterFinished();
+      }
+      else if (filterSelected == 3) {
+        filterApproved();
+      }
+      else if (filterSelected == 4) {
+        filterInAnalysis();
+      }
+       else {
+        filterBoth(user);
+      } 
+
+    }, 1000); */
+    //return () => interval;
   }, [])
 
   const style = styles();
@@ -618,81 +673,6 @@ const ReportMap = props => {
     }
   }
 
-  const carregarAprovadas = () => {
-    API.get('/report?status=' + ReportStatus.Aprovado()
-    ).then(response => {
-      const report = response.data
-      response.data.forEach(element => {
-        // adicionarDenunciaNoMapa('yellow', element)
-      });
-      setLocationsApproved(report)
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
-  }
-  const carregarFinalizadas = () => {
-    API.get('/report?status=' + ReportStatus.Finalizada()
-    ).then(response => {
-      const report = response.data
-      response.data.forEach(element => {
-        // adicionarDenunciaNoMapa('green', element)
-      });
-      setLocationsFinished(report)
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
-  }
-  const carregarEmAnlise = () => {
-    API.get(`/report?status=` + ReportStatus.EmAnalise() + `&userId=${user}`
-    ).then(response => {
-      const report = response.data
-      response.data.forEach(element => {
-        // adicionarDenunciaNoMapa('green', element)
-      });
-      setLocationsInAnalysis(report)
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
-  }
-  const carregarEmProgresso = (props) => {
-    API.get('/report'
-    ).then(response => {
-      const reports = []
-
-      response.data.forEach(element => {
-
-        if ((ReportStatus.EmProgresso() == element.reportStatusId) && emProgresso) {
-          reports.push(adicionarDenunciaNoMapa('blue', element))
-        }
-        else if ((ReportStatus.Finalizada() == element.reportStatusId) && finalizadas) {
-          reports.push(adicionarDenunciaNoMapa('green', element))
-        }
-        else if ((ReportStatus.Aprovado() == element.reportStatusId) && aprovadas) {
-          reports.push(adicionarDenunciaNoMapa('yellow', element))
-        }
-        else if ((ReportStatus.EmAnalise() == element.reportStatusId) && emAnalise) {
-          reports.push(adicionarDenunciaNoMapa('red', element))
-        }
-
-      });
-
-      setDenuncias({
-        ...denuncias,
-        pins: reports
-      })
-    }).catch(erro => {
-      console.log(erro);
-      /* setMensagem('Ocorreu um erro', erro);
-      setOpenDialog(true); */
-    })
-  }
-
   const adicionarDenunciaNoMapa = (cor, denuncia) => {
     return {
       location: [denuncia.latitude, denuncia.longitude],
@@ -716,24 +696,6 @@ const ReportMap = props => {
     pins: [],
   })
 
-  const carregarTodas = () => {
-    // setDenuncias({
-    //   pins: []
-    // })
-    // console.log(denuncias)
-    // if (emProgresso) {
-    carregarEmProgresso();
-    // }
-    // if (aprovadas) {
-    //   carregarAprovadas();
-    // }
-    // if (finalizadas) {
-    //   carregarFinalizadas();
-    // }    
-    // carregarAprovadas();
-    // carregarFinalizadas();
-    // carregarEmProgresso()
-  }
 
   const handleOpenDenuncias = props => {
     setOpenDenuncias(true);
@@ -743,30 +705,6 @@ const ReportMap = props => {
     setOpenDenuncias(false);
   };
   /* FIM MODAL */
-
-  const handleFinalizadas = () => {
-    setFinalizadas(!finalizadas);
-    carregarTodas();
-  };
-
-  const handleEmProgresso = () => {
-    setEmProgresso(!emProgresso);
-    carregarTodas();
-  }
-
-  const handleAprovadas = () => {
-    setAprovadas(!aprovadas)
-    carregarTodas();
-  }
-
-  const handleEmAnalise = () => {
-    setEmAnalise(!emAnalise)
-    carregarTodas();
-  }
-  const [finalizadas, setFinalizadas] = React.useState(true);
-  const [emProgresso, setEmProgresso] = React.useState(true);
-  const [aprovadas, setAprovadas] = React.useState(true);
-  const [emAnalise, setEmAnalise] = React.useState(true);
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
@@ -799,27 +737,27 @@ const ReportMap = props => {
           >Histórico</Button>
           <Button
             text="My Marker"
-            onClick={handleFinalizadas}
+            onClick={filterFinished}
             className={style.button1}
           >Encerradas</Button>{/* ALTERAR PARA FILTRAR POR ENCERRADO */}
           <Button
             text="My Marker"
-            onClick={handleAprovadas}
+            onClick={filterApproved}
             className={style.button1}
           >Aprovadas</Button>
           <Button
             text="My Marker"
-            onClick={handleEmAnalise}
+            onClick={() => filterInAnalysis(user)}
             className={style.button1}
           >Em análise</Button>
           <Button
             text="My Marker"
-            onClick={handleEmProgresso}
+            onClick={filterInProgress}
             className={style.button1}
           >Em progresso</Button>
           <Button
             text="My Marker"
-            onClick={carregarTodas}
+            onClick={() => filterBoth(user)}
             className={style.button1}
           >Todas denúncias</Button>
         </div>
@@ -865,21 +803,21 @@ const ReportMap = props => {
               {/* Passar o id da denúncia para reportId vvvvvvvvvvvv */}
               <Report reportId={idReportModal}></Report>
               <Grid
-                    item
-                    lg={12}
-                    md={12}
-                    xl={12}
-                    xs={12}
-                  >
-                    <Button
-                      color="default"
-                      onClick={handleClose}
-                      variant="contained"
-                      style={{ float: 'right' }}
-                    >
-                      Fechar
+                item
+                lg={12}
+                md={12}
+                xl={12}
+                xs={12}
+              >
+                <Button
+                  color="default"
+                  onClick={handleClose}
+                  variant="contained"
+                  style={{ float: 'right' }}
+                >
+                  Fechar
                              </Button>
-                  </Grid>
+              </Grid>
 
             </div>
           </Fade>
