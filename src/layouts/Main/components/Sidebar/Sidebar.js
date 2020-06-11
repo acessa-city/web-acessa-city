@@ -18,6 +18,7 @@ import Face from '@material-ui/icons/Face';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 import GroupIcon from '@material-ui/icons/Group';
+import RoomIcon from '@material-ui/icons/Room';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import Category from '@material-ui/icons/Category';
 
@@ -137,7 +138,7 @@ const Sidebar = props => {
   const masterMenu = (menu) => {
     menu.push(
 
-   
+
       {
         title: 'Gerenciar Prefeituras',
         href: '/prefeituras',
@@ -147,7 +148,7 @@ const Sidebar = props => {
         title: 'Lista de Cidadão',
         href: '/cidadaos',
         icon: <GroupIcon />
-      },  
+      },
 
     )
   }
@@ -161,7 +162,7 @@ const Sidebar = props => {
         href: '/gerenciar-usuarios',
         icon: <PersonAddIcon />
       },
-   
+
     )
   }
 
@@ -177,17 +178,28 @@ const Sidebar = props => {
         href: '/categorias',
         icon: <Category />
       },
-      
+
     )
   }
- 
+
 
   const moderatorMenu = (menu) => {
     menu.push(
       {
-        title: 'Denúcias de Usuário',
+        title: 'Denúcias',
         href: '/denuncias-moderador',
         icon: <RecordVoiceOverIcon />
+      },
+    )
+  }
+
+
+  const userMenu = (menu) => {
+    menu.push(
+      {
+        title: 'Mapa de Denúncia',
+        href: '/mapa-de-denuncias',
+        icon: <RoomIcon />
       },
     )
   }
@@ -215,6 +227,13 @@ const Sidebar = props => {
         if (claims.moderator) {
           moderatorMenu(novoMenu);
         }
+
+        if (claims.user) {
+
+          userMenu(novoMenu);
+
+        }
+
 
 
         // último elemento do menu

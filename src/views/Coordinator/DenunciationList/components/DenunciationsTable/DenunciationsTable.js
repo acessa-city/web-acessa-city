@@ -771,7 +771,7 @@ const DenunciationsTable = props => {
                                   color="primary"
                                   variant="contained"
                                 >
-                                  Aprovar
+                                  Encerrar
                               </Button>
                               </Grid>
                             </CardActions>

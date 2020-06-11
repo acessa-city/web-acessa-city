@@ -19,6 +19,7 @@ import {
   Tooltip,
   TableSortLabel
 } from '@material-ui/core';
+import Pagination from '@material-ui/lab/Pagination';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
 import { StatusBullet } from 'components';
@@ -26,7 +27,11 @@ import { StatusBullet } from 'components';
 import API from '../../../../utils/API';
 
 const useStyles = makeStyles(theme => ({
-  root: {},
+  root: {
+    '& > *': {
+      marginTop: theme.spacing(2),
+    },
+  },
   content: {
     padding: 0
   },
@@ -149,13 +154,11 @@ const LatestOrders = props => {
       </CardContent>
       <Divider />
       <CardActions className={classes.actions}>
-        <Button
-          color="primary"
-          size="small"
-          variant="text"
-        >
-          View all <ArrowRightIcon />
-        </Button>
+        <div className={classes.root}>
+          {
+            reports.length > 10 ? <Pagination count={10} size="large" /> : null
+          }
+        </div>
       </CardActions>
     </Card>
   );

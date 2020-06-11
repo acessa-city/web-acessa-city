@@ -328,9 +328,9 @@ const SignIn = props => {
                 <Grid
                   className={classes.socialButtons}
                   container
-                  spacing={2}
+                  spacing={1}
                 >
-                  <Grid item>
+                  {/* <Grid item>
                     <Button
                       color="primary"
                       onClick={hanldeFacebookSignin}
@@ -340,7 +340,7 @@ const SignIn = props => {
                       <FacebookIcon className={classes.socialIcon} />
                       Login com Facebook
                     </Button>
-                  </Grid>
+                  </Grid> */}
                   <Grid item>
                     <Button
                       onClick={handleGoogleSignin}
