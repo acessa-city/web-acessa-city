@@ -139,7 +139,7 @@ const StyledMenuItem = withStyles((theme) => ({
 //FIM Abrir opções dos 3 pontinho
 
 const DenunciationsTable = props => {
-  const { className, denunciations, coodenadores, ...rest } = props;
+  const { className, statusDenunciation, denunciations, atualizarTela, coodenadores, ...rest } = props;
   const classes = useStyles();
 
 
@@ -561,7 +561,7 @@ const DenunciationsTable = props => {
                   <CloseIcon />
                 </IconButton>
               </div>
-              <Report reportId={openModalDenunciations.denunciations.id}>
+              <Report atualizarTela={atualizarTela} reportId={openModalDenunciations.denunciations.id}>
               </Report>
               <Grid
                 item
@@ -598,8 +598,8 @@ const DenunciationsTable = props => {
                   <TableCell>Datas</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell style={{
-                        textAlign: 'center',
-                      }}>Cometários</TableCell>
+                    textAlign: 'center',
+                  }}>Cometários</TableCell>
 
                 </TableRow>
               </TableHead>
@@ -706,37 +706,55 @@ const DenunciationsTable = props => {
                             </div>
                           </CardContent>
                           <Divider />
-                          <CardActions>
-                            <Grid container spacing={1}>
-                              <Grid item md={6} xs={6}>
-                                <Button
-                                  onClick={handleOpenDeny}
-                                  color="primary"
-                                  variant="contained"
-                                  style={{
-                                    backgroundColor: '#b71c1c',
-                                    color: 'white',
-                                  }}
-                                >
-                                  Negar
+                          {statusDenunciation == '48cf5f0f-40c9-4a79-9627-6fd22018f72c' &&
+                            <CardActions>
+                              <Grid container spacing={1}>
+                                <Grid item md={6} xs={6}>
+                                  <Button
+                                    onClick={handleOpenDeny}
+                                    color="primary"
+                                    variant="contained"
+                                    style={{
+                                      backgroundColor: '#b71c1c',
+                                      color: 'white',
+                                    }}
+                                  >
+                                    Negar
                             </Button>
-                              </Grid>
+                                </Grid>
 
-                              <Grid item md={6} xs={6}>
-                                <Button
-                                  onClick={handleOpenAprove}
-                                  variant="contained"
-                                  style={{
-                                    backgroundColor: '#1b5e20',
-                                    color: 'white',
-                                    float: 'right'
-                                  }}
-                                >
-                                  Aprovar
+                                <Grid item md={6} xs={6}>
+                                  <Button
+                                    onClick={handleOpenAprove}
+                                    variant="contained"
+                                    style={{
+                                      backgroundColor: '#1b5e20',
+                                      color: 'white',
+                                      float: 'right'
+                                    }}
+                                  >
+                                    Aprovar
                               </Button>
+                                </Grid>
                               </Grid>
+                            </CardActions>
+                          }
+
+                          {statusDenunciation == '52ccae2e-af86-4fcc-82ea-9234088dbedf' &&
+                            <Grid item md={12} xs={12}>
+                              <Button
+                                onClick={handleOpenAprove}
+                                variant="contained"
+                                style={{
+                                  backgroundColor: '#1b5e20',
+                                  color: 'white',
+                                  float: 'right'
+                                }}
+                              >
+                                Reabrir
+                             </Button>
                             </Grid>
-                          </CardActions>
+                          }
                         </Card>
                       </div>
                     </Fade>
@@ -854,7 +872,7 @@ const DenunciationsTable = props => {
       <Snackbar open={errors.length} onClick={handleSnackClick}>
         {erros()}
       </Snackbar>
-    </Card>
+    </Card >
   );
 };
 

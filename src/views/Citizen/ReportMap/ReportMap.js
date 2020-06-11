@@ -1128,7 +1128,7 @@ const ReportMap = props => {
                         color="primary"
                         variant="contained"
                         onClick={handleEnvio}
-                        style={{ background: 'green', float: 'right' }}
+                        style={{ background: '#1b5e20', float: 'right' }}
                       >
                         Enviar
                      </Button>

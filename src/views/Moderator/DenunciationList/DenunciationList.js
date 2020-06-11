@@ -40,6 +40,7 @@ const DenunciationList = () => {
   const [coodenadores, setCoordenadores] = useState([]);
   const [categories, setCategories] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [statusDenunciation, setStatusDenunciation] = useState('48cf5f0f-40c9-4a79-9627-6fd22018f72c');
   const [mensagem, setMensagem] = useState('');
 
 
@@ -185,7 +186,7 @@ const DenunciationList = () => {
     API.get(`/report?${stringFiltro}`,
     ).then(response => {
 
-
+      setStatusDenunciation(filtro.status);
 
       if (response.data.length > 0) {
         setOpenValidador(false)
@@ -240,7 +241,9 @@ const DenunciationList = () => {
     listCategory();
   }, []);
 
-
+  const atualizarTela =() =>{
+    listDenunciations();
+  }
 
   /////Errros///////
   const handleSnackClick = () => {
@@ -302,7 +305,7 @@ const DenunciationList = () => {
       {/* <DenunciationsToolbar save={save} /> */}
       <DenunciationsToolbar denunciationsSlect={denunciationsSlect} categories={categories} filter={filter} filterLimpar={filterLimpar} />
       <div className={classes.content}>
-        <DenunciationsTable denunciations={denunciations} coodenadores={coodenadores} envioCoordenador={envioCoordenador} envioDeny={envioDeny} />
+        <DenunciationsTable statusDenunciation={statusDenunciation} denunciations={denunciations} coodenadores={coodenadores} envioCoordenador={envioCoordenador} envioDeny={envioDeny} atualizarTela={atualizarTela} />
       </div>
 
       <Snackbar open={errors.length} onClick={handleSnackClick}>

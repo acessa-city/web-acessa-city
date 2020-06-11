@@ -148,27 +148,36 @@ const CategoryTable = props => {
 
 
 
-  //Modal de envio Coordenador de fora
-  const [openCategories, setOpenCategories] = useState({
-    categories: {}
+//Modal de envio Coordenador de fora
+const [openCategories, setOpenCategories] = useState({
+  categories: {}
 
+});
+
+const [open, setOpen] = React.useState(false);
+
+const handleOpen = (categoriesT) => {
+  console.log("categoriesT" + JSON.stringify(categoriesT))
+  setOpenCategories({
+    ...categories,
+    categories: categoriesT.name
   });
+  setOpen(true);
+};
 
-  const [open, setOpen] = React.useState(false);
+const handleClose = () => {
 
-  const handleOpen = (categoriesS) => {
-    setOpenCategories({
-      ...categories,
-      categories: categoriesS
-    });
-    setOpen(true);
-  };
+  setOpen(false);
+};
 
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
+// const[values,setValues]
+// const handleChange = event => {
+//   setValues({
+//     ...values,
+//     [event.target.name]: event.target.value
+//   });
+// };
 
 
 
@@ -196,31 +205,18 @@ const CategoryTable = props => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {categories.map(categoriessss => {
+              {categories.map(categorie => {
                   return (
-                    <TableRow key={categoriessss.id}
-                      hover={true}
-                    >
-                      <TableCell onClick={() => handleOpen(categoriessss)}>{categoriessss.name}</TableCell>
-                      <TableCell
-                        style={{
-                          textAlign: 'right'
-                        }}
-                      >
-                        <IconButton aria-label="display more actions" edge="end" color="inherit">
-                          <EditIcon onClick={() => handleOpen(categoriessss)} />  {/* onClick={handleClick}  */}
-                        </IconButton>
-                        <IconButton aria-label="display more actions" edge="end" color="inherit">
-                          <DeleteIcon/>
-                          {/* onClick={() => handleClickDelete(prefecture)}  */}
-                        </IconButton>
-
-                      </TableCell>
+                    <TableRow key={categorie.id}>
+                      <TableCell onClick={() => handleOpen(categorie)}>{categorie.name}</TableCell>
                     </TableRow>
 
                   )
                 })
                 }
+
+
+
 
                 {open &&
 
@@ -229,8 +225,7 @@ const CategoryTable = props => {
                     aria-describedby="transition-modal-description"
                     className={classes.modal}
                     open={open}
-                    closeAfterTransition
-                    onClick={handleClose}
+                    onClose={handleClose}
                     BackdropComponent={Backdrop}
                     BackdropProps={{
                       timeout: 500,
@@ -267,14 +262,14 @@ const CategoryTable = props => {
                                 <TextField
                                   fullWidth
                                   helperText="Informe o novo nome da categoria"
+                                 // onChange={handleChange}
                                   label="Nome da categoria"
                                   margin="dense"
                                   name="name"
                                   required
-                                  value='Infraestrutura'
+                                  value={openCategories.categories}
                                   variant="outlined"
                                 />
-
                               </div>
                             </div>
                           </CardContent>

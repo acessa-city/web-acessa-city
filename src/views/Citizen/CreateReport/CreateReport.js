@@ -158,7 +158,7 @@ const CreateReport = props => {
           >
             <Button
               type="submit"
-              className={{ alignSelf: "rigth", marginTop: "35px" }}
+              className={{ alignSelf: "rigth", background: '#1b5e20', marginTop: "35px" }}
               color="primary"
             >
               ENVIAR

@@ -27,7 +27,7 @@ const useStyles = makeStyles({
 });
 
 const Report = props => {
-    const { reportId } = props;
+    const { reportId,atualizarTela} = props;
     const classes = useStyles();
 
     const [report, setReport] = useState({});
@@ -137,7 +137,7 @@ const Report = props => {
                 </Typography>
 
                 {user &&
-                    <ReportInteractionHistory reportId={reportId} currentUserId={user.id} ></ReportInteractionHistory>
+                    <ReportInteractionHistory atualizarTela={atualizarTela} reportId={reportId} currentUserId={user.id} ></ReportInteractionHistory>
                 }
             </CardContent>
         </Card>
