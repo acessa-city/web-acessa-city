@@ -59,6 +59,7 @@ import firebase from 'firebase/app'
 import API from '../../../../../utils/API';
 import { ReportCommentaries } from '../../../../../components/';
 import { getInitials } from 'helpers';
+import { constant } from 'underscore';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -159,27 +160,48 @@ const [open, setOpen] = React.useState(false);
 const handleOpen = (categoriesT) => {
   console.log("categoriesT" + JSON.stringify(categoriesT))
   setOpenCategories({
-    ...categories,
-    categories: categoriesT.name
+    categories: categoriesT
   });
   setOpen(true);
 };
 
 const handleClose = () => {
-
   setOpen(false);
 };
 
 
-// const[values,setValues]
-// const handleChange = event => {
-//   setValues({
-//     ...values,
-//     [event.target.name]: event.target.value
-//   });
-// };
 
 
+//DELETE
+const [categoriesDelete, setCategoriesDelete] = useState({
+  categories: {}
+});
+
+const handleOpenDelete = (categoriesD) => {
+  props.deleteCategory(categoriesD)
+}
+
+
+
+
+
+const handleChange = event => {
+  event.preventDefault();
+  setOpenCategories({
+    ...openCategories,
+    categories:{
+      id: openCategories.categories.id,
+      name:event.target.value
+    }
+  });
+};
+
+const submit = (event) =>{
+  event.preventDefault();
+  props.editCategory(openCategories)
+  setOpenCategories({categories:{}})
+  setOpen(false);
+}
 
   return (
     <Card
@@ -209,15 +231,24 @@ const handleClose = () => {
                   return (
                     <TableRow key={categorie.id}>
                       <TableCell onClick={() => handleOpen(categorie)}>{categorie.name}</TableCell>
+                      <TableCell
+                        style={{
+                          textAlign: 'right'
+                        }}
+                      >
+                        <IconButton aria-label="display more actions" edge="end" color="inherit">
+                          <EditIcon onClick={() => handleOpen(categorie)} />  {/* onClick={handleClick}  */}
+                        </IconButton>
+                        <IconButton aria-label="display more actions" edge="end" color="inherit">
+                          <DeleteIcon onClick={() => handleOpenDelete(categorie)} />
+                        </IconButton>
+
+                      </TableCell>
                     </TableRow>
 
                   )
                 })
                 }
-
-
-
-
                 {open &&
 
                   <Modal
@@ -262,12 +293,12 @@ const handleClose = () => {
                                 <TextField
                                   fullWidth
                                   helperText="Informe o novo nome da categoria"
-                                 // onChange={handleChange}
+                                  onChange={handleChange}
                                   label="Nome da categoria"
                                   margin="dense"
-                                  name="name"
+                                  name="categorie"
                                   required
-                                  value={openCategories.categories}
+                                  value={openCategories.categories.name}
                                   variant="outlined"
                                 />
                               </div>
@@ -286,6 +317,7 @@ const handleClose = () => {
                                 color="secondary"
                                 variant="contained"
                                 style={{float: 'right' }}
+                                onClick={submit}
                               >
                                 salvar
                              </Button>
@@ -302,17 +334,6 @@ const handleClose = () => {
           </div>
         </PerfectScrollbar>
       </CardContent>
-
-      <Dialog open={openDialog} onClose={e => setOpenDialog(false)}>
-        <DialogTitle>Atenção</DialogTitle>
-        <DialogContent>
-          {mensagem}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={e => setOpenDialog(false)}>Fechar</Button>
-        </DialogActions>
-      </Dialog>
-
     </Card>
   );
 };

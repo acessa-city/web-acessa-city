@@ -107,35 +107,50 @@ const CategoryToolbar = props => {
   const classes = useStyles();
 
 
-  const handleData = (sender) => {
-    setDenunciationData({
-      ...denunciationData,
-      data: sender
+  ////cadastrar
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const [values2, setValues2] = useState({
+    name: '',
+  });
+
+  const handleChangecadastrar = (event) => {
+    setValues2({
+      ...values2,
+      [event.target.name]: event.target.value
+    });
+  };
+
+  const submit2 = (event) => {
+    event.preventDefault();
+
+    const cadastrar = {
+      name: values2.name
+    }
+    props.newCategory(cadastrar);
+    setOpen(false);
+    limparForm2();
+
+  }
+
+  const limparForm2 = () => {
+    setValues2({
+      name: '',
     })
   }
 
-  const handleStreet = (sender) => {
-    setDenunciationStreet({
-      ...denunciationStreet,
-      street: sender
-    })
-  }
-  const handleNeighborhood = (sender) => {
-    setDenunciationNeighborhood({
-      ...denunciationNeighborhood,
-      neighborhood: sender
-    })
-  }
 
-
-
-
+  //filtrar
   const [values, setValues] = useState({
     category: '',
-    status: '',
-    street: '',
-    neighborhood: '',
-    date: ''
   });
 
   const handleChangeFilter = event => {
@@ -149,11 +164,27 @@ const CategoryToolbar = props => {
   const submit = (event) => {
     event.preventDefault();
     //Filtro geral
-    const filtro = {
-      category: values.category
-    }
-    props.filter(filtro);
 
+
+    if (values.category == '') {
+
+      API.get('/category'
+      ).then(response => {
+
+        const listCategory = response.data;
+        props.filterLimpar(listCategory);
+      }).catch(erro => {
+        console.log(erro);
+        setMensagem('Ocorreu um erro', erro);
+        setOpenDialog(true);
+      })
+
+    } else {
+      const filtro = {
+        category: values.category
+      }
+      props.filter(filtro);
+    }
   }
 
 
@@ -174,39 +205,12 @@ const CategoryToolbar = props => {
     limparForm();
   }
 
-
   const limparForm = () => {
     setValues({
       category: '',
     })
   }
 
-
-
-
-
-
-
-  const [open, setOpen] = React.useState(false);
-
-  const [openModalDenunciations, setOpenModalDenunciations] = useState({
-    denunciations: {}
-
-  });
-
-  const handleOpenCadastro = (denunciationsp) => {
-
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleOpen = () => {
-
-    setOpen(true);
-  };
   return (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.root}>
@@ -259,7 +263,7 @@ const CategoryToolbar = props => {
                   style={{
                     background: '#1b5e20',
                   }}
-                  variant="contained" color="secondary">  <AddIcon/>Cadastrar</Button>
+                  variant="contained" color="secondary">  <AddIcon />Cadastrar</Button>
               </FormControl>
             </div>
           </Grid>
@@ -325,9 +329,9 @@ const CategoryToolbar = props => {
                         label="Titulo da categoria"
                         margin="dense"
                         name="name"
-                        //onChange={handleChange}
+                        onChange={handleChangecadastrar}
                         required
-                        //value={values.name}
+                        value={values2.name}
                         variant="outlined"
                       />
                     </div>
@@ -345,7 +349,8 @@ const CategoryToolbar = props => {
                     <Button
                       color="primary"
                       variant="contained"
-                      style={{  background: '#1b5e20', float: 'right' }}
+                      style={{ background: '#1b5e20', float: 'right' }}
+                      onClick={submit2}
                     >
 
                       Cadastrar
