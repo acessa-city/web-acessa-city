@@ -52,9 +52,14 @@ const ChangePassword = props => {
                     password: '',
                     confirmPassword: ''
                 })
-                alert('mensagem verde: senha alterada com sucesso');
+                alert('Senha Alterada com sucesso');
             }).catch(function (error) {
-                console.log('Erro na troca de senha::::', error)
+                console.log('Erro na troca de senha::::', error.message)
+
+                if( error.message == 'This operation is sensitive and requires recent authentication. Log in again before retrying this request.' )
+                {
+                  window.alert('Você está inativo por muito tempo, sai e entre novamente para alterar senha!!');
+                }
             });
         }
         else {

@@ -78,7 +78,7 @@ const AccountDetails = props => {
   
           console.log('sucesso')
         }).catch((erro) => {
-          console.log('erro', erro);
+          console.log('erro', erro.message);
         })
 
       }).catch((erro) => {
