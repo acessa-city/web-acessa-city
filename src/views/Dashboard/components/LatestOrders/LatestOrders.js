@@ -1,171 +1,234 @@
-import React, { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import moment from 'moment';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/styles';
-import {
-  Card,
-  CardActions,
-  CardHeader,
-  CardContent,
-  Button,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Tooltip,
-  TableSortLabel
-} from '@material-ui/core';
-import Pagination from '@material-ui/lab/Pagination';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import clsx from 'clsx';
+import { lighten, makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableRow from '@material-ui/core/TableRow';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import DeleteIcon from '@material-ui/icons/Delete';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import moment from 'moment';
+import EnhancedTableToolbar from './EnhancedTableToolbar';
+import EnhancedTableHead from './EnhancedTableHead';
 
-import { StatusBullet } from 'components';
 
 import API from '../../../../utils/API';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    '& > *': {
-      marginTop: theme.spacing(2),
-    },
-  },
-  content: {
-    padding: 0
-  },
-  inner: {
-    minWidth: 800
-  },
-  statusContainer: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  status: {
-    marginRight: theme.spacing(1)
-  },
-  actions: {
-    justifyContent: 'flex-end'
+
+
+
+
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
   }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
+
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+  },
+  paper: {
+    width: '100%',
+    marginBottom: theme.spacing(2),
+  },
+  table: {
+    minWidth: 750,
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  },
 }));
 
-const statusColors = {
-  delivered: 'success',
-  pending: 'info',
-  refunded: 'danger'
-};
-
-const LatestOrders = props => {
-  const { className, ...rest } = props;
-
+export default function LatestOrders() {
   const classes = useStyles();
+  const [order, setOrder] = React.useState('asc');
+  const [orderBy, setOrderBy] = React.useState('calories');
+  const [selected, setSelected] = React.useState([]);
+  const [page, setPage] = React.useState(0);
+  const [dense, setDense] = React.useState(false);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const [ reports, setReports ] = useState([]);
+  const [report, setReport] = useState([]);
+
 
   useEffect(() => {
-    API.get('/report')
-      .then(result => {
+    API.get('/report').then(result => {
+      
+      setReport(result.data);
+    }).catch(err => {
+      console.log(err.message);
+    });
+  }, [report]);
 
 
-        setReports(result.data);
-        
-      }).catch(err => {
-        window.alert(err.message);
-      });
-  },[reports]);
+  const handleRequestSort = (event, property) => { 
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
 
-  const loadCreateReport = event => {
-    event.preventDefault();
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelecteds = report.map((n) => n.id);
+      setSelected(newSelecteds);
+      return;
+    }
+    setSelected([]);
+  };
 
-    window.location = '/criar-denuncia';
-  }
+  const handleClick = (event, name) => {
+    const selectedIndex = selected.indexOf(name);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, name);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1),
+      );
+    }
+
+    setSelected(newSelected);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleChangeDense = (event) => {
+    setDense(event.target.checked);
+  };
+
+  const isSelected = (name) => selected.indexOf(name) !== -1;
+
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, report.length - page * rowsPerPage);
 
   return (
-    <Card
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
-      <CardHeader
-        action={
-          <Button
-            color="primary"
-            size="small"
-            variant="outlined"
-            onClick = { loadCreateReport }
+    <div className={classes.root}>
+      <Paper className={classes.paper}>
+        <EnhancedTableToolbar numSelected={selected.length} />
+        <TableContainer>
+          <Table
+            className={classes.table}
+            aria-labelledby="tableTitle"
+            size={dense ? 'small' : 'medium'}
+            aria-label="enhanced table"
           >
-            Nova Denúnica
-          </Button>
-        }
-        title="Denúncias Recentes"
-      />
-      <Divider />
-      <CardContent className={classes.content}>
-        <PerfectScrollbar>
-          <div className={classes.inner}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Titulo</TableCell>
-                  <TableCell>Descrição</TableCell>
-                  <TableCell sortDirection="desc">
-                    <Tooltip
-                      enterDelay={300}
-                      title="Sort"
+            <EnhancedTableHead
+              classes={classes}
+              numSelected={selected.length}
+              order={order}
+              orderBy={orderBy}
+              onSelectAllClick={handleSelectAllClick}
+              onRequestSort={handleRequestSort}
+              rowCount={report.length}
+            />
+            <TableBody>
+              {stableSort(report, getComparator(order, orderBy))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((report, index) => {
+                  const isItemSelected = isSelected(report.id);
+                  const labelId = `enhanced-table-checkbox-${index}`;
+
+                  return (
+                    <TableRow
+                      hover
+                      onClick={(event) => handleClick(event, report.id)}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={report.id}
+                      selected={isItemSelected}
                     >
-                      <TableSortLabel
-                        active
-                        direction="desc"
-                      >
-                        Data
-                      </TableSortLabel>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell>Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {reports.map(report => (
-                  <TableRow
-                    hover
-                    key={report.id}
-                  >
-                    <TableCell>{report.title}</TableCell>
-                    <TableCell>{report.description}</TableCell>
-                    <TableCell>
-                      {moment(report.creationDate).format('DD/MM/YYYY')}
-                    </TableCell>
-                    <TableCell>
-                      <div className={classes.statusContainer}>
-                        <StatusBullet
-                          className={classes.status}
-                          color={statusColors[report.reportStatus.description]}
-                          size="sm"
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
                         />
-                        {report.reportStatus.description}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </PerfectScrollbar>
-      </CardContent>
-      <Divider />
-      <CardActions className={classes.actions}>
-        <div className={classes.root}>
-          {
-            reports.length > 10 ? <Pagination count={10} size="large" /> : null
-          }
-        </div>
-      </CardActions>
-    </Card>
+                      </TableCell>
+                      <TableCell component="th" id={labelId} scope="row" padding="none">
+                        {report.title}
+                      </TableCell>
+                      <TableCell align="right">{report.description}</TableCell>
+                      <TableCell align="right">{report.reportStatus.description}</TableCell>
+                      <TableCell align="right">{moment(report.creationDate).format('DD/MM/YYYY')}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={report.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </Paper>
+      <FormControlLabel
+        control={<Switch checked={dense} onChange={handleChangeDense} />}
+        label="Dense padding"
+      />
+    </div>
   );
-};
+}
 
-LatestOrders.propTypes = {
-  className: PropTypes.string
-};
-
-export default LatestOrders;
