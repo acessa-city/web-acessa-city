@@ -254,58 +254,40 @@ const CitizensTable = props => {
               </TableHead>
               <TableBody>
                 {(rowsPerPage > 0
-                      ? citizens.filter(function (user) {
-                        return !user.id.includes(carregarUser)
-                      }).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      : citizens
-                  ).map((citizen) => {
-                    return (
-                      <TableRow key={citizen.id}
-                        hover={true}
+                  ? citizens.filter(function (user) {
+                    return !user.id.includes(carregarUser)
+                  }).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : citizens
+                ).map((citizen) => {
+                  return (
+                    <TableRow key={citizen.id}
+                      hover={true}
+                    >
+                      <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.firstName} {citizen.lastName}</TableCell>
+                      <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.email}</TableCell>
+                      <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.roles[0]} {citizen.roles[1]}</TableCell>
+                      <TableCell style={{
+                        textAlign: 'right'
+                      }}
                       >
-                        <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.firstName} {citizen.lastName}</TableCell>
-                        <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.email}</TableCell>
-                        <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.roles[0]} {citizen.roles[1]}</TableCell>
-                        <TableCell style={{
-                          textAlign: 'right'
-                        }}
-                        >
-                          <IconButton
-                            onClick={() => handleClickAccount(citizen)}
-                            aria-label="display more actions" edge="end" color="inherit">
-                            <EditIcon
-                              onClick={() => handleClickAccount(citizen)} />  {/* onClick={handleClick}  */}
-                          </IconButton>
-                          <IconButton
-                            onClick={() => handleOpenDelete(citizen)}
-                            aria-label="display more actions" edge="end" color="inherit">
-                            <DeleteIcon onClick={() => handleOpenDelete(citizen)} />  {/* onClick={handleClick}  */}
-                          </IconButton>
+                        <IconButton
+                          onClick={() => handleClickAccount(citizen)}
+                          aria-label="display more actions" edge="end" color="inherit">
+                          <EditIcon
+                            onClick={() => handleClickAccount(citizen)} />  {/* onClick={handleClick}  */}
+                        </IconButton>
+                        <IconButton
+                          onClick={() => handleOpenDelete(citizen)}
+                          aria-label="display more actions" edge="end" color="inherit">
+                          <DeleteIcon onClick={() => handleOpenDelete(citizen)} />  {/* onClick={handleClick}  */}
+                        </IconButton>
 
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
                 }
-                <TableFooter>
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                    colSpan={3}
-                    backIconButtonText={"Anterior"}
-                    nextIconButtonText={"Próxima"}
-                    count={citizens.length-1}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    labelRowsPerPage={'Usuários por página:'}
-                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'Usuários por página:' },
-                      native: true,
-                    }}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                  />
-                </TableFooter>
+
               </TableBody>
             </Table>
 
@@ -419,6 +401,25 @@ const CitizensTable = props => {
           </div>
         </PerfectScrollbar>
       </CardContent>
+      <TableFooter>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, { label: 'Todos', value: -1 }]}
+          colSpan={3}
+          backIconButtonText={"Anterior"}
+          nextIconButtonText={"Próxima"}
+          count={citizens.length - 1}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          labelRowsPerPage={'Usuários por página:'}
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+          SelectProps={{
+            inputProps: { 'aria-label': 'Usuários por página:' },
+            native: true,
+          }}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </TableFooter>
     </Card >
   );
 };
