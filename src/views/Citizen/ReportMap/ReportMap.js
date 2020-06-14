@@ -160,8 +160,8 @@ const ReportMap = props => {
   const [idReportModal, setidReportModal] = useState('');
 
   const GetLocationHandled = (location) => {
-    let lat = location.latitude.toFixed(4)
-    let lng = location.longitude.toFixed(4)
+    let lat = location.latitude/* .toFixed(4) */
+    let lng = location.longitude/* .toFixed(4) */
     setLatitude(lat)
     setLongitude(lng)
     console.log(lat + '' + lng)
@@ -527,8 +527,8 @@ const ReportMap = props => {
         reportStatusId: "48cf5f0f-40c9-4a79-9627-6fd22018f72c",
         title: values.title,
         description: values.description,
-        latitude: latitude.toFixed(4),
-        longitude: longitude.toFixed(4),
+        latitude: latitude/* .toFixed(4) */,
+        longitude: longitude/* .toFixed(4) */,
         accuracy: 1.9,
       }
       setOpenValidador(true)

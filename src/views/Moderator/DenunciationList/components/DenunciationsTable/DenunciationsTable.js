@@ -103,6 +103,8 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
+
+
 //Abrir opções dos 3 pontinho
 const StyledMenu = withStyles({
   paper: {
@@ -141,8 +143,20 @@ const StyledMenuItem = withStyles((theme) => ({
 const DenunciationsTable = props => {
   const { className, statusDenunciation, denunciations, atualizarTela, coodenadores, ...rest } = props;
   const classes = useStyles();
+/* PAGINAÇÃO */
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
 
+  
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  /* FIM PAGINAÇÃO */
 
   /// Salvar coodenadores
   const [coodenador, setCoodenador] = useState({
@@ -393,8 +407,7 @@ const DenunciationsTable = props => {
 
 
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [page, setPage] = useState(0);
+
 
   // const handleSelectAll = event => {
   //   const { users } = props;
@@ -604,7 +617,11 @@ const DenunciationsTable = props => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {denunciations.map(denunciation => {
+
+                {(rowsPerPage > 0
+                  ? denunciations.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : denunciations
+                ).map((denunciation) => {
                   return (
                     <TableRow key={denunciation.id}>
                       <TableCell onClick={() => handleOpen(denunciation)}>{denunciation.title}</TableCell>
@@ -621,8 +638,8 @@ const DenunciationsTable = props => {
                   )
                 })
                 }
-
-                {open &&
+                {
+                  open &&
                   //Modal da denuncia
                   <Modal
                     aria-labelledby="transition-modal-title"
@@ -635,7 +652,6 @@ const DenunciationsTable = props => {
                     BackdropProps={{
                       timeout: 500,
                     }}
-
                   >
                     {/* Modal da Dereita */}
                     <Fade in={open}>
@@ -865,6 +881,26 @@ const DenunciationsTable = props => {
                 </Modal>
 
               </TableBody>
+              <TablePagination
+                style={{
+                  margin: 100
+                }}
+                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                colSpan={3}
+                backIconButtonText={"Anterior"}
+                nextIconButtonText={"Próxima"}
+                count={denunciations.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                labelRowsPerPage={'Denúncias por página:'}
+                labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+                SelectProps={{
+                  inputProps: { 'aria-label': 'Denúncias por página:' },
+                  native: true,
+                }}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+              />
             </Table>
           </div>
         </PerfectScrollbar>

@@ -133,12 +133,7 @@ const HistoricReport = () => {
       setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true);
     })
-  }
-
-
-  const monstrarId = () => {
-    console.log("MEU ID" + user.userId)
-  }
+  } 
   // Atualizar os dados na tela
   useEffect(() => {
     currentUser().then(result => {
@@ -147,7 +142,6 @@ const HistoricReport = () => {
     })
     listStatus();
     listCategory();
-    monstrarId();
   }, []);
 
 
@@ -174,7 +168,6 @@ const HistoricReport = () => {
           <Button onClick={e => setOpenDialog(false)}>Fechar</Button>
         </DialogActions>
       </Dialog>
-      <Button onClick={monstrarId}>Mostrar id</Button>
     </div>
   );
 };
