@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 const CityHallCreate = props => {
-  const { className, onCreatePrefecture, prefecturesId, mudarCor,mudarCor2, ...rest } = props;
+  const { className, onCreatePrefecture, prefecturesId, mudarCor, mudarCor2, ...rest } = props;
 
 
   console.log("AQUIII ola ola ", prefecturesId);
@@ -56,8 +56,6 @@ const CityHallCreate = props => {
     setOpen(false);
   };
 
-  const [errors, setErrors] = useState([]);
-
   const handleChange = event => {
     setValues({
       ...values,
@@ -79,9 +77,6 @@ const CityHallCreate = props => {
     })
   }
 
-  const handleSnackClick = () => {
-    setErrors([]);
-  }
 
   const [states, setStates] = useState({
     states: []
@@ -168,6 +163,8 @@ const CityHallCreate = props => {
     changeState(stateId);
   }
 
+  const [vazio, setVazios] = useState('');
+
   const campoVazio = values => {
     values.name === '' ||
       values.cnpj === '' ||
@@ -178,56 +175,127 @@ const CityHallCreate = props => {
       values.number === '' ||
       values.cityId === ''
       ?
-      setErrors([
-        "Existem campos vazios."
-      ]) :
-      setErrors([
-        "A prefeitura " + values.name + ", e o usuário " +
-        values.email + " foram criados com sucesso."
-      ])
+      setVazios(false) :
+      setVazios(true)
   }
   const handleClick = () => {
     setOpen(true)
+    setOpenValidador(true)
+    if (values.name === '' ||  values.cnpj === '' || values.email === '' ||    values.address === '' ||    values.neighborhood === '' ||   values.zipCode === '' || values.number === '' ||  values.cityId === '') {
+      setOpenValidador(false)
+      setErrorsStatus(false)
+      setErrors([
+        "A campos Vazios"
+      ])
+      setTimeout(() => {
+        setErrors([]);
+      }, 2000);
+      
+    } else {
+      var newCityHall = values;
+      api.post('/city-hall', newCityHall)
+        .then((result) => {
+          setOpenValidador(false)
+          setOpen(false)
+          setErrorsStatus(true)
+          setErrors([
+            "A prefeitura " + values.name + " foi criada com sucesso."
+          ])
+
+          if (onCreatePrefecture) {
+            onCreatePrefecture(result.data)
+          }
+          setTimeout(() => {
+            setErrors([]);
+          }, 2000);
+          limparForm()
+        })
+        .catch((aError) => {
+
+          if (aError.response.status == 400) {
+            setOpen(false)
+            console.log(aError.response.data.errors)
+            setErrors(aError.response.data.errors)
+          }
+          else if (aError.response.status == 500) {
+            setErrors([
+              "Erro no servidor"
+            ])
+          }
+          setTimeout(() => {
+            setErrors([]);
+          }, 2000);
+          setErrorsStatus(false)
+          setOpenValidador(false)
+          setOpen(false)
+        })
+    }
+  }
+ 
+  const handleClickAlterar = () => {
     console.log(values);
-    campoVazio(values)
-    var newCityHall = values;
-    api.post('/city-hall', newCityHall)
+    setOpenValidador(true)
+    api.put(`/city-hall/${prefecturesId}`, values)
       .then((result) => {
         setOpen(false)
-        setErrors([
-          "A prefeitura " + values.name + ", e o usuário " +
-          values.email + " foram criados com sucesso."
-        ])
-
-        if (onCreatePrefecture) {
-          onCreatePrefecture(result.data)
+        const closeModal = {
+            name: values.name
         }
-        limparForm()
+        props.modalClose(closeModal);
       })
       .catch((aError) => {
-        if (aError.response.status == 400) {
-          setOpen(false)
-          console.log(aError.response.data.errors)
-          setErrors(aError.response.data.errors)
-        }
-        else if (aError.response.status == 500) {
-          setErrors([
-            "Erro no servidor"
-          ])
-        }
 
-        setOpen(false)
+        setErrors([
+          "Erro ao tentar atualizar a prefeitura."
+        ]);
+        setErrorsStatus(false)
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
+        setOpenValidador(false)
+
       })
   }
 
-  const teste = () => {
-    return (<div>
-      {errors.map(error => (
+
+  /////Errros///////
+  const handleSnackClick = () => {
+    setErrors([]);
+  }
+  const [errors, setErrors] = useState([]);
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };
+
+  const erros = () => {
+    if (errorsStatus == true) {
+      return (
         <div>
-          <SnackbarContent message={<h3>{error}</h3>} />
-        </div>
-      ))}
-    </div>)
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'green',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent autoHideDuration={1}
+              style={{
+                background: 'red',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>}
+            />
+          ))}
+        </div>)
+    }
   }
 
   return (
@@ -240,10 +308,18 @@ const CityHallCreate = props => {
           autoComplete="off"
           noValidate
         >
-          <CardHeader
-            subheader="Cadastrar prefeitura"
-            title="Cadastrar prefeitura"
-          />
+          {mudarCor &&
+            <CardHeader
+              subheader="Cadastrar prefeitura"
+              title="Prefeitura"
+            />
+          }
+          {mudarCor2 &&
+            <CardHeader
+              subheader="Alterar prefeitura"
+              title="Prefeitura"
+            />
+          }
           <Divider />
           <CardContent>
             <Grid
@@ -432,7 +508,7 @@ const CityHallCreate = props => {
           </CardContent>
           <Divider />
           <CardActions>
-            {mudarCor&&
+            {mudarCor &&
               <Grid
                 item
                 lg={12}
@@ -450,7 +526,7 @@ const CityHallCreate = props => {
               </Button>
               </Grid>
             }
-            
+
             {mudarCor2 &&
               <Grid
                 item
@@ -462,7 +538,7 @@ const CityHallCreate = props => {
                 <Button
                   color="secondary"
                   variant="contained"
-                  onClick={handleClick}
+                  onClick={handleClickAlterar}
                   style={{ float: 'right' }}
                 >
                   Salvar
@@ -472,10 +548,12 @@ const CityHallCreate = props => {
           </CardActions>
         </form>
       </Card>
-      <Snackbar open={errors.length} autoHideDuration={20000} onClick={handleSnackClick}>
-        {teste()}
+      <Snackbar open={errors.length} onClick={handleSnackClick}>
+        {erros()}
       </Snackbar>
-      <Backdrop className={classes.backdrop} open={open} onClick={handleClose}>
+      <Backdrop
+        style={{ zIndex: 99999999 }}
+        className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </div>

@@ -25,7 +25,8 @@ import {
   Box,
   Paper,
   Rows,
-  TableContainer
+  TableContainer,
+  Divider
 } from '@material-ui/core';
 
 //Modal
@@ -142,7 +143,7 @@ const PrefecturesTable = props => {
   const users = [];
   const classes = useStyles();
 
-  console.log("Usuário", JSON.stringify(prefectures))
+  //console.log("Usuário", JSON.stringify(prefectures))
 
 
   ///ABRIR MODAL RECUPERAR SENHA
@@ -154,11 +155,11 @@ const PrefecturesTable = props => {
     prefectures: '',
   });
 
-  const[mudarCor2, setMudarCor2] = useState('');
+  const [mudarCor2, setMudarCor2] = useState('');
 
   const handleClickAccount = (prefecturesL) => {
     setMudarCor2(true)
-    console.log("sdfsddsdasddasdasda", prefecturesL)
+    //console.log("sdfsddsdasddasdasda", prefecturesL)
     setOpenPrefecture({
       ...prefectures,
       prefectures: prefecturesL
@@ -170,15 +171,42 @@ const PrefecturesTable = props => {
     setOpen(false);
   };
 
+  ///Fechar Modal de Alteração de prefeitura
+  const modalClose = (value) => {
+    props.fimModal(value);
+    setOpen(false);
+  }
 
-  const handleClickDelete = (userDelete) => {
+  //DELETE
+  const [categoriesDelete, setCategoriesDelete] = useState({
+    categories: {}
+  });
 
-    API.delete(`/user/${userDelete.id}`)
-      .then(response => {
-        console.log("sucesso")
-      }).catch(erro => {
-        console.log(erro);
-      })
+  const [openAlerta, setOpenAlerta] = React.useState(false);
+
+  const handleOpenDelete = (categoriesD) => {
+    setCategoriesDelete({
+      categories: categoriesD
+    });
+    setOpenAlerta(true);
+  };
+
+  const handleCloseAlerta = () => {
+    setOpenAlerta(false);
+  };
+
+
+  const handleExlcuir = (event) => {
+    event.preventDefault();
+    props.deletePrefecture(categoriesDelete);
+    setOpenAlerta(false);
+  }
+
+  //////////////////////
+  const closeModal = (result) => {
+
+    props.closeModalAlter(result)
+    setOpen(false);
 
   }
 
@@ -209,18 +237,21 @@ const PrefecturesTable = props => {
                       hover={true}
                     >
                       <TableCell onClick={() => handleClickAccount(prefecture)}>{prefecture.name}</TableCell>
-                      <TableCell>{prefecture.cnpj}</TableCell>
-                      <TableCell>{prefecture.email}</TableCell>
+                      <TableCell onClick={() => handleClickAccount(prefecture)}>{prefecture.cnpj}</TableCell>
+                      <TableCell onClick={() => handleClickAccount(prefecture)}>{prefecture.email}</TableCell>
                       <TableCell style={{
                         textAlign: 'right'
                       }}>
                         <IconButton
+                          onClick={() => handleClickAccount(prefecture)}
                           aria-label="display more actions" edge="end" color="inherit">
                           <EditIcon
                             onClick={() => handleClickAccount(prefecture)} />  {/* onClick={handleClick}  */}
                         </IconButton>
-                        <IconButton aria-label="display more actions" edge="end" color="inherit">
-                          <DeleteIcon onClick={() => handleClickDelete(prefecture)} />  {/* onClick={handleClick}  */}
+                        <IconButton
+                          onClick={() => handleOpenDelete(prefecture)}
+                          aria-label="display more actions" edge="end" color="inherit">
+                          <DeleteIcon onClick={() => handleOpenDelete(prefecture)} />  {/* onClick={handleClick}  */}
                         </IconButton>
 
                       </TableCell>
@@ -231,6 +262,77 @@ const PrefecturesTable = props => {
               </TableBody>
             </Table>
 
+            {/* Modal Alerta */}
+            {openAlerta &&
+
+              <Modal
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                className={classes.modal}
+                open={openAlerta}
+                onClose={handleCloseAlerta}
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                  timeout: 500,
+                }}
+
+              >
+                {/* Modal da Dereita */}
+                <Fade in={openAlerta}>
+                  <div className={classes.paper}>
+                    <div style={{
+                      textAlign: 'right'
+                    }}>
+
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleCloseAlerta}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                    <Card className={classes.root}
+                      style={{
+                        textAlign: 'center',
+                        width: 500,
+                        maxHeight: 500,
+                      }}>
+
+                      <CardContent>
+                        {
+                        <Typography>
+                            Deseja realmente excluir a prefeitura {categoriesDelete.categories.name}?
+                       </Typography>
+                        }
+                      </CardContent>
+                      <Divider />
+                      <CardActions>
+                        <Grid
+                          item
+                          lg={12}
+                          md={12}
+                          xl={12}
+                          xs={12}
+                        >
+                          <Button
+                            color="secondary"
+                            variant="contained"
+                            style={{ float: 'right', background: '#b71c1c' }}
+                            onClick={handleExlcuir}
+                          >
+                            Excluir
+                        </Button>
+                        </Grid>
+                      </CardActions>
+                    </Card>
+                  </div>
+                </Fade>
+              </Modal>
+              // {/* FIM Abri Modal envio coordenador  */}
+            }
+            {/* Modal Alterar */}
             {open &&
               < Modal
                 aria-labelledby="transition-modal-title"
@@ -259,8 +361,7 @@ const PrefecturesTable = props => {
                         <CloseIcon />
                       </IconButton>
                     </div>
-                    <CityHallCreate mudarCor2={mudarCor2} prefecturesId={openPrefecture.prefectures.id} />
-
+                    <CityHallCreate modalClose={modalClose} mudarCor2={mudarCor2} prefecturesId={openPrefecture.prefectures.id} />
                   </div>
                 </Fade>
               </Modal>

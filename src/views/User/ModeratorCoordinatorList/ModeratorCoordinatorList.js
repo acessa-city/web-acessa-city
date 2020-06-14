@@ -97,11 +97,12 @@ const ModeratorCoordinatorList = () => {
   // FILTRAR USUÀRIOS
   const filter = (userFilter) =>{
     setOpenValidador(true)
+    console.log("filtrar type",userFilter.roles)
       const listaFiltrada = usersBackup.filter(function(user){
        
         let retornaUsuario = true
         if(userFilter.roles){
-          retornaUsuario = user.roles[0] == userFilter.roles
+          retornaUsuario = retornaUsuario && user.roles.includes(userFilter.roles.toLowerCase());
         }
 
         if(userFilter.firstName){
@@ -115,6 +116,8 @@ const ModeratorCoordinatorList = () => {
        
       })
 
+      console.log("filtrouuuuuuu",listaFiltrada)
+
       if (listaFiltrada.length > 0) {
         setUsers(listaFiltrada);
         setOpenValidador(false)
@@ -126,9 +129,28 @@ const ModeratorCoordinatorList = () => {
         setErrorsStatus(true)
         setTimeout(() => {
           setErrors([]);
-        }, 10000);
+        }, 5000);
       }
   }
+
+  //Deletar Usuário
+  const deleteUsuario = (user) => {
+    console.log("aqui o que tem", user)
+    API.delete(`/user/${user.categories.id}`
+    ).then(response => {
+      setErrors([
+        "Usuário " + user.categories.firstName + " foi deletado com sucesso."
+      ])
+      setErrorsStatus2(true)
+      setTimeout(() => {
+        setErrors([]);
+      }, 1000);
+      listUser();
+    }).catch(erro => {
+      console.log(erro);
+    })
+  }
+
 
 
   const limpar = () =>{  
@@ -146,7 +168,7 @@ const ModeratorCoordinatorList = () => {
     listUser();
   }, []);
 
-
+  const [errorsStatus2, setErrorsStatus2] = useState('');
   const erros = () => {
     if (errorsStatus == true) {
       return (
@@ -154,7 +176,20 @@ const ModeratorCoordinatorList = () => {
           {errors.map(error => (
             <SnackbarContent
               style={{
+                background: 'orange',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    }else if (errorsStatus2 == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
                 background: 'green',
+                textAlign: 'center'
               }}
               message={<h3>{error}</h3>} />
           ))}
@@ -166,6 +201,7 @@ const ModeratorCoordinatorList = () => {
             <SnackbarContent autoHideDuration={1}
               style={{
                 background: 'red',
+                textAlign: 'center'
               }}
               message={<h3>{error}</h3>}
             />
@@ -173,13 +209,12 @@ const ModeratorCoordinatorList = () => {
         </div>)
     }
   }
-
   return (
     <div className={classes.root}>
       {/* <DenunciationsToolbar save={save} /> */}
       <ModeratorCoordinatorToolbar  filter={filter} onClearFilter={limpar} onCreateUser={onCreateUser}/>
       <div className={classes.content}>
-        <ModeratorCoordinatorTable users={users} />
+        <ModeratorCoordinatorTable users={users} deleteUsuario={deleteUsuario} />
       </div>
 
       <Snackbar open={errors.length} onClick={handleSnackClick}>

@@ -25,7 +25,8 @@ import {
   Box,
   Paper,
   Rows,
-  TableContainer
+  TableContainer,
+  Divider
 } from '@material-ui/core';
 
 //Modal
@@ -57,6 +58,7 @@ import firebase from 'firebase/app'
 import API from '../../../../../utils/API';
 import AccountDetails from '../../../../../views/Account/components/AccountDetails';
 import { getInitials } from 'helpers';
+import currentUser from 'utils/AppUser';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -155,8 +157,6 @@ const CitizensTable = props => {
   });
 
   const handleClickAccount = (citizensL) => {
-
-    console.log("sdfsddsdasddasdasda", citizensL)
     setOpenCitizens({
       ...citizens,
       citizens: citizensL
@@ -169,14 +169,50 @@ const CitizensTable = props => {
   };
 
 
-  const handleClickDelete = (userDelete) => {
-    console.log("chegando id delete:", userDelete)
-    API.delete(`/user/${userDelete.id}`)
-      .then(response => {
-        console.log("sucesso")
-      }).catch(erro => {
-        console.log(erro);
+  //////Pegar o usuário do momento
+const[carregarUser, setCarregarUser] = useState('');
+React.useEffect(() => {
+      currentUser().then((result) => {
+        //userId = result.id;
+        setCarregarUser(result.id);
+
+      }).catch((erro) => {
+        console.log("erro", erro)
       })
+  }, []);
+
+  console.log("aquii",carregarUser)
+  //DELETE
+  const [categoriesDelete, setCategoriesDelete] = useState({
+    categories: {}
+  });
+
+  const [openAlerta, setOpenAlerta] = React.useState(false);
+
+  const handleOpenDelete = (categoriesD) => {
+    setCategoriesDelete({
+      categories: categoriesD
+    });
+    setOpenAlerta(true);
+  };
+
+  const handleCloseAlerta = () => {
+    setOpenAlerta(false);
+  };
+
+
+  const handleExlcuir = (event) => {
+    event.preventDefault();
+    console.log("Deletar usuario", categoriesDelete)
+    props.deleteUsuario(categoriesDelete);
+    setOpenAlerta(false);
+  }
+
+  //////////////////////
+  const closeModal = (result) => {
+
+    props.closeModalAlter(result)
+    setOpen(false);
 
   }
 
@@ -193,6 +229,7 @@ const CitizensTable = props => {
                 <TableRow>
                   <TableCell>Nome</TableCell>
                   <TableCell>Email</TableCell>
+                  <TableCell>Tipo</TableCell>
                   <TableCell
                     style={{
                       textAlign: 'right',
@@ -202,24 +239,30 @@ const CitizensTable = props => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {citizens.map(citizen => {
+                {citizens.filter(function(user){
+                  return !user.id.includes(carregarUser)
+                }).map(citizen => {
                   return (
                     <TableRow key={citizen.id}
                       hover={true}
                     >
-                      <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.firstName}</TableCell>
-                      <TableCell>{citizen.email}</TableCell>
+                      <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.firstName} {citizen.lastName}</TableCell>
+                      <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.email}</TableCell>
+                      <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.roles[0]} {citizen.roles[1]}</TableCell>
                       <TableCell style={{
                         textAlign: 'right'
                       }}
                       >
                         <IconButton
+                          onClick={() => handleClickAccount(citizen)}
                           aria-label="display more actions" edge="end" color="inherit">
                           <EditIcon
                             onClick={() => handleClickAccount(citizen)} />  {/* onClick={handleClick}  */}
                         </IconButton>
-                        <IconButton aria-label="display more actions" edge="end" color="inherit">
-                          <DeleteIcon onClick={() => handleClickDelete(citizen)} />  {/* onClick={handleClick}  */}
+                        <IconButton
+                          onClick={() => handleOpenDelete(citizen)}
+                          aria-label="display more actions" edge="end" color="inherit">
+                          <DeleteIcon onClick={() => handleOpenDelete(citizen)} />  {/* onClick={handleClick}  */}
                         </IconButton>
 
                       </TableCell>
@@ -230,6 +273,78 @@ const CitizensTable = props => {
               </TableBody>
             </Table>
 
+            {/* Modal Alerta */}
+            {openAlerta &&
+
+              <Modal
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                className={classes.modal}
+                open={openAlerta}
+                onClose={handleCloseAlerta}
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                  timeout: 500,
+                }}
+
+              >
+                {/* Modal da Dereita */}
+                <Fade in={openAlerta}>
+                  <div className={classes.paper}>
+                    <div style={{
+                      textAlign: 'right'
+                    }}>
+
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleCloseAlerta}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                    <Card className={classes.root}
+                      style={{
+                        textAlign: 'center',
+                        width: 500,
+                        maxHeight: 500,
+                      }}>
+
+                      <CardContent>
+                        {
+                          <Typography>
+                            Deseja realmente excluir o usuário {categoriesDelete.categories.firstName}?
+                     </Typography>
+                        }
+                      </CardContent>
+                      <Divider />
+                      <CardActions>
+                        <Grid
+                          item
+                          lg={12}
+                          md={12}
+                          xl={12}
+                          xs={12}
+                        >
+                          <Button
+                            color="secondary"
+                            variant="contained"
+                            style={{ float: 'right', background: '#b71c1c' }}
+                            onClick={handleExlcuir}
+                          >
+                            Excluir
+                         </Button>
+                        </Grid>
+                      </CardActions>
+                    </Card>
+                  </div>
+                </Fade>
+              </Modal>
+              // {/* FIM Abri Modal envio coordenador  */}
+            }
+
+            {/* /// Modal Alterar */}
             {open &&
               < Modal
                 aria-labelledby="transition-modal-title"
@@ -258,7 +373,7 @@ const CitizensTable = props => {
                         <CloseIcon />
                       </IconButton>
                     </div>
-                    <AccountDetails userId={openCitizens.citizens.id} />
+                    <AccountDetails closeModal={closeModal} userId={openCitizens.citizens.id} />
 
                   </div>
                 </Fade>

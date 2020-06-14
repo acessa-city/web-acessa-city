@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 const AccountDetails = props => {
   const { className, ...rest } = props;
 
@@ -41,17 +40,14 @@ const AccountDetails = props => {
     name: '',
     lastName: '',
     email: '',
-    password: '',
     role: '',
+
   });
 
   const [open, setOpen] = React.useState(false);
   const handleClose = () => {
     setOpen(false);
   };
-
-  const [errors, setErrors] = useState([]);
-  const [errorsStatus, setErrorsStatus] = React.useState(true);
 
   const [userLogado, setUserLogado] = useState({});
 
@@ -62,9 +58,7 @@ const AccountDetails = props => {
     });
   };
 
-  const handleSnackClick = () => {
-    setErrors([]);
-  }
+
 
   // const campoVazio = values =>{
 
@@ -84,35 +78,68 @@ const AccountDetails = props => {
   // }
 
 
-  // const [password, setPassword] = useState({
-  //   password: '',
-  //   confirmPassword: ''
-  // });
+  const [password, setPassword] = useState({
+    password: '',
+    confirmPassword: ''
+  });
 
-  //const handleChange2 = (keyName, e) => { setPassword({ ...password, [keyName]: e.target.value }); }
+  const handleChange2 = (keyName, e) => { setPassword({ ...password, [keyName]: e.target.value }); }
 
 
   const handleClick = (event) => {
     event.preventDefault();
 
-    //campoVazio(values)
 
-    const userCreate = {
+    if (password.password != password.confirmPassword) {
+      setErrorsStatus(false)
+      setErrors([
+        "A senha é diferente da confirmação de senha"
+      ])
+      setTimeout(() => {
+        setErrors([]);
+      }, 2000);
+    } else if (password.password.length < 6) {
+      setErrorsStatus(false)
+      setErrors([
+        "A senha deve conter pelo menos 6 caracteres"
+      ])
+      setTimeout(() => {
+        setErrors([]);
+      }, 2000);
 
-      cityHallId: userLogado.cityHallId,
-      email: values.email,
-      emailVerified: true,
-      password: values.password,
-      displayName: values.name + ' ' + values.lastName,
-      photoUrl: 'https://acessacity.s3.amazonaws.com/photos/user.png',
-      disabled: false,
-      roles: [
-        values.role
-      ]
+    } else {
+
+      const userCreate = {
+        cityHallId: userLogado.cityHallId,
+        email: values.email,
+        emailVerified: true,
+        password: password.password,
+        displayName: values.name + ' ' + values.lastName,
+        photoUrl: 'https://acessacity.s3.amazonaws.com/photos/user.png',
+        disabled: false,
+        roles: [
+          values.role
+        ]
+      }
+
+      setOpenValidador(true)
+      if (values.role && values.name && values.email) {
+        setOpenValidador(false)
+        props.createUser(userCreate);
+        limparForm()
+      } else {
+        setOpenValidador(false)
+        setErrorsStatus(false)
+        setErrors([
+          "A campos Vazios"
+        ])
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
+      }
+
     }
-    console.log("teste", userCreate);
-    props.createUser(userCreate);
-    limparForm()
+
   }
 
   const limparForm = () => {
@@ -123,16 +150,52 @@ const AccountDetails = props => {
       password: '',
       role: '',
     })
+
+    setPassword({
+      password: '',
+      confirmPassword: '',
+    })
   }
 
-  const teste = () => {
-    return (<div>
-      {errors.map(error => (
-        <SnackbarContent message={<h3>{error}</h3>} />
-      ))}
-    </div>)
+  /////Errros///////
+  const handleSnackClick = () => {
+    setErrors([]);
   }
+  const [errors, setErrors] = useState([]);
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };
 
+  const erros = () => {
+    if (errorsStatus == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'green',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent autoHideDuration={1}
+              style={{
+                background: 'red',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>}
+            />
+          ))}
+        </div>)
+    }
+  }
   const [roles, setRoles] = useState({
     loaded: false,
   });
@@ -161,10 +224,20 @@ const AccountDetails = props => {
           autoComplete="off"
           noValidate
         >
-          <CardHeader
-            subheader="Criar um novo coordenador ou moderador"
-            title="Criar novo usuário"
-          />
+          {roles.admin &&
+            <CardHeader
+              subheader="Criar Admin ou Usuário"
+              title="Criar novo usuário"
+            />
+          }
+
+          {roles.city_hall &&
+            <CardHeader
+              subheader="Criar coordenador ou Moderador"
+              title="Criar novo usuário"
+            />
+          }
+
           <Divider />
           <CardContent>
             <Grid
@@ -222,7 +295,41 @@ const AccountDetails = props => {
                   variant="outlined"
                 />
               </Grid>
-              <Grid
+
+
+              <Grid item xs={12} md={3}>
+                <TextField
+                  fullWidth
+                  error={password.password != password.confirmPassword}
+                  helperText="Senha"
+                  label="Senha"
+                  margin="dense"
+                  name="password"
+                  type="password"
+                  required
+                  value={password.password}
+                  onChange={sender => handleChange2('password', sender)}
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid item xs={12} md={3}>
+                <TextField
+                  fullWidth
+                  error={password.password != password.confirmPassword}
+                  helperText="Confirmar senha"
+                  label="Confirmação da senha"
+                  margin="dense"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  onChange={sender => handleChange2('confirmPassword', sender)}
+                  value={password.confirmPassword}
+                  variant="outlined"
+                />
+              </Grid>
+
+              {/* <Grid
                 item
                 md={3}
                 xs={12}
@@ -239,6 +346,23 @@ const AccountDetails = props => {
                   variant="outlined"
                 />
               </Grid>
+
+              <Grid item xs={12} md={3}>
+                <TextField
+                  fullWidth
+                  error={password.password != password.confirmPassword}
+                  helperText="Confirmar senha"
+                  label="Confirmação da senha"
+                  margin="dense"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  onChange={sender => handleChange('confirmPassword', sender)}
+                  value={password.confirmPassword}
+                  variant="outlined"
+                />
+              </Grid> */}
+
               <Grid
                 item
                 md={2}
@@ -257,6 +381,7 @@ const AccountDetails = props => {
                       }}>
 
                       <option aria-label="None" value="" />
+                      <option value='admin'>Admin</option>
                       <option value='user'>Usuários</option>
 
                     </Select>
@@ -303,10 +428,12 @@ const AccountDetails = props => {
           </CardActions>
         </form>
       </Card>
-      <Snackbar open={errors.length} autoHideDuration={20000} onClick={handleSnackClick}>
-        {teste()}
+      <Snackbar open={errors.length} onClick={handleSnackClick}>
+        {erros()}
       </Snackbar>
-      <Backdrop className={classes.backdrop} open={open} onClick={handleClose}>
+      <Backdrop
+        style={{ zIndex: 99999999 }}
+        className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </div >

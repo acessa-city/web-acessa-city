@@ -20,14 +20,14 @@ import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
 
 const schema = {
   email: {
-    presence: { allowEmpty: false, message: 'is required' },
+    presence: { allowEmpty: false, message: 'é obrigatório' },
     email: true,
     length: {
       maximum: 64
     }
   },
   password: {
-    presence: { allowEmpty: false, message: 'is required' },
+    presence: { allowEmpty: false, message: 'é obrigatório' },
     length: {
       maximum: 128
     }
@@ -191,12 +191,15 @@ const SignIn = props => {
                 })
               })
               .catch(error => {
-
+                console.log(error)
               })
             }
         })
       }).catch((error) => {
-        console.log(error)
+        if (error.code == 'auth/wrong-password')
+        {
+          alert('Falha ao realizar o login. O usuário ou senha é uma entrada inválida.')
+        }
       })     
   }
 
@@ -251,13 +254,15 @@ const SignIn = props => {
                   console.log(error)
                 })
               })
-              .catch(error => {
-
+              .catch(error => {                
               })
             }
         })
       }).catch((error) => {
-        console.log(error.message);
+        if (error.code == 'auth/wrong-password')
+        {
+          alert('Falha ao realizar o login. O usuário ou senha é uma entrada inválida.')
+        }
       });
   
   };

@@ -113,8 +113,8 @@ const CategoryList = () => {
   }
 
   const deleteCategory = (category) => {
-
-  API.delete(`/category/${category.id}`, category
+    console.log("aqui o que tem",category)
+  API.delete(`/category/${category.categories.id}`, category
   ).then(response => {
     setErrors([
       "Categoria deletada com sucesso!"

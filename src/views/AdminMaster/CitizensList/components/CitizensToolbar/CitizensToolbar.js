@@ -11,7 +11,9 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Backdrop
+  Backdrop,
+  CardHeader,
+  Card
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
@@ -89,6 +91,7 @@ const CitizensToolbar = props => {
 
 
   const [values, setValues] = useState({
+    type:'',
     firstName: '',
     email: '',
   });
@@ -103,6 +106,7 @@ const CitizensToolbar = props => {
   const limparForm = (event) => {
     event.preventDefault();
     setValues({
+      type:'',
       firstName: '',
       email: '',
     })
@@ -127,10 +131,29 @@ const CitizensToolbar = props => {
         <Grid container spacing={1}>
 
           <Grid item xs={12} sm={2}>
+            <FormControl className={classes.formControl} fullWidth>
+              <InputLabel htmlFor="age-native-simple">Tipo</InputLabel>
+              <Select
+                native
+                value={values.type}
+                onChange={handleChangeFilter}
+                inputProps={{
+                  name: 'type',
+                }}
+              >
+                <option aria-label="None" value="" />
+                <option value='admin'>Admin</option>
+                <option value='user'>User</option>
+           
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={2}>
             <div>
               <TextField
                 fullWidth
-                id="standard-rua"
+                id="Nome"
                 label="Nome"
                 onChange={handleChangeFilter}
                 required
@@ -146,7 +169,7 @@ const CitizensToolbar = props => {
             <div>
               <TextField
                 fullWidth
-                id="standard-bairro"
+                id="Email"
                 label="Email"
                 onChange={handleChangeFilter}
                 required
@@ -218,6 +241,14 @@ const CitizensToolbar = props => {
                   <CloseIcon />
                 </IconButton>
               </div>
+              {/* <div style={{padding:'0px 16px 0px 16px'}}>
+                <Card style={{marginBottom: '-17px', borderBottomLeftRadius: '0px', borderBottomRightRadius: '0px'}}>
+                  <CardHeader
+                    subheader="Criar Admin ou Usuário"
+                    title="Criar novo usuário"
+                  />
+                </Card>
+              </div> */}
               <CreateUser onCreateUser={onCreateUser} />
 
             </div>
