@@ -39,7 +39,8 @@ const AccountDetails = props => {
   const classes = useStyles();
 
 
-  const [user, setUser] = useState({})
+  const [user, setUser] = useState({});
+  const [atualizar, setAtualizar] = useState('');
 
   const [controleUser, setControleUser] = useState('');
 
@@ -93,16 +94,14 @@ const AccountDetails = props => {
 
         API.put('/user/update-data-profile', alter).then((result) => {
           setErrors([
-            "Dados Atualizado Com sucesso."])
+            "Dados do usuário" + values.firstName + "foi atualizado com sucesso."])
   
           setErrorsStatus(true)
           setTimeout(() => {
             setErrors([]);
           }, 1000);
            window.location.reload(true);
-          //const fechaModal = true;
-          ///props.closeModal(fechaModal);
-
+   
         }).catch((erro) => {
           setErrors([
             "Ta entrando aqui 1"])
@@ -127,17 +126,12 @@ const AccountDetails = props => {
 
       API.put('/user/update-data-profile', alter).then((result) => {
         
-        setErrors([
-          "Dados Atualizado Com sucesso."])
-
-        setErrorsStatus(true)
-        setTimeout(() => {
-          setErrors([]);
-        }, 1000);
+        const atualizar = {
+          status: true,
+          user: values.firstName
+        }
+        props.atualizar(atualizar);
  
-        //const fechaModal = true;
-        //props.closeModal(fechaModal);
-
       }).catch((erro) => {
         setErrors([
           "Ta entrando aqui 2"])

@@ -151,6 +151,19 @@ const ModeratorCoordinatorList = () => {
     })
   }
 
+  const atualizarModal = (status) =>{
+    if(status.status){
+      setOpenValidador(false)
+      setErrors([
+        "Dados do usuário " + status.user + " foi alterado com sucesso."])
+      setErrorsStatus2(true)
+      setTimeout(() => {
+        setErrors([]);
+      }, 2000);
+    }
+    listUser();
+  }
+
 
 
   const limpar = () =>{  
@@ -214,7 +227,7 @@ const ModeratorCoordinatorList = () => {
       {/* <DenunciationsToolbar save={save} /> */}
       <ModeratorCoordinatorToolbar  filter={filter} onClearFilter={limpar} onCreateUser={onCreateUser}/>
       <div className={classes.content}>
-        <ModeratorCoordinatorTable users={users} deleteUsuario={deleteUsuario} />
+        <ModeratorCoordinatorTable users={users} deleteUsuario={deleteUsuario} atualizarModal={atualizarModal}/>
       </div>
 
       <Snackbar open={errors.length} onClick={handleSnackClick}>

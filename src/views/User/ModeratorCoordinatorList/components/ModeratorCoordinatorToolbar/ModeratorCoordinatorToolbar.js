@@ -232,7 +232,12 @@ const ModeratorCoordinatorToolbar = props => {
             timeout: 500,
           }}
         >
-          <Fade in={openModal}>
+          <Fade 
+            style={{
+              overflow: 'scroll',
+              height: '70%'
+            }}
+          in={openModal}>
             <div className={classes.paper}>
               <div style={{
                 textAlign: 'right'

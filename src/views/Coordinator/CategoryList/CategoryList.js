@@ -38,22 +38,9 @@ const CategoryList = () => {
 
   const [categories, setCategories] = useState([]);
   const [categoriesSlect, setCategoriesSelect] = useState([]);
+  const [categoryBackup, setCategoryBackup] = useState([]);
 
-
-  //Fitrar categoria
-  const filter = (id) => {
-    //console.log("id categoria", id);
-    API.get(`/category/${id.category}`
-    ).then(response => {
-      const filterCategory = response.data;
-      const categorias = [];
-      categorias.push(filterCategory);
-      setCategories(categorias)
-    }).catch(erro => {
-      console.log(erro);
-    })
-  }
-
+  
 
   ///Lista de categorias
   ///Listar os dados  na tela co comentarios
@@ -64,6 +51,7 @@ const CategoryList = () => {
       setOpenValidador(false)
       const listCategory2 = response.data;
       setCategories(listCategory2);
+      setCategoryBackup(listCategory2);
       setCategoriesSelect(listCategory2)
     }).catch(erro => {
       console.log(erro);
@@ -113,90 +101,134 @@ const CategoryList = () => {
   }
 
   const deleteCategory = (category) => {
-    console.log("aqui o que tem",category)
-  API.delete(`/category/${category.categories.id}`, category
-  ).then(response => {
-    setErrors([
-      "Categoria deletada com sucesso!"
-    ])
-    setErrorsStatus(true)
-    setTimeout(() => {
-      setErrors([]);
-    }, 1000);
-    listCategory();
-  }).catch(erro => {
-    console.log(erro);
-  })
+    console.log("aqui o que tem", category)
+    API.delete(`/category/${category.categories.id}`, category
+    ).then(response => {
+      setErrors([
+        "Categoria deletada com sucesso!"
+      ])
+      setErrorsStatus(true)
+      setTimeout(() => {
+        setErrors([]);
+      }, 1000);
+      listCategory();
+    }).catch(erro => {
+      console.log(erro);
+    })
 
-}
-
-
-// Atualizar os dados na tela
-useEffect(() => {
-  listCategory();
-}, []);
-
-
-
-/////Errros///////
-const handleSnackClick = () => {
-  setErrors([]);
-}
-const [errors, setErrors] = useState([]);
-const [errorsStatus, setErrorsStatus] = useState('');
-const [errorsStatus2, setErrorsStatus2] = useState('');
-const [openValidador, setOpenValidador] = React.useState(false);
-const handleCloseValidador = () => {
-  setOpenValidador(false);
-};
-
-const erros = () => {
-  if (errorsStatus == true) {
-    return (
-      <div>
-        {errors.map(error => (
-          <SnackbarContent
-            style={{
-              background: 'green',
-              textAlign: 'center'
-            }}
-            message={<h3>{error}</h3>} />
-        ))}
-      </div>)
-  } else {
-    return (
-      <div>
-        {errors.map(error => (
-          <SnackbarContent autoHideDuration={1}
-            style={{
-              background: 'red',
-              textAlign: 'center'
-            }}
-            message={<h3>{error}</h3>}
-          />
-        ))}
-      </div>)
   }
-}
+
+  //Fitrar categoria
+  const filter = (filtro) => {
+   
+    const listaFiltrada = categoryBackup.filter(function (citizen) {
+
+      let retornaCitizen = true
+
+      if (filtro.category) {
+        retornaCitizen = retornaCitizen && citizen.name.toUpperCase().includes(filtro.category.toUpperCase());
+      }
+
+      return retornaCitizen;
+    })
+
+    setOpenValidador(true)
+    if (listaFiltrada == '') {
+      setOpenValidador(false)
+      setErrors(["Nenhum resultado encontrado!"])
+      setCategories(listaFiltrada);
+      setErrorsStatus2(true)
+      setTimeout(() => {
+        setErrors([]);
+      }, 2000);
+
+    } else {
+      setOpenValidador(false)
+      setCategories(listaFiltrada);
+    }
 
 
-return (
-  <div className={classes.root}>
-    {/* <DenunciationsToolbar save={save} /> */}
-    <CategoryToolbar categoriesSlect={categoriesSlect} filter={filter} filterLimpar={filterLimpar} newCategory={newCategory} />
-    <div className={classes.content}>
-      <CategoryTable categories={categories} editCategory={editCategory} deleteCategory={deleteCategory}/>
+  }
+
+
+  // Atualizar os dados na tela
+  useEffect(() => {
+    listCategory();
+  }, []);
+
+
+
+  /////Errros///////
+  const handleSnackClick = () => {
+    setErrors([]);
+  }
+  const [errors, setErrors] = useState([]);
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [errorsStatus2, setErrorsStatus2] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };
+
+  const erros = () => {
+    if (errorsStatus == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'green',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else if (errorsStatus2) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'orange',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent autoHideDuration={1}
+              style={{
+                background: 'red',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>}
+            />
+          ))}
+        </div>)
+    }
+  }
+
+
+  return (
+    <div className={classes.root}>
+      {/* <DenunciationsToolbar save={save} /> */}
+      <CategoryToolbar categoriesSlect={categoriesSlect} filter={filter} filterLimpar={filterLimpar} newCategory={newCategory} />
+      <div className={classes.content}>
+        <CategoryTable categories={categories} editCategory={editCategory} deleteCategory={deleteCategory} />
+      </div>
+      <Snackbar open={errors.length} onClick={handleSnackClick} >
+        {erros()}
+      </Snackbar>
+      <Backdrop
+        style={{ zIndex: 99999999 }}
+        className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
-    <Snackbar open={errors.length} onClick={handleSnackClick} >
-      {erros()}
-    </Snackbar>
-    <Backdrop
-      style={{ zIndex: 99999999 }}
-      className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
-      <CircularProgress color="inherit" />
-    </Backdrop>
-  </div>
-);
+  );
 };
 
 export default CategoryList;

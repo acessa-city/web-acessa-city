@@ -235,10 +235,14 @@ const CategoryTable = props => {
                           textAlign: 'right'
                         }}
                       >
-                        <IconButton aria-label="display more actions" edge="end" color="inherit">
+                        <IconButton
+                          onClick={() => handleOpen(categorie)}
+                          aria-label="display more actions" edge="end" color="inherit">
                           <EditIcon onClick={() => handleOpen(categorie)} />  {/* onClick={handleClick}  */}
                         </IconButton>
-                        <IconButton aria-label="display more actions" edge="end" color="inherit">
+                        <IconButton
+                          onClick={() => handleOpenDelete(categorie)}
+                          aria-label="display more actions" edge="end" color="inherit">
                           <DeleteIcon onClick={() => handleOpenDelete(categorie)} />
                         </IconButton>
 
@@ -264,7 +268,15 @@ const CategoryTable = props => {
 
                   >
                     {/* Modal da Dereita */}
-                    <Fade in={openAlerta}>
+                    <Fade 
+                    
+                    style={{
+                      overflow: 'scroll',
+                      height: '35%'
+                    }}
+
+                    
+                    in={openAlerta}>
                       <div className={classes.paper}>
                         <div style={{
                           textAlign: 'right'
@@ -337,7 +349,13 @@ const CategoryTable = props => {
 
                   >
                     {/* Modal da Dereita */}
-                    <Fade in={open}>
+                    <Fade
+                      style={{
+                        overflow: 'scroll',
+                        height: '50%'
+                      }}
+
+                      in={open}>
                       <div className={classes.paper}>
                         <div style={{
                           textAlign: 'right'

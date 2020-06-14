@@ -223,7 +223,13 @@ const[mudarCor, setMudarCor] = useState('');
             timeout: 500,
           }}
         >
-          <Fade in={openModal}>
+          <Fade
+           style={{
+              overflow: 'scroll',
+              height: '90%'
+            }}
+          
+          in={openModal}>
             <div className={classes.paper}>
               <div style={{
                 textAlign: 'right'

@@ -226,6 +226,11 @@ const ModeratorCoordinatorTable = props => {
     setOpenAlerta(false);
   }
 
+  const atualizar = (status) =>{
+    props.atualizarModal(status);
+    setOpen(false);
+  }
+
   return (
     <Card
       {...rest}
@@ -388,9 +393,7 @@ const ModeratorCoordinatorTable = props => {
                       </IconButton>
                     </div>
 
-
-
-                    <AccountDetails userId={openAccount.users.id} />
+                    <AccountDetails atualizar={atualizar} userId={openAccount.users.id} />
 
                   </div>
                 </Fade>

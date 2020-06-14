@@ -164,8 +164,6 @@ const CategoryToolbar = props => {
   const submit = (event) => {
     event.preventDefault();
     //Filtro geral
-
-
     if (values.category == '') {
 
       API.get('/category'
@@ -201,7 +199,6 @@ const CategoryToolbar = props => {
       setMensagem('Ocorreu um erro', erro);
       setOpenDialog(true);
     })
-
     limparForm();
   }
 
@@ -217,7 +214,7 @@ const CategoryToolbar = props => {
 
         <Grid container spacing={1}>
 
-          <Grid item xs={12} sm={2}>
+          {/* <Grid item xs={12} sm={2}>
             <FormControl className={classes.formControl} fullWidth>
               <InputLabel htmlFor="age-native-simple">Categoria</InputLabel>
               <Select
@@ -237,8 +234,23 @@ const CategoryToolbar = props => {
                 }
               </Select>
             </FormControl>
+          </Grid> */}
+
+          <Grid item xs={12} sm={3}>
+            <div>
+              <TextField
+                fullWidth
+                id="Categoria"
+                label="Categoria"
+                value={values.category}
+                onChange={handleChangeFilter}
+                inputProps={{
+                  name: 'category',
+                }}
+              />
+            </div>
           </Grid>
-  
+
           <Grid item xs={12} sm={1}>
             <FormControl margin="dense" fullWidth>
               <Button onClick={submit} variant="contained" color="secondary">Filtrar</Button>
@@ -287,7 +299,13 @@ const CategoryToolbar = props => {
 
         >
           {/* Modal da Dereita */}
-          <Fade in={open}>
+          <Fade
+           style={{
+            overflow: 'scroll',
+            height: '50%'
+          }}
+          
+          in={open}>
             <div className={classes.paper}>
               <div style={{
                 textAlign: 'right'
