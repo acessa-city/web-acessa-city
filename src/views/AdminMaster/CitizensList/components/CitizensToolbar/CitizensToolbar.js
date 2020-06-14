@@ -149,7 +149,7 @@ const CitizensToolbar = props => {
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} sm={2}>
+          <Grid item xs={12} xl={12} md={2} sm={2}>
             <div>
               <TextField
                 fullWidth
@@ -165,7 +165,7 @@ const CitizensToolbar = props => {
             </div>
           </Grid>
 
-          <Grid item xs={12} sm={2}>
+          <Grid item xs={12} xl={12} md={2} sm={2}>
             <div>
               <TextField
                 fullWidth
@@ -180,20 +180,20 @@ const CitizensToolbar = props => {
               />
             </div>
           </Grid>
-          <Grid item xs={12} sm={1}>
+          <Grid item xs={12} xl={12} md={1} sm={1}>
             <FormControl margin="dense" fullWidth>
               <Button onClick={handleClickFilter} variant="contained" color="secondary">Filtrar</Button>
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} sm={1}>
+          <Grid item xs={12} xl={12} md={1} sm={1}>
             <FormControl margin="dense" fullWidth>
               <Button onClick={limparForm} variant="contained" >Limpar</Button>
             </FormControl>
           </Grid>
 
 
-          <Grid item xs={12} sm={2}>
+          <Grid item xs={12} xl={12} md={2} sm={2}>
 
             <div
               style={{
@@ -226,7 +226,13 @@ const CitizensToolbar = props => {
             timeout: 500,
           }}
         >
-          <Fade in={openModal}>
+          <Fade 
+           style={{
+            overflow: 'scroll',
+            height: '70%'
+          }}
+          
+          in={openModal}>
             <div className={classes.paper}>
               <div style={{
                 textAlign: 'right'

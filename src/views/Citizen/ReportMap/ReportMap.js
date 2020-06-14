@@ -770,10 +770,10 @@ const ReportMap = props => {
             onClick={handleOpenDenuncias}
             className={style.button1}
           >Denúnciar</Button>
-          <Button
+          {/* <Button
             href="/historico-de-denuncias"
             className={style.button1}
-          >Histórico</Button>
+          >Histórico</Button> */}
           <Button
             text="My Marker"
             onClick={filterFinished}

@@ -14,7 +14,10 @@ import {
   Backdrop,
   CircularProgress,
   Snackbar,
-  SnackbarContent
+  SnackbarContent,
+  Select,
+  FormControl,
+  InputLabel
 } from '@material-ui/core';
 import api from 'utils/API';
 import currentUser from 'utils/AppUser';
@@ -62,6 +65,8 @@ const CityHallCreate = props => {
       [event.target.name]: event.target.value
     });
   };
+
+  console.log("Aquii os values")
 
   const limparForm = () => {
     setValues({
@@ -486,7 +491,7 @@ const CityHallCreate = props => {
                 <TextField
                   fullWidth
                   helperText="Informe a cidade"
-                  label="Cidade"
+                  label="Cidades"
                   margin="dense"
                   name="state"
                   select
@@ -502,8 +507,28 @@ const CityHallCreate = props => {
                     {option.name}
                   </option>
                 ))}
+                
                 </TextField>
               </Grid>
+
+              <FormControl className={classes.formControl} fullWidth>
+              <InputLabel htmlFor="age-native-simple">Categoria</InputLabel>
+              <Select
+                native
+                value={values.cityId}
+                inputProps={{
+                  name: 'state',
+                }}
+              >
+                <option aria-label="None" value="" />
+                {cities.cities.map(cidade => {
+                  return (
+                    <option value={values.cityId}>{cidade.name}</option>
+                  )
+                })
+                }
+              </Select>
+            </FormControl>
             </Grid>
           </CardContent>
           <Divider />

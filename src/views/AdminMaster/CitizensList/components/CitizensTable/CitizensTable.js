@@ -209,12 +209,11 @@ React.useEffect(() => {
   }
 
   //////////////////////
-  const closeModal = (result) => {
-
-    props.closeModalAlter(result)
+  const atualizar = (status) =>{
+    props.atualizarModal(status);
     setOpen(false);
-
   }
+
 
   return (
     <Card
@@ -358,7 +357,12 @@ React.useEffect(() => {
                   timeout: 500,
                 }}
               >
-                <Fade in={open}>
+                <Fade 
+                 style={{
+                  overflow: 'scroll',
+                  height: '75%'
+                }}
+                in={open}>
                   <div className={classes.paper}>
                     <div style={{
                       textAlign: 'right'
@@ -373,7 +377,7 @@ React.useEffect(() => {
                         <CloseIcon />
                       </IconButton>
                     </div>
-                    <AccountDetails closeModal={closeModal} userId={openCitizens.citizens.id} />
+                    <AccountDetails atualizar={atualizar}   userId={openCitizens.citizens.id} />
 
                   </div>
                 </Fade>

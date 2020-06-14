@@ -69,7 +69,7 @@ const ChangePassword = props => {
                 if (error.message == 'This operation is sensitive and requires recent authentication. Log in again before retrying this request.') {
 
                     setErrors([
-                        "Sua sessão expirou, para alterar sua senha e necessário deslogar e logar novamente!"
+                        "Sua sessão expirou, para alterar sua senha é necessário deslogar e logar novamente."
                     ])
                     setErrorsStatus(true)
                     setTimeout(() => {

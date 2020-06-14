@@ -119,7 +119,7 @@ const CitizensList = () => {
      setOpenValidador(false)
      setErrors(["Nenhum resultado encontrado!"])
      setCitizens(listaFiltrada);
-     setErrorsStatus(true)
+     setErrorsStatus2(true)
      setTimeout(() => {
        setErrors([]);
      }, 2000);
@@ -161,18 +161,20 @@ const CitizensList = () => {
     }
   }
   //Fechar o Modal de Alteração com sucesso
-  const closeModalAlter = (result) => {
-    if (result) {
+  const atualizarModal = (status) =>{
+    if(status.status){
+      setOpenValidador(false)
       setErrors([
-        "O usuário foi atualizado com sucesso."])
-
+        "Dados do usuário " + status.user + " foi alterado com sucesso."])
       setErrorsStatus(true)
       setTimeout(() => {
         setErrors([]);
-      }, 1000);
-      listCitizens();
+      }, 2000);
+       listCitizens();
     }
+   
   }
+
 
   // Atualizar os dados na tela
   React.useEffect(() => {
@@ -189,19 +191,19 @@ const CitizensList = () => {
           {errors.map(error => (
             <SnackbarContent
               style={{
-                background: 'orange',
+                background: 'green',
                 textAlign: 'center'
               }}
               message={<h3>{error}</h3>} />
           ))}
         </div>)
-    }else if (errorsStatus2 == true) {
+    }else if (errorsStatus2) {
       return (
         <div>
           {errors.map(error => (
             <SnackbarContent
               style={{
-                background: 'green',
+                background: 'orange',
                 textAlign: 'center'
               }}
               message={<h3>{error}</h3>} />
@@ -229,7 +231,7 @@ const CitizensList = () => {
 
       <CitizensToolbar filter={filter} onClearFilter={limpar} onCreateUser={onCreateUser} />
       <div className={classes.content}>
-        <CitizensTable citizens={citizens} deleteUsuario={deleteUsuario} closeModalAlter={closeModalAlter} />
+        <CitizensTable atualizarModal={atualizarModal}  citizens={citizens} deleteUsuario={deleteUsuario}  />
       </div>
 
       <Snackbar open={errors.length} onClick={handleSnackClick}>
