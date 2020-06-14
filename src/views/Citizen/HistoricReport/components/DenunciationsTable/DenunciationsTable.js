@@ -23,6 +23,7 @@ import {
   Typography,
   CardHeader,
   TablePagination,
+  TableFooter,
   Box,
   Paper,
   Rows,
@@ -143,8 +144,21 @@ const DenunciationsTable = props => {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
   const [mensagem, setMensagem] = useState('');
-  console.log("Aquiiii stou euuuuuuuuuuuuuuu status" + JSON.stringify(statusProgressDenunciation));
 
+  /* PAGINAÇÃO */
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
+
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  /* FIM PAGINAÇÃO */
 
   /// Salvar coodenadores
   const [coodenador, setCoodenador] = useState({
@@ -252,7 +266,7 @@ const DenunciationsTable = props => {
   }
 
   React.useEffect(() => {
-    
+
     // listen for auth state changes
     const unsubscribe = firebase.auth().onAuthStateChanged(getFirebase)
     console.log(3)
@@ -457,7 +471,10 @@ const DenunciationsTable = props => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {denunciations.map(denunciation => {
+                {(rowsPerPage > 0
+                  ? denunciations.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : denunciations
+                ).map((denunciation) => {
                   return (
                     <TableRow key={denunciation.id}
                       hover={true}
@@ -491,7 +508,7 @@ const DenunciationsTable = props => {
                     >
                       <Fade in={open}>
                         {/* DENTRO DO MODAL */}
-                        <div className={classes.paper}>                          
+                        <div className={classes.paper}>
                           <Report reportId={idReportModal}></Report>
                           <Button onClick={handleClose}>Voltar</Button>
 
@@ -502,7 +519,28 @@ const DenunciationsTable = props => {
                   </div>
                   // {/* FIM Abri Modal envio coordenador  */}
                 }
+
+                <TableFooter>                  
+                  <TablePagination                   
+                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                    colSpan={3}
+                    backIconButtonText={"Anterior"}
+                    nextIconButtonText={"Próxima"}
+                    count={denunciations.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    labelRowsPerPage={'Denúncias por página:'}
+                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+                    SelectProps={{
+                      inputProps: { 'aria-label': 'Denúncias por página:' },
+                      native: true,
+                    }}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                  />
+                </TableFooter>
               </TableBody>
+
             </Table>
           </div>
         </PerfectScrollbar>

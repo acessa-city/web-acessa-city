@@ -319,7 +319,7 @@ const DenunciationsTable = props => {
 
 
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
   // const handleSelectAll = event => {
@@ -356,16 +356,17 @@ const DenunciationsTable = props => {
     setSelectedUsers(newSelectedUsers);
   };
 
-  const handlePageChange = (event, page) => {
-    setPage(page);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
   };
 
   const tratarClose = () => {
     setComments(false)
   }
 
-  const handleRowsPerPageChange = event => {
-    setRowsPerPage(event.target.value);
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
 
@@ -618,13 +619,16 @@ const DenunciationsTable = props => {
                   <TableCell>Datas</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell style={{
-                        textAlign: 'center',
-                      }}>Cometários</TableCell>
+                    textAlign: 'center',
+                  }}>Cometários</TableCell>
 
                 </TableRow>
               </TableHead>
               <TableBody>
-                {denunciations.map(denunciation => {
+                {(rowsPerPage > 0
+                  ? denunciations.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : denunciations
+                ).map((denunciation) => {
                   return (
                     <TableRow key={denunciation.id}>
                       <TableCell onClick={() => handleOpen(denunciation)}>{denunciation.title}</TableCell>
@@ -756,7 +760,7 @@ const DenunciationsTable = props => {
                             <CardActions>
                               <Grid item md={6} xs={6}>
                                 <Button
-                                 style={{ background: '#b71c1c' }}
+                                  style={{ background: '#b71c1c' }}
                                   onClick={handleOpenDeny}
                                   color="primary"
                                   variant="contained"
@@ -766,7 +770,7 @@ const DenunciationsTable = props => {
                               </Grid>
                               <Grid item md={6} xs={6}>
                                 <Button
-                                 style={{ background: '#1b5e20', float: 'right' }}
+                                  style={{ background: '#1b5e20', float: 'right' }}
                                   onClick={handleOpenAprove}
                                   color="primary"
                                   variant="contained"
@@ -889,7 +893,7 @@ const DenunciationsTable = props => {
                           <Grid item xs={12} sm={2}>
                             <FormControl margin="dense" fullWidth>
                               <Grid item md={12} xs={12}>
-                                <Button onClick={submitEncerramento} style={{background: '#1b5e20', float: 'right' }} variant="contained" color="secondary">Encerrar</Button>
+                                <Button onClick={submitEncerramento} style={{ background: '#1b5e20', float: 'right' }} variant="contained" color="secondary">Encerrar</Button>
                               </Grid>
                             </FormControl>
                           </Grid>
@@ -952,7 +956,24 @@ const DenunciationsTable = props => {
                     </div>
                   </Fade>
                 </Modal>
-
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                  colSpan={3}
+                  backIconButtonText={"Anterior"}
+                  nextIconButtonText={"Próxima"}
+                  count={denunciations.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  labelRowsPerPage={'Denúncias por página:'}
+                  labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+                  SelectProps={{
+                    inputProps: { 'aria-label': 'Denúncias por página:' },
+                    native: true,
+                  }}
+                  onChangePage={handleChangePage}
+                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                //ActionsComponent={TablePaginationActions}
+                />
               </TableBody>
             </Table>
           </div>
