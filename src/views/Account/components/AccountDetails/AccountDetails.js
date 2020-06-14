@@ -62,7 +62,7 @@ const AccountDetails = props => {
     auth.sendPasswordResetEmail(userEmail).then(function () {
       setOpenValidador(false)
       setErrors([
-        "Recuperação foi enviada para" + user.email + ", com sucesso."])
+        "Foi enviado um email de recuperação para o" + user.email + ", com sucesso."])
 
       setErrorsStatus(true)
       setTimeout(() => {

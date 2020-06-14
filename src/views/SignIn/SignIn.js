@@ -9,11 +9,27 @@ import {
   IconButton,
   TextField,
   Link,
-  Typography
+  Typography,
+  CircularProgress,
+  Snackbar,
+  SnackbarContent,
+  Backdrop,
+  Card,
+  CardActions,
+  CardContent,
+  Divider
 } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { asyncLogin, logout } from '../../utils/auth';
-
+//Modal
+import Modal from '@material-ui/core/Modal';
+import Fade from '@material-ui/core/Fade';
+import CloseIcon from '@material-ui/icons/Close';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import firebase from 'firebase/app';
 
 import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
@@ -125,7 +141,27 @@ const useStyles = makeStyles(theme => ({
   },
   signInButton: {
     margin: theme.spacing(2, 0)
-  }
+  },
+  //modal
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    overflow: 'scroll'
+
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+  button: {
+    marginRight: 10,
+    marginTop: 10,
+  },
+  //FIM modal
 }));
 
 const SignIn = props => {
@@ -175,100 +211,207 @@ const SignIn = props => {
 
   const handleGoogleSignin = event => {
     event.preventDefault();
-    
+
     const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
 
     firebase.auth().signInWithPopup(googleAuthProvider)
-      .then((result) => {          
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-              user.getIdTokenResult().then((token) => {
-                asyncLogin(token.token).then(result => {
-                  window.location = '/';
-                })
+      .then((result) => {
+        firebase.auth().onAuthStateChanged(function (user) {
+          if (user) {
+            user.getIdTokenResult().then((token) => {
+              asyncLogin(token.token).then(result => {
+                window.location = '/';
+              })
                 .catch(error => {
                   console.log(error)
                 })
-              })
+            })
               .catch(error => {
                 console.log(error)
               })
-            }
+          }
         })
       }).catch((error) => {
-        if (error.code == 'auth/wrong-password')
-        {
-          alert('Falha ao realizar o login. O usuário ou senha é uma entrada inválida.')
+        if (error.code == 'auth/wrong-password') {
+          setErrors(["Falha ao realizar o login. O usuário ou senha é uma entrada inválida."])
+          setErrorsStatus(false)
+          setTimeout(() => {
+            setErrors([]);
+          }, 2000);
         }
-      })     
+      })
   }
 
   const hanldeFacebookSignin = event => {
     event.preventDefault();
 
     const facebookProvider = new firebase.auth.FacebookAuthProvider;
-    
+
     firebase.auth().signInWithPopup(facebookProvider)
-    .then((result) => {          
-      firebase.auth().onAuthStateChanged(function(user) {
+      .then((result) => {
+        firebase.auth().onAuthStateChanged(function (user) {
           if (user) {
             user.getIdTokenResult().then((token) => {
               asyncLogin(token.token).then(result => {
                 window.location = '/';
               })
+                .catch(error => {
+                  console.log(error)
+                })
+            })
               .catch(error => {
-                console.log(error)
-              })
-            })
-            .catch(error => {
 
-            })
+              })
           }
+        })
+      }).catch((error) => {
+        console.log(error)
       })
-    }).catch((error) => {
-      console.log(error)
-    })  
-    
+
   }
 
   const logout = event => {
     event.preventDefault();
     firebase.auth().signOut();
   }
-  
+
   const handleSignIn = event => {
     event.preventDefault();
-
     firebase
       .auth()
       .signInWithEmailAndPassword(formState.values.email, formState.values.password)
-      .then((result) => {          
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-              user.getIdTokenResult().then((token) => {
-                console.log(token.token)
-                asyncLogin(token.token).then(result => {
-                  window.location = '/'
-                })
+      .then((result) => {
+        firebase.auth().onAuthStateChanged(function (user) {
+          if (user) {
+            user.getIdTokenResult().then((token) => {
+              console.log(token.token)
+              asyncLogin(token.token).then(result => {
+                window.location = '/'
+              })
                 .catch(error => {
                   console.log(error)
                 })
+            })
+              .catch(error => {
               })
-              .catch(error => {                
-              })
-            }
+          }
         })
       }).catch((error) => {
-        if (error.code == 'auth/wrong-password')
-        {
-          alert('Falha ao realizar o login. O usuário ou senha é uma entrada inválida.')
+
+        console.log(error);
+        if (error.code == 'auth/wrong-password' || error.code == 'auth/user-not-found') {
+
+          setErrors(["Falha ao realizar o login. O usuário ou senha é uma entrada inválida."])
+          setErrorsStatus(false)
+          setTimeout(() => {
+            setErrors([]);
+          }, 3000);
+
         }
       });
-  
+
   };
 
   const hasError = field =>
     formState.touched[field] && formState.errors[field] ? true : false;
+
+  const [values2, setValues2] = useState({
+    email: '',
+  });
+
+  const handleChange2 = event => {
+    setValues2({
+      ...values2,
+      [event.target.name]: event.target.value
+    });
+  };
+
+
+  const [openAlerta, setOpenAlerta] = React.useState(false);
+
+  const handleRecuperar = (categoriesD) => {
+    setOpenAlerta(true);
+  };
+
+  const handleCloseRecuperar = () => {
+    setOpenAlerta(false);
+  };
+
+
+
+  const handleEnvio = () => {
+    if (values2.email == '') {
+      setErrors(["Precisa preencher o campo email."])
+      setErrorsStatus(false)
+      setTimeout(() => {
+        setErrors([]);
+      }, 3000);
+
+    } else {
+      console.log(values2);
+      var auth = firebase.auth();
+      setOpenValidador(true)
+      auth.sendPasswordResetEmail(values2.email).then(function () {
+        setOpenValidador(false)
+        setErrors([
+          "Foi enviado um email de recuperação para o " + values2.email + ", com sucesso."])
+        setErrorsStatus(true)
+        setTimeout(() => {
+          setErrors([]);
+        }, 5000);
+
+      }).catch(function (error) {
+        setOpenValidador(false)
+        setErrors(["Precisa preencher o campo email."])
+        setErrorsStatus(false)
+        setTimeout(() => {
+          setErrors([]);
+        }, 3000);
+      });
+    }
+
+  }
+
+
+  /////Errros///////
+  const handleSnackClick = () => {
+    setErrors([]);
+  }
+  const [errors, setErrors] = useState([]);
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };
+
+  const erros = () => {
+    if (errorsStatus == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'green',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent autoHideDuration={1}
+              style={{
+                background: 'red',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>}
+            />
+          ))}
+        </div>)
+    }
+  }
 
   return (
     <div className={classes.root}>
@@ -404,24 +547,92 @@ const SignIn = props => {
                 >
                   Entrar agora
                 </Button>
-                <Typography
-                  color="textSecondary"
-                  variant="body1"
+                <Grid
+                  container
+                  spacing={1}
                 >
-                  Ainda não tem uma conta?{' '}
-                  <Link
-                    component={RouterLink}
-                    to="/sign-up"
-                    variant="h6"
+                  <Grid
+                    item
+                    lg={6}
+                    md={6}
+                    xl={12}
+                    xs={12}
                   >
-                    Cadastre-se
+                    <Typography
+                      color="textSecondary"
+                      variant="body1"
+                    >
+                      Ainda não tem uma conta?{' '}
+                      <Link
+                        component={RouterLink}
+                        to="/sign-up"
+                        variant="h6"
+                      >
+                        Cadastre-se
                   </Link>
-                </Typography>
+                    </Typography>
+                  </Grid>
+
+                  <Grid
+                    item
+                    lg={6}
+                    md={6}
+                    xl={12}
+                    xs={12}
+                  >
+                    <Button
+                      style={{
+                        float: 'right'
+                      }}
+                      variant="outlined" color="primary"
+                      onClick={handleRecuperar}>
+                      Recuperar Senha
+                   </Button>
+                  </Grid>
+                </Grid>
+
+                <Dialog open={openAlerta} onClose={handleCloseRecuperar} aria-labelledby="form-dialog-title">
+                  <DialogTitle id="form-dialog-title">Recuperação de senha!</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      Se realmente precisa recuperar sua senha, digite seu email e selecione a opção sim e chegará um email de recuperação na seu email.
+                     </DialogContentText>
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      id="email"
+                      name="email"
+                      label="Email"
+                      type="email"
+                      onChange={handleChange2}
+                      value={values2.email}
+                      fullWidth
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleCloseRecuperar} color="primary">
+                      Não
+                    </Button>
+                    <Button onClick={handleEnvio} color="primary">
+                      Sim
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+
               </form>
             </div>
           </div>
         </Grid>
       </Grid>
+
+      <Snackbar open={errors.length} onClick={handleSnackClick}>
+        {erros()}
+      </Snackbar>
+      <Backdrop
+        style={{ zIndex: 99999999 }}
+        className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 };
