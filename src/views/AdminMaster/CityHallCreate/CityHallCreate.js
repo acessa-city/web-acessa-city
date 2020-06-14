@@ -186,16 +186,16 @@ const CityHallCreate = props => {
   const handleClick = () => {
     setOpen(true)
     setOpenValidador(true)
-    if (values.name === '' ||  values.cnpj === '' || values.email === '' ||    values.address === '' ||    values.neighborhood === '' ||   values.zipCode === '' || values.number === '' ||  values.cityId === '') {
+    if (values.name === '' || values.cnpj === '' || values.email === '' || values.address === '' || values.neighborhood === '' || values.zipCode === '' || values.number === '' || values.cityId === '') {
       setOpenValidador(false)
       setErrorsStatus(false)
       setErrors([
-        "A campos Vazios"
+        "Há campos vazios"
       ])
       setTimeout(() => {
         setErrors([]);
       }, 2000);
-      
+
     } else {
       var newCityHall = values;
       api.post('/city-hall', newCityHall)
@@ -236,7 +236,7 @@ const CityHallCreate = props => {
         })
     }
   }
- 
+
   const handleClickAlterar = () => {
     console.log(values);
     setOpenValidador(true)
@@ -244,7 +244,7 @@ const CityHallCreate = props => {
       .then((result) => {
         setOpen(false)
         const closeModal = {
-            name: values.name
+          name: values.name
         }
         props.modalClose(closeModal);
       })

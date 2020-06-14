@@ -26,7 +26,8 @@ import {
   Paper,
   Rows,
   TableContainer,
-  Divider
+  Divider,
+  TableFooter
 } from '@material-ui/core';
 
 //Modal
@@ -143,6 +144,21 @@ const PrefecturesTable = props => {
   const users = [];
   const classes = useStyles();
 
+  /* PAGINAÇÃO */
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
+
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  /* FIM PAGINAÇÃO */
+
   //console.log("Usuário", JSON.stringify(prefectures))
 
 
@@ -231,7 +247,10 @@ const PrefecturesTable = props => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {prefectures.map(prefecture => {
+                {(rowsPerPage > 0
+                  ? prefectures.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : prefectures
+                ).map((prefecture) => {
                   return (
                     <TableRow key={prefecture.id}
                       hover={true}
@@ -259,6 +278,25 @@ const PrefecturesTable = props => {
                   )
                 })
                 }
+                <TableFooter>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                    colSpan={3}
+                    backIconButtonText={"Anterior"}
+                    nextIconButtonText={"Próxima"}
+                    count={prefectures.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    labelRowsPerPage={'Prefeituras por página:'}
+                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+                    SelectProps={{
+                      inputProps: { 'aria-label': 'Prefeituras por página:' },
+                      native: true,
+                    }}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                  />
+                </TableFooter>
               </TableBody>
             </Table>
 
@@ -302,7 +340,7 @@ const PrefecturesTable = props => {
 
                       <CardContent>
                         {
-                        <Typography>
+                          <Typography>
                             Deseja realmente excluir a prefeitura {categoriesDelete.categories.name}?
                        </Typography>
                         }

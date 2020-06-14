@@ -26,7 +26,8 @@ import {
   Paper,
   Rows,
   TableContainer,
-  Divider
+  Divider,
+  TableFooter
 } from '@material-ui/core';
 
 //Modal
@@ -112,6 +113,21 @@ const useStyles = makeStyles(theme => ({
 const CategoryTable = props => {
   const { className, categories, ...rest } = props;
   const classes = useStyles();
+
+  /* PAGINAÇÃO */
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
+
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  /* FIM PAGINAÇÃO */
 
 
   //Modal de envio Coordenador de fora
@@ -207,7 +223,10 @@ const CategoryTable = props => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {categories.map(categorie => {
+                {(rowsPerPage > 0
+                  ? categories.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : categories
+                ).map((categorie) => {
                   return (
                     <TableRow key={categorie.id}>
                       <TableCell onClick={() => handleOpen(categorie)}>{categorie.name}</TableCell>
@@ -401,6 +420,25 @@ const CategoryTable = props => {
                   </Modal>
                   // {/* FIM Abri Modal envio coordenador  */}
                 }
+                <TableFooter>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                    colSpan={3}
+                    backIconButtonText={"Anterior"}
+                    nextIconButtonText={"Próxima"}
+                    count={categories.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    labelRowsPerPage={'Categorias por página:'}
+                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+                    SelectProps={{
+                      inputProps: { 'aria-label': 'Categorias por página:' },
+                      native: true,
+                    }}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                  />
+                </TableFooter>
               </TableBody>
             </Table>
           </div>

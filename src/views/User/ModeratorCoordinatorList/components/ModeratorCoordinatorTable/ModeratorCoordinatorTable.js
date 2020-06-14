@@ -26,7 +26,8 @@ import {
   Paper,
   Rows,
   TableContainer,
-  Divider
+  Divider,
+  TableFooter
 } from '@material-ui/core';
 
 //Modal
@@ -142,6 +143,26 @@ const ModeratorCoordinatorTable = props => {
   const { className, users, ...rest } = props;
   const classes = useStyles();
 
+  /* PAGINAÇÃO */
+  const resUsersFilter = users.filter(function (user) {
+    return !user.roles.includes('city_hall')
+  });
+
+
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
+
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  /* FIM PAGINAÇÃO */
+
   console.log("Usuário", JSON.stringify(users))
   //Abrir opções dos 3 pontinho
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -233,9 +254,13 @@ const ModeratorCoordinatorTable = props => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.filter(function(user){
-                  return !user.roles.includes('city_hall')
-                }).map(user => {
+
+                {(rowsPerPage > 0
+                  ? users.filter(function (user) {
+                    return !user.roles.includes('city_hall')
+                  }).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : resUsersFilter
+                ).map((user) => {
                   return (
                     <TableRow key={user.id}
                       hover={true}
@@ -262,7 +287,26 @@ const ModeratorCoordinatorTable = props => {
                     </TableRow>
                   )
                 })
-                }
+                }<
+                  TableFooter>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                    colSpan={3}
+                    backIconButtonText={"Anterior"}
+                    nextIconButtonText={"Próxima"}
+                    count={resUsersFilter.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    labelRowsPerPage={'Usuários por página:'}
+                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+                    SelectProps={{
+                      inputProps: { 'aria-label': 'Usuários por página:' },
+                      native: true,
+                    }}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                  />
+                </TableFooter>
               </TableBody>
             </Table>
 
