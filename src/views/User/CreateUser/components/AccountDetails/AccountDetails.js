@@ -131,7 +131,7 @@ const AccountDetails = props => {
         setOpenValidador(false)
         setErrorsStatus(false)
         setErrors([
-          "A campos Vazios"
+          "Há campos vazios"
         ])
         setTimeout(() => {
           setErrors([]);

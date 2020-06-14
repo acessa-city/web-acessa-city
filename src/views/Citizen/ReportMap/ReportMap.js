@@ -637,7 +637,7 @@ const ReportMap = props => {
         }
         else if (aError.response.status == 500) {
           setErrors([
-            "A campos vazios"
+            "Há campos vazios"
           ])
           setTimeout(() => {
             setErrors([]);

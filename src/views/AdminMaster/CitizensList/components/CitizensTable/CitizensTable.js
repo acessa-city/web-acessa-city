@@ -26,7 +26,8 @@ import {
   Paper,
   Rows,
   TableContainer,
-  Divider
+  Divider,
+  TableFooter
 } from '@material-ui/core';
 
 //Modal
@@ -146,7 +147,20 @@ const CitizensTable = props => {
 
   console.log("Usuário", JSON.stringify(citizens))
 
+  /* PAGINAÇÃO */
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
 
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  /* FIM PAGINAÇÃO */
   ///ABRIR MODAL RECUPERAR SENHA
 
   const [open, setOpen] = React.useState(false);
@@ -170,18 +184,18 @@ const CitizensTable = props => {
 
 
   //////Pegar o usuário do momento
-const[carregarUser, setCarregarUser] = useState('');
-React.useEffect(() => {
-      currentUser().then((result) => {
-        //userId = result.id;
-        setCarregarUser(result.id);
+  const [carregarUser, setCarregarUser] = useState('');
+  React.useEffect(() => {
+    currentUser().then((result) => {
+      //userId = result.id;
+      setCarregarUser(result.id);
 
-      }).catch((erro) => {
-        console.log("erro", erro)
-      })
+    }).catch((erro) => {
+      console.log("erro", erro)
+    })
   }, []);
 
-  console.log("aquii",carregarUser)
+  console.log("aquii", carregarUser)
   //DELETE
   const [categoriesDelete, setCategoriesDelete] = useState({
     categories: {}
@@ -239,37 +253,59 @@ React.useEffect(() => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {citizens.filter(function(user){
-                  return !user.id.includes(carregarUser)
-                }).map(citizen => {
-                  return (
-                    <TableRow key={citizen.id}
-                      hover={true}
-                    >
-                      <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.firstName} {citizen.lastName}</TableCell>
-                      <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.email}</TableCell>
-                      <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.roles[0]} {citizen.roles[1]}</TableCell>
-                      <TableCell style={{
-                        textAlign: 'right'
-                      }}
+                {(rowsPerPage > 0
+                      ? citizens.filter(function (user) {
+                        return !user.id.includes(carregarUser)
+                      }).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      : citizens
+                  ).map((citizen) => {
+                    return (
+                      <TableRow key={citizen.id}
+                        hover={true}
                       >
-                        <IconButton
-                          onClick={() => handleClickAccount(citizen)}
-                          aria-label="display more actions" edge="end" color="inherit">
-                          <EditIcon
-                            onClick={() => handleClickAccount(citizen)} />  {/* onClick={handleClick}  */}
-                        </IconButton>
-                        <IconButton
-                          onClick={() => handleOpenDelete(citizen)}
-                          aria-label="display more actions" edge="end" color="inherit">
-                          <DeleteIcon onClick={() => handleOpenDelete(citizen)} />  {/* onClick={handleClick}  */}
-                        </IconButton>
+                        <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.firstName} {citizen.lastName}</TableCell>
+                        <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.email}</TableCell>
+                        <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.roles[0]} {citizen.roles[1]}</TableCell>
+                        <TableCell style={{
+                          textAlign: 'right'
+                        }}
+                        >
+                          <IconButton
+                            onClick={() => handleClickAccount(citizen)}
+                            aria-label="display more actions" edge="end" color="inherit">
+                            <EditIcon
+                              onClick={() => handleClickAccount(citizen)} />  {/* onClick={handleClick}  */}
+                          </IconButton>
+                          <IconButton
+                            onClick={() => handleOpenDelete(citizen)}
+                            aria-label="display more actions" edge="end" color="inherit">
+                            <DeleteIcon onClick={() => handleOpenDelete(citizen)} />  {/* onClick={handleClick}  */}
+                          </IconButton>
 
-                      </TableCell>
-                    </TableRow>
-                  )
-                })
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
                 }
+                <TableFooter>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                    colSpan={3}
+                    backIconButtonText={"Anterior"}
+                    nextIconButtonText={"Próxima"}
+                    count={citizens.length-1}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    labelRowsPerPage={'Usuários por página:'}
+                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+                    SelectProps={{
+                      inputProps: { 'aria-label': 'Usuários por página:' },
+                      native: true,
+                    }}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                  />
+                </TableFooter>
               </TableBody>
             </Table>
 

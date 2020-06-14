@@ -24,6 +24,7 @@ import {
   Divider,
   Snackbar,
   SnackbarContent,
+  TableFooter
 } from '@material-ui/core';
 
 //Modal
@@ -143,11 +144,11 @@ const StyledMenuItem = withStyles((theme) => ({
 const DenunciationsTable = props => {
   const { className, statusDenunciation, denunciations, atualizarTela, coodenadores, ...rest } = props;
   const classes = useStyles();
-/* PAGINAÇÃO */
+  /* PAGINAÇÃO */
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
-  
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -881,26 +882,25 @@ const DenunciationsTable = props => {
                 </Modal>
 
               </TableBody>
-              <TablePagination
-                style={{
-                  margin: 100
-                }}
-                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                colSpan={3}
-                backIconButtonText={"Anterior"}
-                nextIconButtonText={"Próxima"}
-                count={denunciations.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                labelRowsPerPage={'Denúncias por página:'}
-                labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
-                SelectProps={{
-                  inputProps: { 'aria-label': 'Denúncias por página:' },
-                  native: true,
-                }}
-                onChangePage={handleChangePage}
-                onChangeRowsPerPage={handleChangeRowsPerPage}
-              />
+              <TableFooter>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                  colSpan={3}
+                  backIconButtonText={"Anterior"}
+                  nextIconButtonText={"Próxima"}
+                  count={denunciations.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  labelRowsPerPage={'Denúncias por página:'}
+                  labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+                  SelectProps={{
+                    inputProps: { 'aria-label': 'Denúncias por página:' },
+                    native: true,
+                  }}
+                  onChangePage={handleChangePage}
+                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                />
+              </TableFooter>
             </Table>
           </div>
         </PerfectScrollbar>
