@@ -238,7 +238,7 @@ const CategoryToolbar = props => {
               </Select>
             </FormControl>
           </Grid>
-
+  
           <Grid item xs={12} sm={1}>
             <FormControl margin="dense" fullWidth>
               <Button onClick={submit} variant="contained" color="secondary">Filtrar</Button>
@@ -270,16 +270,6 @@ const CategoryToolbar = props => {
         </Grid>
 
       </div >
-
-      <Dialog open={openDialog} onClose={e => setOpenDialog(false)}>
-        <DialogTitle>Atenção</DialogTitle>
-        <DialogContent>
-          {mensagem}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={e => setOpenDialog(false)}>Fechar</Button>
-        </DialogActions>
-      </Dialog>
 
       {open &&
 

@@ -10,7 +10,11 @@ import {
   Divider,
   Grid,
   Button,
-  TextField
+  TextField,
+  Backdrop,
+  CircularProgress,
+  Snackbar,
+  SnackbarContent,
 } from '@material-ui/core';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -29,13 +33,15 @@ const useStyles = makeStyles(() => ({
 const AccountDetails = props => {
   const { className, userId, ...rest } = props;
 
+  console.log("esta chegando aqui",userId);
+
 
   const classes = useStyles();
 
 
   const [user, setUser] = useState({})
 
-  const[controleUser, setControleUser] = useState('');
+  const [controleUser, setControleUser] = useState('');
 
   const [values, setValues] = useState({
     firstName: '',
@@ -52,35 +58,62 @@ const AccountDetails = props => {
 
   const enviaEmailRecuperacaoSenha = (userEmail) => {
     var auth = firebase.auth();
-    
-    auth.sendPasswordResetEmail(userEmail).then(function() {
-      alert('Email enviado com sucesso')
-    }).catch(function(error) {
+    setOpenValidador(true)
+    auth.sendPasswordResetEmail(userEmail).then(function () {
+      setOpenValidador(false)
+      setErrors([
+        "Recuperação foi enviada para" + user.email + ", com sucesso."])
+
+      setErrorsStatus(true)
+      setTimeout(() => {
+        setErrors([]);
+      }, 5000);
+
+    }).catch(function (error) {
       alert('Falha no envio do e-mail');
       console.log(error);
     });
   }
 
-
+  
   const handleClickAlterar = (event) => {
     event.preventDefault();
 
     if (!userId) {
       currentUser().then((result) => {
+        console.log(" usuário ID",result.id);
         const alter = {
           userId: result.id,
           firstName: values.firstName,
           lastName: values.lastName,
           email: values.email,
         }
-        
-        API.put('/user/update-data-profile',alter).then((result) => {
-  
-          console.log('sucesso')
-        }).catch((erro) => {
-          console.log('erro', erro.message);
-        })
 
+        console.log("aaaaaa",alter);
+
+        API.put('/user/update-data-profile', alter).then((result) => {
+          setErrors([
+            "Dados Atualizado Com sucesso."])
+  
+          setErrorsStatus(true)
+          setTimeout(() => {
+            setErrors([]);
+          }, 1000);
+           window.location.reload(true);
+          //const fechaModal = true;
+          ///props.closeModal(fechaModal);
+
+        }).catch((erro) => {
+          setErrors([
+            "Ta entrando aqui 1"])
+
+          setErrorsStatus(false)
+          setTimeout(() => {
+            setErrors([]);
+          }, 1000);
+          console.log("erro", erro)
+        })
+       
       }).catch((erro) => {
         console.log("erro", erro)
       })
@@ -92,13 +125,30 @@ const AccountDetails = props => {
         email: values.email,
       }
 
-      API.put('/user/update-data-profile',alter).then((result) => {
+      API.put('/user/update-data-profile', alter).then((result) => {
+        
+        setErrors([
+          "Dados Atualizado Com sucesso."])
 
-        console.log('sucesso')
+        setErrorsStatus(true)
+        setTimeout(() => {
+          setErrors([]);
+        }, 1000);
+ 
+        //const fechaModal = true;
+        //props.closeModal(fechaModal);
+
       }).catch((erro) => {
-        console.log('erro', erro);
+        setErrors([
+          "Ta entrando aqui 2"])
+
+        setErrorsStatus(false)
+        setTimeout(() => {
+          setErrors([]);
+        }, 1000);
+
       })
-      
+
     }
 
   }
@@ -112,6 +162,10 @@ const AccountDetails = props => {
   };
 
   const handleCloseRecuperar = () => {
+    setOpenRecuperarSenha(false);
+  };
+
+  const handleRecuperar = () => {
     enviaEmailRecuperacaoSenha(values.email);
     setOpenRecuperarSenha(false);
   };
@@ -147,6 +201,48 @@ const AccountDetails = props => {
 
   }, []);
 
+
+  ///Erro
+  const [errors, setErrors] = useState([]);
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };
+
+  const handleSnackClick = () => {
+    setErrors([]);
+  }
+
+
+  const erros = () => {
+    if (errorsStatus == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'green',
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent autoHideDuration={1}
+              style={{
+                background: 'red',
+              }}
+              message={<h3>{error}</h3>}
+            />
+          ))}
+        </div>)
+    }
+
+  }
+
   return (
     <Card
       {...rest}
@@ -157,7 +253,7 @@ const AccountDetails = props => {
         noValidate
       >
         <CardHeader
-          subheader="Meus dados pessoais"
+          subheader="Dados de cadastro"
           title="Perfil"
         />
         <Divider />
@@ -219,80 +315,42 @@ const AccountDetails = props => {
 
 
             {controleUser == true &&
-            <Grid
-              item
-              md={12}
-              xs={12}
-              style={{ textAlign: 'center' }}
-            >
-              <Button
-                variant="outlined" color="primary"
-                onClick={handleClickOpenRecuperar}>
-                Recuperar Senha
-              </Button>
-              <Dialog
-                open={openRecuperarSenha}
-                onClose={handleCloseRecuperar}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
+              <Grid
+                item
+                md={12}
+                xs={12}
+                style={{ textAlign: 'center' }}
               >
-                <DialogTitle id="alert-dialog-title">Recuperação de senha!</DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    Chegará um email de recuperação de senha no seu email.
-                    Se deseja realmente recuperar sua senha,clicar na opção sim!
+                <Button
+                  variant="outlined" color="primary"
+                  onClick={handleClickOpenRecuperar}>
+                  Recuperar Senha
+              </Button>
+                <Dialog
+                  open={openRecuperarSenha}
+                  onClose={handleCloseRecuperar}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">Recuperação de senha!</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      Chegará um email de recuperação de senha no seu email.
+                      Se deseja realmente recuperar sua senha,clicar na opção sim!
                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleCloseRecuperar} color="primary">
-                    Não
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleCloseRecuperar} color="primary">
+                      Não
                   </Button>
-                  <Button onClick={handleCloseRecuperar} color="primary" autoFocus>
-                    sim
+                    <Button onClick={handleRecuperar} color="primary" autoFocus>
+                      sim
                   </Button>
-                </DialogActions>
-              </Dialog>
+                  </DialogActions>
+                </Dialog>
+              </Grid>
 
-            </Grid>
-
-}
-            {/* <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                helperText="Senha"
-                label="Senha"
-                margin="dense"
-                name="password"
-                type="password"
-                required
-                value={values.senha}
-                variant="outlined"
-              />
-
-            </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-
-              <TextField
-                fullWidth
-                helperText="Confirmar senha"
-                label="Confirmação da senha"
-                margin="dense"
-                name="password"
-                type="password"
-                required
-                value={values.confirmarSenha}
-                variant="outlined"
-              />
-
-            </Grid> */}
+            }
           </Grid>
         </CardContent>
         <CardActions
@@ -307,6 +365,16 @@ const AccountDetails = props => {
           </Button>
         </CardActions>
       </form>
+
+      <Snackbar open={errors.length} onClick={handleSnackClick}>
+        {erros()}
+      </Snackbar>
+      <Backdrop
+        style={{ zIndex: 99999999 }}
+        className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
     </Card>
   );
 };

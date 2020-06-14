@@ -175,16 +175,6 @@ const Routes = () => {
         {/* FIM Rotas do Coordinator */}
 
 
-        {/* Rotas do Master */}
-
-        {/* <RouteWithLayout
-          component={AproveCityHallListView}
-          exact
-          layout={MainLayout}
-          path="/aprovar-prefeitura"
-          permission={true}
-        /> */}
-
         <RouteWithLayout
           component={PrefecturesListView}
           exact
@@ -199,7 +189,7 @@ const Routes = () => {
           component={CitizensListView}
           exact
           layout={MainLayout}
-          path="/cidadaos"
+          path="/usuarios"
           permission={roles.admin}
         // permission={roles.admin || roles.moderator || roles.coordinator || roles.city_hall}
         />

@@ -106,102 +106,82 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-//Abrir opções dos 3 pontinho
-const StyledMenu = withStyles({
-  paper: {
-    border: '1px solid #d3d4d5',
-  },
-})((props) => (
-  <Menu
-    elevation={0}
-    getContentAnchorEl={null}
-    anchorOrigin={{
-      vertical: 'bottom',
-      horizontal: 'center',
-    }}
-    transformOrigin={{
-      vertical: 'top',
-      horizontal: 'center',
-    }}
-    {...props}
-  />
-));
-
-const StyledMenuItem = withStyles((theme) => ({
-  root: {
-    '&:focus': {
-      backgroundColor: theme.palette.primary.main,
-      '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
-        color: theme.palette.common.white,
-      },
-    },
-  },
-}))(MenuItem);
-
 
 //FIM Abrir opções dos 3 pontinho
 
 const CategoryTable = props => {
   const { className, categories, ...rest } = props;
   const classes = useStyles();
-  const [openDialog, setOpenDialog] = useState(false);
-  const [mensagem, setMensagem] = useState('');
 
 
+  //Modal de envio Coordenador de fora
+  const [openCategories, setOpenCategories] = useState({
+    categories: {}
 
-//Modal de envio Coordenador de fora
-const [openCategories, setOpenCategories] = useState({
-  categories: {}
-
-});
-
-const [open, setOpen] = React.useState(false);
-
-const handleOpen = (categoriesT) => {
-  console.log("categoriesT" + JSON.stringify(categoriesT))
-  setOpenCategories({
-    categories: categoriesT
   });
-  setOpen(true);
-};
 
-const handleClose = () => {
-  setOpen(false);
-};
+  const [open, setOpen] = React.useState(false);
 
+  const handleOpen = (categoriesT) => {
+    console.log("categoriesT" + JSON.stringify(categoriesT))
+    setOpenCategories({
+      categories: categoriesT
+    });
+    setOpen(true);
+  };
 
-
-
-//DELETE
-const [categoriesDelete, setCategoriesDelete] = useState({
-  categories: {}
-});
-
-const handleOpenDelete = (categoriesD) => {
-  props.deleteCategory(categoriesD)
-}
+  const handleClose = () => {
+    setOpen(false);
+  };
 
 
 
-
-
-const handleChange = event => {
-  event.preventDefault();
-  setOpenCategories({
-    ...openCategories,
-    categories:{
-      id: openCategories.categories.id,
-      name:event.target.value
-    }
+  //DELETE
+  const [categoriesDelete, setCategoriesDelete] = useState({
+    categories: {}
   });
-};
 
-const submit = (event) =>{
-  event.preventDefault();
-  props.editCategory(openCategories)
-  setOpenCategories({categories:{}})
-  setOpen(false);
-}
+  const [openAlerta, setOpenAlerta] = React.useState(false);
+
+  const handleOpenDelete = (categoriesD) => {
+    setCategoriesDelete({
+      categories: categoriesD
+    });
+    setOpenAlerta(true);
+  };
+
+  const handleCloseAlerta = () => {
+    setOpenAlerta(false);
+  };
+
+
+  const handleExlcuir = (event) => {
+    event.preventDefault();
+    props.deleteCategory(categoriesDelete);
+    setOpenAlerta(false);
+  }
+
+//////////////////////
+
+
+
+  const handleChange = event => {
+    event.preventDefault();
+    setOpenCategories({
+      ...openCategories,
+      categories: {
+        id: openCategories.categories.id,
+        name: event.target.value
+      }
+    });
+  };
+
+  const submit = (event) => {
+    event.preventDefault();
+    props.editCategory(openCategories)
+    setOpenCategories({ categories: {} })
+    setOpen(false);
+  }
 
   return (
     <Card
@@ -217,17 +197,17 @@ const submit = (event) =>{
 
                   <TableCell>Categoria</TableCell>
                   <TableCell
-                   style={{
-                    textAlign: 'right',
-                    padding: '0px 25px 0px 0px'
-                  }}
-                  
+                    style={{
+                      textAlign: 'right',
+                      padding: '0px 25px 0px 0px'
+                    }}
+
                   >Ações</TableCell>
 
                 </TableRow>
               </TableHead>
               <TableBody>
-              {categories.map(categorie => {
+                {categories.map(categorie => {
                   return (
                     <TableRow key={categorie.id}>
                       <TableCell onClick={() => handleOpen(categorie)}>{categorie.name}</TableCell>
@@ -249,6 +229,80 @@ const submit = (event) =>{
                   )
                 })
                 }
+                 {/* Modal Alerta */}
+                {openAlerta &&
+
+                  <Modal
+                    aria-labelledby="transition-modal-title"
+                    aria-describedby="transition-modal-description"
+                    className={classes.modal}
+                    open={openAlerta}
+                    onClose={handleCloseAlerta}
+                    BackdropComponent={Backdrop}
+                    BackdropProps={{
+                      timeout: 500,
+                    }}
+
+                  >
+                    {/* Modal da Dereita */}
+                    <Fade in={openAlerta}>
+                      <div className={classes.paper}>
+                        <div style={{
+                          textAlign: 'right'
+                        }}>
+
+                          <IconButton
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            onClick={handleCloseAlerta}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </div>
+                        <Card className={classes.root}
+                          style={{
+                            textAlign: 'center',
+                            width: 500,
+                            maxHeight: 500,
+                          }}>
+
+                          <CardContent>
+                           {
+                             <Typography>
+                             Deseja realmente excluir a categoria {categoriesDelete.categories.name}?
+                             </Typography>
+                           }
+                          </CardContent>
+                          <Divider />
+                          <CardActions>
+                            <Grid
+                              item
+                              lg={12}
+                              md={12}
+                              xl={12}
+                              xs={12}
+                            >
+                              <Button
+                                color="secondary"
+                                variant="contained"
+                                style={{ float: 'right', background: '#b71c1c'}}
+                                onClick={handleExlcuir}
+                              >
+                                Excluir
+                            </Button>
+                            </Grid>
+                          </CardActions>
+                        </Card>
+                      </div>
+                    </Fade>
+                  </Modal>
+                  // {/* FIM Abri Modal envio coordenador  */}
+                }
+
+
+
+                {/* Modal Edição */}
                 {open &&
 
                   <Modal
@@ -316,7 +370,7 @@ const submit = (event) =>{
                               <Button
                                 color="secondary"
                                 variant="contained"
-                                style={{float: 'right' }}
+                                style={{ float: 'right' }}
                                 onClick={submit}
                               >
                                 salvar

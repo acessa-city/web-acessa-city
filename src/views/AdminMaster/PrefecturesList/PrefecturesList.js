@@ -58,72 +58,127 @@ const PrefecturesList = () => {
 
   // CHAMAR API DE USUARIOS
   const listPrefectures = () => {
-      API.get('/city-hall')
-        .then(response => {
-          const PrefecturesList = response.data;
-          setPrefectures(PrefecturesList)
-          setPrefecturesBackup(PrefecturesList)
-        })
-        .catch((aError) => {
-          if (aError.response.status == 400) {
-            setOpenValidador(false)
-            console.log(aError.response.data.errors)
-            setErrors(aError.response.data.errors)
-
-            setTimeout(() => {
-              setErrors([]);
-            }, 10000);
-          }
-          else if (aError.response.status == 500) {
-            setErrors([
-              "Erro no servidor"
-            ])
-
-            setTimeout(() => {
-              setErrors([]);
-            }, 10000);
-          }
-          setErrorsStatus(false)
+    setOpenValidador(true)
+    API.get('/city-hall')
+      .then(response => {
+        setOpenValidador(false)
+        const PrefecturesList = response.data;
+        setPrefectures(PrefecturesList)
+        setPrefecturesBackup(PrefecturesList)
+      })
+      .catch((aError) => {
+        if (aError.response.status == 400) {
           setOpenValidador(false)
-        })
+          console.log(aError.response.data.errors)
+          setErrors(aError.response.data.errors)
+
+          setTimeout(() => {
+            setErrors([]);
+          }, 10000);
+        }
+        else if (aError.response.status == 500) {
+          setErrors([
+            "Erro no servidor"
+          ])
+
+          setTimeout(() => {
+            setErrors([]);
+          }, 10000);
+        }
+        setErrorsStatus(false)
+        setOpenValidador(false)
+      })
   }
 
   // FILTRAR USUÀRIOS
-  const filter = (prefectureFilter) =>{
+  const filter = (prefectureFilter) => {
 
-    console.log("filtro",  prefectureFilter.name)
+    //console.log("filtro", prefectureFilter.name)
 
-  
-      const listaFiltrada = prefecturesBackup.filter(function(prefecture){
 
-        let retornaPrefeitura = true
-        if(prefectureFilter.name){
-          retornaPrefeitura = prefecture.name.toUpperCase().includes(prefectureFilter.name.toUpperCase());
-        }
+    const listaFiltrada = prefecturesBackup.filter(function (prefecture) {
 
-        if(prefectureFilter.cnpj){
-          retornaPrefeitura = retornaPrefeitura && prefecture.cnpj.toUpperCase().includes(prefectureFilter.cnpj.toUpperCase());
-        }
+      let retornaPrefeitura = true
+      if (prefectureFilter.name) {
+        retornaPrefeitura = prefecture.name.toUpperCase().includes(prefectureFilter.name.toUpperCase());
+      }
 
-        if(prefectureFilter.email){
-          retornaPrefeitura = retornaPrefeitura && prefecture.email.toUpperCase().includes(prefectureFilter.email.toUpperCase());
-        }
-        return retornaPrefeitura ;
-      })
-       console.log("teste", listaFiltrada)
+      if (prefectureFilter.cnpj) {
+        retornaPrefeitura = retornaPrefeitura && prefecture.cnpj.toUpperCase().includes(prefectureFilter.cnpj.toUpperCase());
+      }
+
+      if (prefectureFilter.email) {
+        retornaPrefeitura = retornaPrefeitura && prefecture.email.toUpperCase().includes(prefectureFilter.email.toUpperCase());
+      }
+      return retornaPrefeitura;
+    })
+    setOpenValidador(true)
+    if (listaFiltrada == '') {
+      setOpenValidador(false)
+      setErrors(["Nenhum resultado encontrado!"])
       setPrefectures(listaFiltrada);
+      setErrorsStatus(true)
+      setTimeout(() => {
+        setErrors([]);
+      }, 2000);
+
+    } else {
+      setOpenValidador(false)
+      setPrefectures(listaFiltrada);
+    }
 
   }
 
 
-  const limpar = () =>{  
+  const limpar = () => {
     setPrefectures(prefecturesBackup)
   }
 
-  const onCreatePrefecture = (prefecture) =>{
-      if(prefecture){
+  const onCreatePrefecture = (prefecture) => {
+    if (prefecture) {
+      listPrefectures();
+    }
+  }
+
+  ////Fechar Modal de Atualização
+  const fimModal = (value) => {
+    setOpenValidador(false)
+    setErrors([
+      "A prefeitura " + value.name + " foi altera com sucesso."
+    ]);
+    setErrorsStatus2(true)
+    setTimeout(() => {
+      setErrors([]);
+    }, 2000);
+    listPrefectures();
+  }
+
+
+  /////Deletar prefeitura
+  const deletePrefecture = (userDelete) => {
+    console.log("PREFEITURA AQUII II I I I I:", userDelete)
+    setOpenValidador(true)
+    API.delete(`/city-hall/${userDelete.categories.id}`)
+      .then(response => {
+        setOpenValidador(false)
+        setErrors([
+          "A prefeitura foi deletada com sucesso."
+        ]);
+        setErrorsStatus2(true)
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
         listPrefectures();
-      }
+      }).catch(erro => {
+        setOpenValidador(false)
+        setErrors([
+          "Não conseguimos deletar essa prefeitura."
+        ]);
+        setErrorsStatus(false)
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
+      })
   }
 
   // Atualizar os dados na tela
@@ -131,6 +186,10 @@ const PrefecturesList = () => {
     listPrefectures();
   }, []);
 
+
+
+
+  const [errorsStatus2, setErrorsStatus2] = useState('');
   const erros = () => {
     if (errorsStatus == true) {
       return (
@@ -138,7 +197,20 @@ const PrefecturesList = () => {
           {errors.map(error => (
             <SnackbarContent
               style={{
+                background: 'orange',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else if (errorsStatus2 == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
                 background: 'green',
+                textAlign: 'center'
               }}
               message={<h3>{error}</h3>} />
           ))}
@@ -150,6 +222,7 @@ const PrefecturesList = () => {
             <SnackbarContent autoHideDuration={1}
               style={{
                 background: 'red',
+                textAlign: 'center'
               }}
               message={<h3>{error}</h3>}
             />
@@ -157,15 +230,14 @@ const PrefecturesList = () => {
         </div>)
     }
   }
-
   return (
     <div className={classes.root}>
       {/* <DenunciationsToolbar save={save} /> */}
 
-      
-      <PrefecturesToolbar   filter={filter} onClearFilter={limpar} onCreatePrefecture={onCreatePrefecture}/>   
+
+      <PrefecturesToolbar filter={filter} onClearFilter={limpar} onCreatePrefecture={onCreatePrefecture} />
       <div className={classes.content}>
-        <PrefecturesTable prefectures={prefectures} />
+        <PrefecturesTable prefectures={prefectures} fimModal={fimModal} deletePrefecture={deletePrefecture} />
       </div>
 
       <Snackbar open={errors.length} onClick={handleSnackClick}>

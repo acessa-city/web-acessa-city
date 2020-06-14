@@ -58,68 +58,120 @@ const CitizensList = () => {
 
   // CHAMAR API DE USUARIOS
   const listCitizens = () => {
-      API.get('/user')
-        .then(response => {
-          const CitizensList = response.data;
-          setCitizens(CitizensList)
-          setCitizensBackup(CitizensList)
-        })
-        .catch((aError) => {
-          if (aError.response.status == 400) {
-            setOpenValidador(false)
-            console.log(aError.response.data.errors)
-            setErrors(aError.response.data.errors)
-
-            setTimeout(() => {
-              setErrors([]);
-            }, 10000);
-          }
-          else if (aError.response.status == 500) {
-            setErrors([
-              "Erro no servidor"
-            ])
-
-            setTimeout(() => {
-              setErrors([]);
-            }, 10000);
-          }
-          setErrorsStatus(false)
+    setOpenValidador(true)
+    API.get('/user')
+      .then(response => {
+        setOpenValidador(false)
+        const CitizensList = response.data;
+        setCitizens(CitizensList)
+        setCitizensBackup(CitizensList)
+      })
+      .catch((aError) => {
+        if (aError.response.status == 400) {
           setOpenValidador(false)
-        })
+          console.log(aError.response.data.errors)
+          setErrors(aError.response.data.errors)
+
+          setTimeout(() => {
+            setErrors([]);
+          }, 10000);
+        }
+        else if (aError.response.status == 500) {
+          setErrors([
+            "Erro no servidor"
+          ])
+
+          setTimeout(() => {
+            setErrors([]);
+          }, 10000);
+        }
+        setErrorsStatus(false)
+        setOpenValidador(false)
+      })
   }
 
   // FILTRAR USUÀRIOS
-  const filter = (citizenFilter) =>{
+  const filter = (citizenFilter) => {
 
-    console.log("filtro",  citizenFilter.firstName)
+    console.log("filtro", citizenFilter.type)
 
-  
-      const listaFiltrada = citizensBackup.filter(function(citizen){
 
-        let retornaCitizen = true
+    const listaFiltrada = citizensBackup.filter(function (citizen) {
 
-        if(citizenFilter.firstName){
-          retornaCitizen = retornaCitizen && citizen.firstName.toUpperCase().includes(citizenFilter.firstName.toUpperCase());
-        }
+      let retornaCitizen = true
+
+      if (citizenFilter.type) {
+        retornaCitizen = retornaCitizen && citizen.roles.includes(citizenFilter.type.toLowerCase());
+      }
+      
+      if (citizenFilter.firstName) {
+        retornaCitizen = retornaCitizen && citizen.firstName.toUpperCase().includes(citizenFilter.firstName.toUpperCase());
+      }
+
+      if (citizenFilter.email) {
+        retornaCitizen = retornaCitizen && citizen.email.toUpperCase().includes(citizenFilter.email.toUpperCase());
+      }
+      return retornaCitizen;
+    })
+   
+    setOpenValidador(true)
+    if(listaFiltrada == ''){
+     setOpenValidador(false)
+     setErrors(["Nenhum resultado encontrado!"])
+     setCitizens(listaFiltrada);
+     setErrorsStatus(true)
+     setTimeout(() => {
+       setErrors([]);
+     }, 2000);
     
-        if(citizenFilter.email){
-          retornaCitizen = retornaCitizen && citizen.email.toUpperCase().includes(citizenFilter.email.toUpperCase());
-        }
-        return retornaCitizen ;
-      })
-       setCitizens(listaFiltrada);
+    }else{
+     setOpenValidador(false)
+     setCitizens(listaFiltrada);
+    }
+
 
   }
 
+  ///Deletar Usuário
+  const deleteUsuario = (user) => {
+    console.log("aqui o que tem", user)
+    API.delete(`/user/${user.categories.id}`
+    ).then(response => {
+      setErrors([
+        "Usuário deletado com sucesso!"
+      ])
+      setErrorsStatus(true)
+      setTimeout(() => {
+        setErrors([]);
+      }, 1000);
+      listCitizens();
+    }).catch(erro => {
+      console.log(erro);
+    })
+  }
 
-  const limpar = () =>{  
+
+  const limpar = () => {
     setCitizens(citizensBackup)
   }
 
-  const onCreateUser = (citizen) =>{
-      if(citizen){
-        listCitizens();
-      }
+  const onCreateUser = (citizen) => {
+    if (citizen) {
+      listCitizens();
+    }
+  }
+  //Fechar o Modal de Alteração com sucesso
+  const closeModalAlter = (result) => {
+    if (result) {
+      setErrors([
+        "O usuário foi atualizado com sucesso."])
+
+      setErrorsStatus(true)
+      setTimeout(() => {
+        setErrors([]);
+      }, 1000);
+      listCitizens();
+    }
   }
 
   // Atualizar os dados na tela
@@ -128,6 +180,8 @@ const CitizensList = () => {
   }, []);
 
 
+  
+  const [errorsStatus2, setErrorsStatus2] = useState('');
   const erros = () => {
     if (errorsStatus == true) {
       return (
@@ -135,7 +189,20 @@ const CitizensList = () => {
           {errors.map(error => (
             <SnackbarContent
               style={{
+                background: 'orange',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    }else if (errorsStatus2 == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
                 background: 'green',
+                textAlign: 'center'
               }}
               message={<h3>{error}</h3>} />
           ))}
@@ -147,6 +214,7 @@ const CitizensList = () => {
             <SnackbarContent autoHideDuration={1}
               style={{
                 background: 'red',
+                textAlign: 'center'
               }}
               message={<h3>{error}</h3>}
             />
@@ -159,9 +227,9 @@ const CitizensList = () => {
     <div className={classes.root}>
       {/* <DenunciationsToolbar save={save} /> */}
 
-      <CitizensToolbar   filter={filter} onClearFilter={limpar}  onCreateUser={onCreateUser}/>   
+      <CitizensToolbar filter={filter} onClearFilter={limpar} onCreateUser={onCreateUser} />
       <div className={classes.content}>
-        <CitizensTable citizens={citizens} />
+        <CitizensTable citizens={citizens} deleteUsuario={deleteUsuario} closeModalAlter={closeModalAlter} />
       </div>
 
       <Snackbar open={errors.length} onClick={handleSnackClick}>

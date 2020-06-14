@@ -25,7 +25,8 @@ import {
   Box,
   Paper,
   Rows,
-  TableContainer
+  TableContainer,
+  Divider
 } from '@material-ui/core';
 
 //Modal
@@ -178,18 +179,31 @@ const ModeratorCoordinatorTable = props => {
   };
 
 
-  const handleClickDelete = (userDelete) => {
+  //DELETE
+  const [categoriesDelete, setCategoriesDelete] = useState({
+    categories: {}
+  });
 
-    API.delete(`/user/${userDelete.id}`)
-      .then(response => {
-        console.log("sucesso")
-      }).catch(erro => {
-        console.log(erro);
-      })
+  const [openAlerta, setOpenAlerta] = React.useState(false);
 
+  const handleOpenDelete = (categoriesD) => {
+    setCategoriesDelete({
+      categories: categoriesD
+    });
+    setOpenAlerta(true);
+  };
+
+  const handleCloseAlerta = () => {
+    setOpenAlerta(false);
+  };
+
+
+  const handleExlcuir = (event) => {
+    event.preventDefault();
+    console.log("Deletar usuario", categoriesDelete)
+    props.deleteUsuario(categoriesDelete);
+    setOpenAlerta(false);
   }
-
-
 
   return (
     <Card
@@ -214,24 +228,29 @@ const ModeratorCoordinatorTable = props => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.map(user => {
+                {users.filter(function(user){
+                  return !user.roles.includes('city_hall')
+                }).map(user => {
                   return (
                     <TableRow key={user.id}
                       hover={true}
                     >
-                      <TableCell onClick={() => handleClickAccount(user)}>{user.firstName}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.roles[0]}</TableCell>
+                      <TableCell onClick={() => handleClickAccount(user)}>{user.firstName} {user.lastName}</TableCell>
+                      <TableCell onClick={() => handleClickAccount(user)}>{user.email}</TableCell>
+                      <TableCell onClick={() => handleClickAccount(user)}>{user.roles[0]} {user.roles[1]}</TableCell>
                       <TableCell style={{
                         textAlign: 'right'
                       }}>
                         <IconButton
+                          onClick={() => handleClickAccount(user)}
                           aria-label="display more actions" edge="end" color="inherit">
                           <EditIcon
                             onClick={() => handleClickAccount(user)} />  {/* onClick={handleClick}  */}
                         </IconButton>
-                        <IconButton aria-label="display more actions" edge="end" color="inherit">
-                          <DeleteIcon onClick={() => handleClickDelete(user)} />  {/* onClick={handleClick}  */}
+                        <IconButton
+                          onClick={() => handleOpenDelete(user)}
+                          aria-label="display more actions" edge="end" color="inherit">
+                          <DeleteIcon onClick={() => handleOpenDelete(user)} />  {/* onClick={handleClick}  */}
                         </IconButton>
 
                       </TableCell>
@@ -242,6 +261,78 @@ const ModeratorCoordinatorTable = props => {
               </TableBody>
             </Table>
 
+            {/* Modal Alerta */}
+            {openAlerta &&
+
+              <Modal
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                className={classes.modal}
+                open={openAlerta}
+                onClose={handleCloseAlerta}
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                  timeout: 500,
+                }}
+
+              >
+                {/* Modal da Dereita */}
+                <Fade in={openAlerta}>
+                  <div className={classes.paper}>
+                    <div style={{
+                      textAlign: 'right'
+                    }}>
+
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleCloseAlerta}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                    <Card className={classes.root}
+                      style={{
+                        textAlign: 'center',
+                        width: 500,
+                        maxHeight: 500,
+                      }}>
+
+                      <CardContent>
+                        {
+                          <Typography>
+                            Deseja realmente excluir o usuário {categoriesDelete.categories.firstName}?
+                       </Typography>
+                        }
+                      </CardContent>
+                      <Divider />
+                      <CardActions>
+                        <Grid
+                          item
+                          lg={12}
+                          md={12}
+                          xl={12}
+                          xs={12}
+                        >
+                          <Button
+                            color="secondary"
+                            variant="contained"
+                            style={{ float: 'right', background: '#b71c1c' }}
+                            onClick={handleExlcuir}
+                          >
+                            Excluir
+                        </Button>
+                        </Grid>
+                      </CardActions>
+                    </Card>
+                  </div>
+                </Fade>
+              </Modal>
+              // {/* FIM Abri Modal envio coordenador  */}
+            }
+
+            {/* ///Alterar dados */}
             {open &&
               < Modal
                 aria-labelledby="transition-modal-title"

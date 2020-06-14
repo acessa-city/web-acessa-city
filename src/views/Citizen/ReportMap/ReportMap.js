@@ -54,7 +54,7 @@ import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import CloseIcon from '@material-ui/icons/Close';
-
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import API from '../../../utils/API';
 import s3 from 'utils/AWS-S3'
 import currentUser from 'utils/AppUser';
@@ -315,29 +315,68 @@ const ReportMap = props => {
       setUser(result.id)
       filterBoth(result.id);
     })
-  /*   const interval = setInterval(() => {
-
-      if (filterSelected == 1) {
-        filterInProgress(user);
-      }
-      else if (filterSelected == 2) {
-        filterFinished();
-      }
-      else if (filterSelected == 3) {
-        filterApproved();
-      }
-      else if (filterSelected == 4) {
-        filterInAnalysis();
-      }
-       else {
-        filterBoth(user);
-      } 
-
-    }, 1000); */
+    /*   const interval = setInterval(() => {
+  
+        if (filterSelected == 1) {
+          filterInProgress(user);
+        }
+        else if (filterSelected == 2) {
+          filterFinished();
+        }
+        else if (filterSelected == 3) {
+          filterApproved();
+        }
+        else if (filterSelected == 4) {
+          filterInAnalysis();
+        }
+         else {
+          filterBoth(user);
+        } 
+  
+      }, 1000); */
     //return () => interval;
   }, [])
 
   const style = styles();
+
+
+
+  //DELETE
+  const [categoriesDelete, setCategoriesDelete] = useState({
+    categories: {}
+  });
+
+  const [openAlerta, setOpenAlerta] = React.useState(false);
+
+  const handleOpenDelete = (categoriesD) => {
+    setCategoriesDelete({
+      categories: categoriesD
+    });
+    setOpenAlerta(true);
+  };
+
+  const handleCloseAlerta = () => {
+    setOpenAlerta(false);
+  };
+
+
+  const handleExlcuir = (event) => {
+    event.preventDefault();
+    console.log("PEguei a photo",categoriesDelete);
+   // props.deleteCategory(categoriesDelete);
+   var novoArr = midia.images.slice(categoriesDelete);
+   console.log("dfdfsf",novoArr);
+   
+    setOpenAlerta(false);
+  }
+
+
+
+
+
+
+
+
 
 
   /* INICIO MODAL */
@@ -959,11 +998,83 @@ const ReportMap = props => {
                             cellHeight={160} className={style.gridList} cols={3}>
                             {midia.images.map((midias) => (
                               <GridListTile key={midias.fileLocal.name} cols={midias.cols || 1}>
-                                <img src={midias.base64} />
+                                <img onClick={() => handleOpenDelete(midias)} src={midias.base64} />
                               </GridListTile>
                             ))}
                           </GridList>
                         }
+
+                        {/* Modal Alerta */}
+                        {openAlerta &&
+
+                          <Modal
+                            aria-labelledby="transition-modal-title"
+                            aria-describedby="transition-modal-description"
+                            className={style.modal}
+                            open={openAlerta}
+                            onClose={handleCloseAlerta}
+                            BackdropComponent={Backdrop}
+                            BackdropProps={{
+                              timeout: 500,
+                            }}
+                            
+                          >
+                            {/* Modal da Dereita */}
+                            <Fade in={openAlerta}>
+                              <div className={style.paper}>
+                                <div style={{
+                                  textAlign: 'right'
+                                }}>
+
+                                  <IconButton
+                                    aria-label="more"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    onClick={handleCloseAlerta}
+                                  >
+                                    <CloseIcon />
+                                  </IconButton>
+                                </div>
+                                <Card className={style.root}
+                                  style={{
+                                    textAlign: 'center',
+                                    width: 500,
+                                    maxHeight: 500,
+                                  }}>
+
+                                  <CardContent>
+                                    {
+                                      <Typography>
+                                        Deseja excluir a photo {categoriesDelete.categories.fileLocal.name}?
+                                   </Typography>
+                                    }
+                                  </CardContent>
+                                  <Divider />
+                                  <CardActions>
+                                    <Grid
+                                      item
+                                      lg={12}
+                                      md={12}
+                                      xl={12}
+                                      xs={12}
+                                    >
+                                      <Button
+                                        color="secondary"
+                                        variant="contained"
+                                        style={{ float: 'right', background: '#b71c1c' }}
+                                        onClick={handleExlcuir}
+                                      >
+                                        Excluir
+                                     </Button>
+                                    </Grid>
+                                  </CardActions>
+                                </Card>
+                              </div>
+                            </Fade>
+                          </Modal>
+                          // {/* FIM Abri Modal envio coordenador  */}
+                        }
+
                         <Fragment>
                           <input
                             accept="image/*"
@@ -1004,6 +1115,8 @@ const ReportMap = props => {
                             {midia.videos.map((videos) => (
                               <GridListTile key={videos.fileLocal.name} cols={videos.cols || 1}>
                                 <video controls
+                                  style={{cursor: 'point'}}
+                                  onClick={() => handleOpenDelete(videos)}
                                   width='100%'
                                   height='auto'
                                 >

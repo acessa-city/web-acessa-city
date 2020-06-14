@@ -145,8 +145,8 @@ const Sidebar = props => {
         icon: <AccountBalanceIcon />
       },
       {
-        title: 'Lista de Cidadão',
-        href: '/cidadaos',
+        title: 'Gerenciar Usuários',
+        href: '/usuarios',
         icon: <GroupIcon />
       },
 

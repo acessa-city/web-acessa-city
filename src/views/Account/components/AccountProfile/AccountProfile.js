@@ -12,7 +12,11 @@ import {
   Typography,
   Divider,
   Button,
-  LinearProgress
+  LinearProgress,
+  Backdrop,
+  CircularProgress,
+  Snackbar,
+  SnackbarContent,
 } from '@material-ui/core';
 import s3 from 'utils/AWS-S3'
 import api from 'utils/API'
@@ -55,21 +59,59 @@ const AccountProfile = props => {
       userId: user.id,
       photoURL: photoUrl
     }
-
-    api.put('/user/update-photo-profile', update)
+    const url = photoUrl;
+    setOpenValidador(true)
+    if(url){
+      api.put('/user/update-photo-profile', update)
       .then(response => {
+        setErrorsStatus(true)
+        setOpenValidador(false)
+        setErrors(["Foto Atualizada com sucesso."])
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
         setUser(response.data)
+        
+      }).catch((erro) => {
+        setOpenValidador(false)
+        setErrors(["Não foi possivel atualizar a foto."])
+        setErrorsStatus(false)
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
       })
+    }else{
+      api.put('/user/update-photo-profile', update)
+      .then(response => {
+        setErrorsStatus(true)
+        setOpenValidador(false)
+        setErrors(["Foto Removida."])
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
+        setUser(response.data)
+        
+      }).catch((erro) => {
+        setOpenValidador(false)
+        setErrors(["Não foi possivel remover a foto Removida."])
+        setErrorsStatus(false)
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
+      })
+    }
+    
   }
 
   const uploadFileImg = (e) => {
+      
     s3(e.target.files[0])
       .then((result) => {
         const photo = result.fotoUrl
         updatePhoto(photo)
 
       }).catch((erro) => {
-
+       console.log(erro);
       })
   }
 
@@ -83,8 +125,48 @@ const AccountProfile = props => {
       })
   }, [])
 
+
+  const [errors, setErrors] = useState([]);
+  const [errorsStatus, setErrorsStatus] = useState('');
+  const [openValidador, setOpenValidador] = React.useState(false);
+  const handleCloseValidador = () => {
+    setOpenValidador(false);
+  };
+  const handleSnackClick = () => {
+    setErrors([]);
+  }
+  const [errorsStatus2, setErrorsStatus2] = useState('');
+  const erros = () => {
+    if (errorsStatus == true) {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent
+              style={{
+                background: 'green',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>} />
+          ))}
+        </div>)
+    } else {
+      return (
+        <div>
+          {errors.map(error => (
+            <SnackbarContent autoHideDuration={1}
+              style={{
+                background: 'red',
+                textAlign: 'center'
+              }}
+              message={<h3>{error}</h3>}
+            />
+          ))}
+        </div>)
+    }
+  }
+
   return (
-    <div>    
+    <div>
       <Card
         {...rest}
         className={clsx(classes.root, className)}
@@ -96,31 +178,31 @@ const AccountProfile = props => {
                 gutterBottom
                 variant="h2"
               >
-                {user.firstName}
+                {user.firstName}  { user.lastName}
               </Typography>
               <Typography
                 className={classes.locationText}
                 color="textSecondary"
                 variant="body1"
               >
-                {user.email} 
+                {user.email}
               </Typography>
             </div>
-  
-              <input
-                onChange={uploadFileImg}
-                type="file"
-                id="my_file"
-                accept="image/*"
-                style={{ display: "none" }}
-                ref={fileUploadInput}
-              />
-              <Avatar
-                className={classes.avatar}
-                src={user.profileUrl}
-                onClick={showFileUpload}
-              />
-          
+
+            <input
+              onChange={uploadFileImg}
+              type="file"
+              id="my_file"
+              accept="image/*"
+              style={{ display: "none" }}
+              ref={fileUploadInput}
+            />
+            <Avatar
+              className={classes.avatar}
+              src={user.profileUrl}
+              onClick={showFileUpload}
+            />
+
           </div>
           {/* <div className={classes.progress}>
             <Typography variant="body1">Profile Completeness: 70%</Typography>
@@ -145,8 +227,16 @@ const AccountProfile = props => {
             Atualizar foto
           </Button>
           <Button onClick={() => updatePhoto("")} variant="text">Remover foto</Button>
-        </CardActions>      
+        </CardActions>
       </Card>
+
+      <Snackbar open={errors.length} onClick={handleSnackClick}>
+        {erros()}
+      </Snackbar>
+      <Backdrop style={{zIndex: 999999999999999}} className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
     </div>
   );
 };
