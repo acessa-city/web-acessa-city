@@ -852,7 +852,7 @@ const ReportMap = props => {
                   color="default"
                   onClick={handleClose}
                   variant="contained"
-                  style={{ float: 'right' }}
+                  style={{ float: 'right', marginTop: 25 }}
                 >
                   Fechar
                              </Button>
