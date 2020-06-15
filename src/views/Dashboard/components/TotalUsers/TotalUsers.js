@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const TotalUsers = props => {
-  const { className, ...rest } = props;
+  const { className, value, ...rest } = props;
 
   const classes = useStyles();
 
