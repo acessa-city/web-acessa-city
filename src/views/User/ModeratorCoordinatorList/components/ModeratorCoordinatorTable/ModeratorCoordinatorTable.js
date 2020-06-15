@@ -287,26 +287,7 @@ const ModeratorCoordinatorTable = props => {
                     </TableRow>
                   )
                 })
-                }<
-                  TableFooter>
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                    colSpan={3}
-                    backIconButtonText={"Anterior"}
-                    nextIconButtonText={"Próxima"}
-                    count={resUsersFilter.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    labelRowsPerPage={'Usuários por página:'}
-                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'Usuários por página:' },
-                      native: true,
-                    }}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                  />
-                </TableFooter>
+                }
               </TableBody>
             </Table>
 
@@ -422,6 +403,25 @@ const ModeratorCoordinatorTable = props => {
           </div>
         </PerfectScrollbar>
       </CardContent>
+      <TableFooter>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, { label: 'Todos', value: -1 }]}
+          colSpan={3}
+          backIconButtonText={"Anterior"}
+          nextIconButtonText={"Próxima"}
+          count={resUsersFilter.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          labelRowsPerPage={'Usuários por página:'}
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+          SelectProps={{
+            inputProps: { 'aria-label': 'Usuários por página:' },
+            native: true,
+          }}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </TableFooter>
     </Card >
   );
 };

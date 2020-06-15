@@ -29,6 +29,7 @@ import OutlinedInput from '@material-ui/core/OutlinedInput';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/FormControl';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import ReportStatus from 'utils/ReportStatus';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -109,6 +110,7 @@ const InteractionCard = props => {
 
   return (
     <Card className={classes.root}>
+      {interaction.newReportStatusId != ReportStatus.EmAnalise() &&
       <CardHeader
         avatar={
           <Avatar src={interaction.user.profileUrl} aria-label="recipe" className={classes.avatar}>            
@@ -117,6 +119,7 @@ const InteractionCard = props => {
         title={interaction.user.firstName}
         subheader={interaction.creationDate}        
       />
+      }
 
       <CardContent>
         <Chip size="small" icon={<DoneIcon />} />

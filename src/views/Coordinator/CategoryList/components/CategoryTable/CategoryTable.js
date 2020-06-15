@@ -420,30 +420,30 @@ const CategoryTable = props => {
                   </Modal>
                   // {/* FIM Abri Modal envio coordenador  */}
                 }
-                <TableFooter>
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                    colSpan={3}
-                    backIconButtonText={"Anterior"}
-                    nextIconButtonText={"Próxima"}
-                    count={categories.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    labelRowsPerPage={'Categorias por página:'}
-                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'Categorias por página:' },
-                      native: true,
-                    }}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                  />
-                </TableFooter>
               </TableBody>
             </Table>
           </div>
         </PerfectScrollbar>
       </CardContent>
+      <TableFooter>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, { label: 'Todas', value: -1 }]}
+          colSpan={3}
+          backIconButtonText={"Anterior"}
+          nextIconButtonText={"Próxima"}
+          count={categories.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          labelRowsPerPage={'Categorias por página:'}
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+          SelectProps={{
+            inputProps: { 'aria-label': 'Categorias por página:' },
+            native: true,
+          }}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </TableFooter>
     </Card>
   );
 };

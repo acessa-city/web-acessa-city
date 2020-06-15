@@ -278,25 +278,7 @@ const PrefecturesTable = props => {
                   )
                 })
                 }
-                <TableFooter>
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                    colSpan={3}
-                    backIconButtonText={"Anterior"}
-                    nextIconButtonText={"Próxima"}
-                    count={prefectures.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    labelRowsPerPage={'Prefeituras por página:'}
-                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'Prefeituras por página:' },
-                      native: true,
-                    }}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                  />
-                </TableFooter>
+
               </TableBody>
             </Table>
 
@@ -408,6 +390,25 @@ const PrefecturesTable = props => {
           </div>
         </PerfectScrollbar>
       </CardContent>
+      <TableFooter>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, { label: 'Todas', value: -1 }]}
+          colSpan={3}
+          backIconButtonText={"Anterior"}
+          nextIconButtonText={"Próxima"}
+          count={prefectures.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          labelRowsPerPage={'Prefeituras por página:'}
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+          SelectProps={{
+            inputProps: { 'aria-label': 'Prefeituras por página:' },
+            native: true,
+          }}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </TableFooter>
     </Card >
   );
 };

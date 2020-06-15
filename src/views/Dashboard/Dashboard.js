@@ -3,78 +3,40 @@ import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 
 import {
-  Budget,
-  TotalUsers,
-  TasksProgress,
-  TotalProfit,
-  UsersByDevice,
-  LatestOrders
+  DashboardUser,
+  DashboardAdmin
 } from './components';
+
+import currentUser from 'utils/AppUser';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    padding: theme.spacing(4)
+    padding: theme.spacing(2)
   }
 }));
 
 const Dashboard = () => {
   const classes = useStyles();
+  
+  const [user, setUser] = React.useState({});
+
+  React.useEffect(() => {
+    currentUser().then(usuario => {
+      setUser(usuario);
+      console.log(usuario)     
+    })    
+  }, []);
+
+  const DashboardContent = () => {
+    if (user.cityHall)
+      return <DashboardAdmin></DashboardAdmin>
+    else
+  return <DashboardUser></DashboardUser>  
+  }
 
   return (
-    <div className={classes.root}>
-      <Grid
-        container
-        spacing={4}
-      >
-        <Grid
-          item
-          lg={3}
-          sm={6}
-          xl={3}
-          xs={12}
-        >
-          <Budget />
-        </Grid>
-        <Grid
-          item
-          lg={3}
-          sm={6}
-          xl={3}
-          xs={12}
-        >
-          <TotalUsers />
-        </Grid>
-        <Grid
-          item
-          lg={3}
-          sm={6}
-          xl={3}
-          xs={12}
-        >
-          <TasksProgress />
-        </Grid>
-        <Grid
-          item
-          lg={3}
-          sm={6}
-          xl={3}
-          xs={12}
-        >
-          <TotalProfit />
-        </Grid>
-  
-        <Grid
-          item
-          lg={12}
-          md={12}
-          xl={12}
-          xs={12}
-        >
-          <LatestOrders />
-        </Grid>
-      </Grid>
-    </div>
-  );
+    DashboardContent()
+  )
 };
 
 export default Dashboard;

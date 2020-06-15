@@ -907,6 +907,25 @@ const DenunciationsTable = props => {
       <Snackbar open={errors.length} onClick={handleSnackClick}>
         {erros()}
       </Snackbar>
+      <TableFooter>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, { label: 'Todas', value: -1 }]}
+          colSpan={3}
+          backIconButtonText={"Anterior"}
+          nextIconButtonText={"Próxima"}
+          count={denunciations.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          labelRowsPerPage={'Denúncias por página:'}
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
+          SelectProps={{
+            inputProps: { 'aria-label': 'Denúncias por página:' },
+            native: true,
+          }}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+      </TableFooter>
     </Card >
   );
 };
