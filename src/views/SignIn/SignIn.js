@@ -176,9 +176,18 @@ const SignIn = props => {
     errors: {}
   });
 
+  const xlogout = event => {
+    firebase.auth().signOut().then(function() {
+    logout();
+    }).catch(function(error) {
+      // An error happened.
+    });    
+   
+  }  
+
   useEffect(() => {
     const errors = validate(formState.values, schema);
-
+    xlogout();
     setFormState(formState => ({
       ...formState,
       isValid: errors ? false : true,
@@ -270,10 +279,6 @@ const SignIn = props => {
 
   }
 
-  const logout = event => {
-    event.preventDefault();
-    firebase.auth().signOut();
-  }
 
   const handleSignIn = event => {
     event.preventDefault();

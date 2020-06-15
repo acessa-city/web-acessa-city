@@ -11941,6 +11941,13 @@ react-simple-video-player@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-simple-video-player/-/react-simple-video-player-1.0.0.tgz#96a2f2777da3009c3a73904fdc16f35f4ddd2e0e"
   integrity sha512-yY5zdYsJ2wsW0tEE6GwZCOoDe4Ix6sOCUmkk+xO/wVc7/8bxNJAtMSmwzp6wPGIxunn95eIgiONef2yaIJOvaA==
 
+react-text-mask@^5.4.3:
+  version "5.4.3"
+  resolved "https://registry.yarnpkg.com/react-text-mask/-/react-text-mask-5.4.3.tgz#991efb4299e30c2e6c2c46d13f617169463e0d2d"
+  integrity sha1-mR77QpnjDC5sLEbRP2FxaUY+DS0=
+  dependencies:
+    prop-types "^15.5.6"
+
 react-transition-group@^2.5.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.9.0.tgz#df9cdb025796211151a436c69a8f3b97b5b07c8d"

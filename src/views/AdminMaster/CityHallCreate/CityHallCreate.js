@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
+import MaskedInput from 'react-text-mask';
 import {
   Card,
   CardHeader,
@@ -17,7 +18,9 @@ import {
   SnackbarContent,
   Select,
   FormControl,
-  InputLabel
+  InputLabel,
+  InputMask,
+  Input
 } from '@material-ui/core';
 import api from 'utils/API';
 import currentUser from 'utils/AppUser';
@@ -35,19 +38,44 @@ const CityHallCreate = props => {
   const { className, onCreatePrefecture, prefecturesId, mudarCor, mudarCor2, ...rest } = props;
 
 
-  console.log("AQUIII ola ola ", prefecturesId);
 
   const classes = useStyles();
 
+  const [values2, setValues2] = useState({
+    city: '',
+  });
+
+  const handleChange2 = event => {
+    setValues2({
+      ...values2,
+      [event.target.name]: event.target.value
+    });
+  };
+
+  const limparForm2 = () => {
+    setValues2({
+      city: '',
+    })
+  }
+
+
+  const limparForm3 = () => {
+    setValues({
+      state: '',
+      state: ''
+    })
+  }
+
   const [values, setValues] = useState({
     name: '',
-    cityId: '7ae590f1-c6a4-4bb3-91bf-1e82ea45bb4b',
+    cityId: '',
     cnpj: '',
     address: '',
     neighborhood: '',
     zipCode: '',
     number: '',
-    email: ''
+    email: '',
+    state: ''
   });
 
   const { register, watch } = useForm(
@@ -66,7 +94,6 @@ const CityHallCreate = props => {
     });
   };
 
-  console.log("Aquii os values")
 
   const limparForm = () => {
     setValues({
@@ -77,7 +104,6 @@ const CityHallCreate = props => {
       neighborhood: '',
       zipCode: '',
       number: '',
-      cityId: '',
       state: ''
     })
   }
@@ -95,28 +121,30 @@ const CityHallCreate = props => {
   const changeState = (stateId) => {
     setValues({
       ...values,
-      stateId: stateId
+      state: stateId
     })
+    atualizacidades(stateId)
+    console.log(values);
+  }
+
+
+
+  const atualizacidades = (stateId) => {
     api.get('/state/' + stateId + '/cities').then((result) => {
       setCities({
         cities: result.data
       });
-      if (result.data.length) {
-        setValues({
-          ...values,
-          stateId: stateId,
-          cityId: result.data[0].id
-        })
-      }
     })
-    console.log(values);
   }
+
+
 
   const [controlePrefecture, setControlePrefecture] = useState('');
 
   const carregarPrefecture = (id) => {
     api.get(`/city-hall/${id}`).then((result) => {
 
+      console.log("result", result);
       setValues({
         ...values,
         name: result.data.name,
@@ -127,6 +155,12 @@ const CityHallCreate = props => {
         zipCode: result.data.zipCode,
         number: result.data.number,
         state: result.data.city.cityState.id,
+      });
+
+      atualizacidades(result.data.city.cityState.id);
+
+      setValues2({
+        city: result.data.cityId
       });
 
     }).catch((erro) => {
@@ -143,7 +177,7 @@ const CityHallCreate = props => {
       if (result.data.length) {
         setValues({
           ...values,
-          stateId: result.data[0].id
+          state: result.data.id
         })
       }
     })
@@ -163,30 +197,17 @@ const CityHallCreate = props => {
 
   }, [])
 
+
   const handleStateChange = (event) => {
     const stateId = event.target.value;
     changeState(stateId);
   }
 
-  const [vazio, setVazios] = useState('');
 
-  const campoVazio = values => {
-    values.name === '' ||
-      values.cnpj === '' ||
-      values.email === '' ||
-      values.address === '' ||
-      values.neighborhood === '' ||
-      values.zipCode === '' ||
-      values.number === '' ||
-      values.cityId === ''
-      ?
-      setVazios(false) :
-      setVazios(true)
-  }
   const handleClick = () => {
     setOpen(true)
     setOpenValidador(true)
-    if (values.name === '' || values.cnpj === '' || values.email === '' || values.address === '' || values.neighborhood === '' || values.zipCode === '' || values.number === '' || values.cityId === '') {
+    if (values2.city === '' || values.state === '' || values.name === '' || values.cnpj === '' || values.email === '' || values.address === '' || values.neighborhood === '' || values.zipCode === '' || values.number === '') {
       setOpenValidador(false)
       setErrorsStatus(false)
       setErrors([
@@ -195,72 +216,163 @@ const CityHallCreate = props => {
       setTimeout(() => {
         setErrors([]);
       }, 2000);
-
     } else {
-      var newCityHall = values;
-      api.post('/city-hall', newCityHall)
-        .then((result) => {
-          setOpenValidador(false)
-          setOpen(false)
-          setErrorsStatus(true)
-          setErrors([
-            "A prefeitura " + values.name + " foi criada com sucesso."
-          ])
 
-          if (onCreatePrefecture) {
-            onCreatePrefecture(result.data)
-          }
-          setTimeout(() => {
-            setErrors([]);
-          }, 2000);
-          limparForm()
-        })
-        .catch((aError) => {
+      const newCityHall = {
+        name: values.name,
+        cnpj: values.cnpj.replace(/\.|\/|\-/g, ""),
+        email: values.email,
+        address: values.address,
+        neighborhood: values.neighborhood,
+        zipCode: values.zipCode.replace(/\-/g, ""),
+        number: values.number,
+        state: values.state,
+        cityId: values2.city
+      }
 
-          if (aError.response.status == 400) {
-            setOpen(false)
-            console.log(aError.response.data.errors)
-            setErrors(aError.response.data.errors)
-          }
-          else if (aError.response.status == 500) {
-            setErrors([
-              "Erro no servidor"
-            ])
-          }
-          setTimeout(() => {
-            setErrors([]);
-          }, 2000);
-          setErrorsStatus(false)
-          setOpenValidador(false)
-          setOpen(false)
-        })
-    }
-  }
-
-  const handleClickAlterar = () => {
-    console.log(values);
-    setOpenValidador(true)
-    api.put(`/city-hall/${prefecturesId}`, values)
-      .then((result) => {
-        setOpen(false)
-        const closeModal = {
-          name: values.name
-        }
-        props.modalClose(closeModal);
-      })
-      .catch((aError) => {
-
-        setErrors([
-          "Erro ao tentar atualizar a prefeitura."
-        ]);
+      if (newCityHall.cnpj.replace(/\s/g, '').length !== 14) {
+        setOpenValidador(false)
         setErrorsStatus(false)
+        setErrors([
+          "O CNPJ precisa ter 14 dígitos, verifique o campo CNPJ."
+        ])
         setTimeout(() => {
           setErrors([]);
         }, 2000);
-        setOpenValidador(false)
+      } else if (newCityHall.zipCode.replace(/\s/g, '').length !== 8) {
 
-      })
+        setOpenValidador(false)
+        setErrorsStatus(false)
+        setErrors([
+          "O CEP precisa ter 8 dígitos, verifique o campo CEP."
+        ])
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
+
+      } else {
+
+        api.post('/city-hall', newCityHall)
+          .then((result) => {
+            setOpenValidador(false)
+            setOpen(false)
+            setErrorsStatus(true)
+            setErrors([
+              "A prefeitura " + values.name + " foi criada com sucesso."
+            ])
+
+            if (onCreatePrefecture) {
+              onCreatePrefecture(result.data)
+            }
+            setTimeout(() => {
+              setErrors([]);
+            }, 2000);
+            limparForm();
+            limparForm2();
+            limparForm3();
+          })
+          .catch((aError) => {
+
+            if (aError.response.status == 400) {
+              setOpen(false)
+              console.log(aError.response.data.errors)
+              setErrors(aError.response.data.errors)
+            }
+            else if (aError.response.status == 500) {
+              setErrors([
+                "Erro no servidor"
+              ])
+            }
+            setTimeout(() => {
+              setErrors([]);
+            }, 2000);
+            setErrorsStatus(false)
+            setOpenValidador(false)
+            setOpen(false)
+          })
+
+
+      }
+
+    }
+
   }
+
+
+  const handleClickAlterar = () => {
+    setOpenValidador(true)
+    if (values2.city === '' || values.state === '' || values.name === '' || values.cnpj === '' || values.email === '' || values.address === '' || values.neighborhood === '' || values.zipCode === '' || values.number === '') {
+      setOpenValidador(false)
+      setErrorsStatus(false)
+      setErrors([
+        "Há campos vazios"
+      ])
+      setTimeout(() => {
+        setErrors([]);
+      }, 2000);
+    } else {
+
+      const newCityHall = {
+        name: values.name,
+        cnpj: values.cnpj.replace(/\.|\/|\-/g, ""),
+        email: values.email,
+        address: values.address,
+        neighborhood: values.neighborhood,
+        zipCode: values.zipCode.replace(/\-/g, ""),
+        number: values.number,
+        state: values.state,
+        cityId: values2.city
+      }
+
+      if (newCityHall.cnpj.replace(/\s/g, '').length !== 14) {
+        setOpenValidador(false)
+        setErrorsStatus(false)
+        setErrors([
+          "O CNPJ precisa ter 14 dígitos, verifique o campo CNPJ."
+        ])
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
+      } else if (newCityHall.zipCode.replace(/\s/g, '').length !== 8) {
+
+        setOpenValidador(false)
+        setErrorsStatus(false)
+        setErrors([
+          "O CEP precisa ter 8 dígitos, verifique o campo CEP."
+        ])
+        setTimeout(() => {
+          setErrors([]);
+        }, 2000);
+
+      } else {
+
+        api.put(`/city-hall/${prefecturesId}`, newCityHall)
+          .then((result) => {
+            setOpen(false)
+            const closeModal = {
+              name: values.name
+            }
+            props.modalClose(closeModal);
+          })
+          .catch((aError) => {
+
+            setErrors([
+              "Erro ao tentar atualizar a prefeitura."
+            ]);
+            setErrorsStatus(false)
+            setTimeout(() => {
+              setErrors([]);
+            }, 2000);
+            setOpenValidador(false)
+
+          })
+
+      }
+
+    }
+
+  }
+
 
 
   /////Errros///////
@@ -272,6 +384,48 @@ const CityHallCreate = props => {
   const [openValidador, setOpenValidador] = React.useState(false);
   const handleCloseValidador = () => {
     setOpenValidador(false);
+  };
+
+
+
+  function TextMaskCustom(props) {
+    const { inputRef, ...outros } = props;
+
+    return (
+      <MaskedInput
+        {...outros}
+        ref={(ref) => {
+          inputRef(ref ? ref.inputElement : null);
+        }}
+        // style={{padding: '10px', border: 'transparent', width: '100%'}}
+        mask={[/\d/, /\d/, '.', /\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/]}
+        placeholderChar={'\u2000'}
+        showMask
+      />
+    );
+  }
+
+
+
+  function TextMaskCustom2(props) {
+    const { inputRef, ...outros } = props;
+
+    return (
+      <MaskedInput
+        {...outros}
+        ref={(ref) => {
+          inputRef(ref ? ref.inputElement : null);
+        }}
+        // style={{padding: '10px', border: 'transparent', width: '100%'}}
+        mask={[/\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/]}
+        placeholderChar={'\u2000'}
+        showMask
+      />
+    );
+  }
+
+  TextMaskCustom.propTypes = {
+    inputRef: PropTypes.func.isRequired,
   };
 
   const erros = () => {
@@ -329,7 +483,7 @@ const CityHallCreate = props => {
           <CardContent>
             <Grid
               container
-              spacing={3}
+              spacing={2}
             >
               <Grid
                 item
@@ -354,6 +508,19 @@ const CityHallCreate = props => {
                 md={2}
                 xs={12}
               >
+                {/* <TextField
+                  fullWidth
+                  helperText="Informe o CNPJ da prefeitura"
+                  label="CNPJ"
+                  margin="dense"
+                  name="cnpj"
+                  //onChange={handleChange}
+                  required
+                  // value={values.cnpj}
+                  variant="outlined"
+                  inputComponent={TextMaskCustom}
+                /> */}
+
                 <TextField
                   fullWidth
                   helperText="Informe o CNPJ da prefeitura"
@@ -364,7 +531,11 @@ const CityHallCreate = props => {
                   required
                   value={values.cnpj}
                   variant="outlined"
+                  InputProps={{
+                    inputComponent: TextMaskCustom,
+                  }}
                 />
+
               </Grid>
               <Grid
                 item
@@ -381,6 +552,9 @@ const CityHallCreate = props => {
                   required
                   value={values.zipCode}
                   variant="outlined"
+                  InputProps={{
+                    inputComponent: TextMaskCustom2,
+                  }}
                 />
               </Grid>
               <Grid
@@ -473,14 +647,16 @@ const CityHallCreate = props => {
                   onChange={handleStateChange}
                   value={values.state}
                   variant="outlined"
-                >{states.states.map(option => (
-                  <option
-                    key={option.id}
-                    value={option.id}
-                  >
-                    {option.name}
-                  </option>
-                ))}
+                >
+                  <option aria-label="None" value="" />
+                  {states.states.map(option => (
+                    <option
+                      key={option.id}
+                      value={option.id}
+                    >
+                      {option.name}
+                    </option>
+                  ))}
                 </TextField>
               </Grid>
               <Grid
@@ -493,42 +669,25 @@ const CityHallCreate = props => {
                   helperText="Informe a cidade"
                   label="Cidades"
                   margin="dense"
-                  name="state"
                   select
-                  onChange={handleChange}
+                  SelectProps={{ native: true }}
+                  onChange={handleChange2}
                   required
-                  value={values.cityId}
+                  name="city"
+                  value={values2.city}
                   variant="outlined"
-                >{cities.cities.map(option => (
-                  <option
-                    key={option.id}
-                    value={option.id}
-                  >
-                    {option.name}
-                  </option>
-                ))}
-                
+                >
+                  <option aria-label="None" value="" />
+                  {cities.cities.map(option => (
+                    <option
+                      key={option.id}
+                      value={option.id}
+                    >
+                      {option.name}
+                    </option>
+                  ))}
                 </TextField>
               </Grid>
-
-              <FormControl className={classes.formControl} fullWidth>
-              <InputLabel htmlFor="age-native-simple">Categoria</InputLabel>
-              <Select
-                native
-                value={values.cityId}
-                inputProps={{
-                  name: 'state',
-                }}
-              >
-                <option aria-label="None" value="" />
-                {cities.cities.map(cidade => {
-                  return (
-                    <option value={values.cityId}>{cidade.name}</option>
-                  )
-                })
-                }
-              </Select>
-            </FormControl>
             </Grid>
           </CardContent>
           <Divider />
