@@ -161,7 +161,7 @@ const Routes = () => {
           component={DenunciationCoordinatorView}
           exact
           layout={MainLayout}
-          path="/denuncias"
+          path="/denuncias-coordenador"
           permission={roles.coordinator}
         />
 
@@ -260,7 +260,7 @@ const Routes = () => {
           component={MainReportMapView}
           exact
           layout={MinimalLayout}
-          path="/mapa-principal"
+          path="/denuncias"
           permission={true}
         />
         <Route

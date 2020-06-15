@@ -23,7 +23,6 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import Category from '@material-ui/icons/Category';
 import {logout} from 'utils/auth';
 import HistoryIcon from '@material-ui/icons/History'
-
 import { Profile, SidebarNav } from './components';
 import firebase from 'firebase/app'
 
@@ -51,18 +50,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Sidebar = props => {
-  const { open, variant, onClose, className,history, ...rest } = props;
-
-  const xlogout = event => {
-    event.preventDefault();
-    firebase.auth().signOut().then(function() {
-      logout();
-      history.push('/sign-in')
-    }).catch(function(error) {
-      // An error happened.
-    });    
-  }  
-
+  const { open, variant, onClose, className, ...rest } = props;
 
   const classes = useStyles();
   const [menuPages, setMenuPages] = useState({
@@ -178,8 +166,8 @@ const Sidebar = props => {
   const coordinadorMenu = (menu) => {
     menu.push(
       {
-        title: 'Denúcias',
-        href: '/denuncias',
+        title: 'Denúncias',
+        href: '/denuncias-coordenador',
         icon: <RecordVoiceOverIcon />
       },
       {

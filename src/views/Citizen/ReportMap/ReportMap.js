@@ -342,15 +342,15 @@ const ReportMap = props => {
 
 
   //DELETE
-  const [categoriesDelete, setCategoriesDelete] = useState({
-    categories: {}
+  const [midiasDelete, setMidiasDelete] = useState({
+    midiasVideoPhoto: {}
   });
 
   const [openAlerta, setOpenAlerta] = React.useState(false);
 
-  const handleOpenDelete = (categoriesD) => {
-    setCategoriesDelete({
-      categories: categoriesD
+  const handleOpenDelete = (midias) => {
+    setMidiasDelete({
+      midiasVideoPhoto: midias
     });
     setOpenAlerta(true);
   };
@@ -362,9 +362,9 @@ const ReportMap = props => {
 
   const handleExlcuir = (event) => {
     event.preventDefault();
-    console.log("PEguei a photo",categoriesDelete);
+    console.log("PEguei a photo",midiasDelete);
    // props.deleteCategory(categoriesDelete);
-   var novoArr = midia.images.slice(categoriesDelete);
+   var novoArr = midia.images.slice(midiasDelete);
    console.log("dfdfsf",novoArr);
    
     setOpenAlerta(false);
@@ -1045,7 +1045,7 @@ const ReportMap = props => {
                                   <CardContent>
                                     {
                                       <Typography>
-                                        Deseja excluir a photo {categoriesDelete.categories.fileLocal.name}?
+                                        Deseja excluir a photo {midiasDelete.categories.fileLocal.name}?
                                    </Typography>
                                     }
                                   </CardContent>
