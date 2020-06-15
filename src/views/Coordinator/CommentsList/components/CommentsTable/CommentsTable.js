@@ -203,7 +203,10 @@ const CommentsTable = props => {
               <TableBody>
                 {comments.map(commentary => {
                   return (
-                    <TableRow key={commentary.id}>
+                    <TableRow key={commentary.id}
+                    hover={true}
+                    style={{cursor: 'pointer'}}
+                    >
                       <TableCell onClick={() => handleOpen(commentary)}>{commentary.id}</TableCell>
                       <TableCell>{commentary.name}</TableCell>
                     </TableRow>

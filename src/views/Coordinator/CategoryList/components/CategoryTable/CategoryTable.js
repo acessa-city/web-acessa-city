@@ -228,7 +228,10 @@ const CategoryTable = props => {
                   : categories
                 ).map((categorie) => {
                   return (
-                    <TableRow key={categorie.id}>
+                    <TableRow key={categorie.id}
+                    hover={true}
+                    style={{cursor: 'pointer'}}
+                    >
                       <TableCell onClick={() => handleOpen(categorie)}>{categorie.name}</TableCell>
                       <TableCell
                         style={{

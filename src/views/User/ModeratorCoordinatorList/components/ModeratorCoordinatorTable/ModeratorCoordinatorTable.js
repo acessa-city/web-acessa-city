@@ -263,7 +263,8 @@ const ModeratorCoordinatorTable = props => {
                 ).map((user) => {
                   return (
                     <TableRow key={user.id}
-                      hover={true}
+                    hover={true}
+                    style={{cursor: 'pointer'}}
                     >
                       <TableCell onClick={() => handleClickAccount(user)}>{user.firstName} {user.lastName}</TableCell>
                       <TableCell onClick={() => handleClickAccount(user)}>{user.email}</TableCell>

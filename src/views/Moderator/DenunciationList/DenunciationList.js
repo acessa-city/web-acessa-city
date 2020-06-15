@@ -135,6 +135,8 @@ const DenunciationList = () => {
     })
   }
 
+  console.log("Aquiiisddsfsdfdffdf",coodenadores);
+
 
   // Listar os dados  na tela
   const listDenunciations = () => {
@@ -239,6 +241,7 @@ const DenunciationList = () => {
   useEffect(() => {
     listDenunciations();
     listCategory();
+    listCoodenador();
   }, []);
 
   const atualizarTela =() =>{

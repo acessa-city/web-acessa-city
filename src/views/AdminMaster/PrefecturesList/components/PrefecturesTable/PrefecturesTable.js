@@ -254,6 +254,7 @@ const PrefecturesTable = props => {
                   return (
                     <TableRow key={prefecture.id}
                       hover={true}
+                      style={{cursor: 'pointer'}}
                     >
                       <TableCell onClick={() => handleClickAccount(prefecture)}>{prefecture.name}</TableCell>
                       <TableCell onClick={() => handleClickAccount(prefecture)}>{prefecture.cnpj}</TableCell>

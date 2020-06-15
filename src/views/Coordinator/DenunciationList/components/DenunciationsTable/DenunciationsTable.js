@@ -631,7 +631,10 @@ const DenunciationsTable = props => {
                   : denunciations
                 ).map((denunciation) => {
                   return (
-                    <TableRow key={denunciation.id}>
+                    <TableRow key={denunciation.id}
+                    hover={true}
+                    style={{cursor: 'pointer'}}
+                    >
                       <TableCell onClick={() => handleOpen(denunciation)}>{denunciation.title}</TableCell>
                       <TableCell>{denunciation.street}</TableCell>
                       <TableCell>{denunciation.neighborhood}</TableCell>

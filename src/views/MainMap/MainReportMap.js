@@ -28,6 +28,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import ReportStatus from 'utils/ReportStatus';
 import { ReactBingmaps } from 'react-bingmaps';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 
 
 const styles = makeStyles(theme => ({
@@ -140,7 +142,7 @@ const MainReportMap = props => {
       const report = response.data
       response.data.forEach(element => {
         // adicionarDenunciaNoMapa('yellow', element)
-      });      
+      });
       setLocationsApproved(report)
     }).catch(erro => {
       console.log(erro);
@@ -166,7 +168,7 @@ const MainReportMap = props => {
     API.get('/report'
     ).then(response => {
       const reports = []
-      
+
       response.data.forEach(element => {
 
         if ((ReportStatus.EmProgresso() == element.reportStatusId) && emProgresso) {
@@ -176,7 +178,7 @@ const MainReportMap = props => {
           reports.push(adicionarDenunciaNoMapa('green', element))
         }
         else if ((ReportStatus.Aprovado() == element.reportStatusId) && aprovadas) {
-          reports.push(adicionarDenunciaNoMapa('yellow', element))            
+          reports.push(adicionarDenunciaNoMapa('yellow', element))
         }
 
       });
@@ -202,17 +204,17 @@ const MainReportMap = props => {
       addHandler: {
         type: "click",
         callback: () => openModalReport(denuncia.id)
-      }          
+      }
     }
   }
 
   const openModalReport = (message) => {
     setidReportModal(message)
-    setOpen(true);    
+    setOpen(true);
   }
 
   const [denuncias, setDenuncias] = useState({
-    pins : [],
+    pins: [],
   })
 
   const carregarTodas = () => {
@@ -221,7 +223,7 @@ const MainReportMap = props => {
     // })
     // console.log(denuncias)
     // if (emProgresso) {
-      carregarEmProgresso();
+    carregarEmProgresso();
     // }
     // if (aprovadas) {
     //   carregarAprovadas();
@@ -234,7 +236,7 @@ const MainReportMap = props => {
     // carregarEmProgresso()
   }
 
-  useEffect(() => {    
+  useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position.coords.latitude);
@@ -242,18 +244,18 @@ const MainReportMap = props => {
         const { latitude, longitude } = position.coords;
         setLongitude(longitude);
         setLatitude(latitude);
-        carregarTodas()    
+        carregarTodas()
       },
 
       (error) => {
         console.log("ERRO! " + error.message)
       }
-    )    
+    )
     // const interval = setInterval(() => {
     //   carregarTodas();
     // }, 10000);
     // return () => interval;    
-  }, []) 
+  }, [])
 
   const style = styles();
 
@@ -408,13 +410,13 @@ const MainReportMap = props => {
           ))}
         </GoogleMapReact> */}
 
-        <ReactBingmaps 
-          bingmapKey = "AhB03kPUyRzwqaJu5TId4Ny9-WKbQzvOHxDrKtJaIqFEN9iLwfk5fWZD-5nZCVXv" 
-          center = {[latitude, longitude]}
-          pushPins = {denuncias.pins}
-          zoom = {18}
-          >          
-        </ReactBingmaps>        
+        <ReactBingmaps
+          bingmapKey="AhB03kPUyRzwqaJu5TId4Ny9-WKbQzvOHxDrKtJaIqFEN9iLwfk5fWZD-5nZCVXv"
+          center={[latitude, longitude]}
+          pushPins={denuncias.pins}
+          zoom={18}
+        >
+        </ReactBingmaps>
 
         <Grid
           className={style.gridButton}
@@ -444,15 +446,49 @@ const MainReportMap = props => {
                 timeout: 500,
               }}
             >
-              <Fade in={open}>                 
+              <Fade
+
+
+                in={open}>
                 {/* DENTRO DO MODAL */}
                 <div style={{
                   overflow: 'scroll',
                   height: '80%'
                 }} className={style.paper}>
+
+                  <div style={{
+                    textAlign: 'right'
+                  }}>
+
+                    <IconButton
+                      aria-label="more"
+                      aria-controls="long-menu"
+                      aria-haspopup="true"
+                      onClick={handleClose}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  </div>
+
                   {/* Passar o id da denúncia para reportId vvvvvvvvvvvv */}
                   <Report reportId={idReportModal}></Report>
-                  <Button onClick={handleClose}>Voltar</Button>
+                  <Grid
+                    item
+                    lg={12}
+                    md={12}
+                    xl={12}
+                    xs={12}
+                  >
+                    <Button
+                      color="default"
+                      onClick={handleClose}
+                      variant="contained"
+                      style={{ float: 'right' }}
+                    >
+                      Fechar
+                             </Button>
+                  </Grid>
+
                 </div>
               </Fade>
             </Modal>

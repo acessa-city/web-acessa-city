@@ -148,6 +148,8 @@ const DenunciationsTable = props => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
+  console.log("Aqui são coordenadore", coodenadores);
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -624,13 +626,16 @@ const DenunciationsTable = props => {
                   : denunciations
                 ).map((denunciation) => {
                   return (
-                    <TableRow key={denunciation.id}>
+                    <TableRow key={denunciation.id}
+                    hover={true}
+                    style={{cursor: 'pointer'}}
+                    >
                       <TableCell onClick={() => handleOpen(denunciation)}>{denunciation.title}</TableCell>
-                      <TableCell>{denunciation.street}</TableCell>
-                      <TableCell>{denunciation.neighborhood}</TableCell>
-                      <TableCell>{denunciation.category.name}</TableCell>
-                      <TableCell>{moment(denunciation.creationDate).format('DD/MM/YYYY')}</TableCell>
-                      <TableCell onClick={() => handleOpen(denunciation.id)}>{(denunciation.reportStatus.description)}</TableCell>
+                      <TableCell onClick={() => handleOpen(denunciation)}>{denunciation.street}</TableCell>
+                      <TableCell onClick={() => handleOpen(denunciation)}>{denunciation.neighborhood}</TableCell>
+                      <TableCell onClick={() => handleOpen(denunciation)}>{denunciation.category.name}</TableCell>
+                      <TableCell onClick={() => handleOpen(denunciation)}>{moment(denunciation.creationDate).format('DD/MM/YYYY')}</TableCell>
+                      <TableCell onClick={() => handleOpen(denunciation)}>{(denunciation.reportStatus.description)}</TableCell>
                       <TableCell onClick={() => handleOpenComments(denunciation)} style={{
                         textAlign: 'center',
                       }}><div><ForumIcon /></div></TableCell>
@@ -885,25 +890,6 @@ const DenunciationsTable = props => {
           </div>
         </PerfectScrollbar>
       </CardContent>
-      <TableFooter>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                colSpan={3}
-                backIconButtonText={"Anterior"}
-                nextIconButtonText={"Próxima"}
-                count={denunciations.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                labelRowsPerPage={'Denúncias por página:'}
-                labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ` + `${count}`}
-                SelectProps={{
-                  inputProps: { 'aria-label': 'Denúncias por página:' },
-                  native: true,
-                }}
-                onChangePage={handleChangePage}
-                onChangeRowsPerPage={handleChangeRowsPerPage}
-              />
-            </TableFooter>
       <Snackbar open={errors.length} onClick={handleSnackClick}>
         {erros()}
       </Snackbar>

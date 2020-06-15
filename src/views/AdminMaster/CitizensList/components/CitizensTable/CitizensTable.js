@@ -261,6 +261,7 @@ const CitizensTable = props => {
                   return (
                     <TableRow key={citizen.id}
                       hover={true}
+                      style={{cursor: 'pointer'}}
                     >
                       <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.firstName} {citizen.lastName}</TableCell>
                       <TableCell onClick={() => handleClickAccount(citizen)}>{citizen.email}</TableCell>
