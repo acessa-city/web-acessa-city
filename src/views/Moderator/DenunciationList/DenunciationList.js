@@ -17,6 +17,7 @@ import {
 
 import API from '../../../utils/API';
 import firebase from 'firebase/app'
+import currentUser from 'utils/AppUser';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -57,7 +58,7 @@ const DenunciationList = () => {
       }
       API.post(`/report/${update.reportId}/status-update`, param
       ).then(responseStatus => {
-        listDenunciations();
+        listDenunciations(user.cityHall.city.id);
         setErrors(["Denúncia Enviada para o coordenador com sucesso!"])
         setErrorsStatus2(true)
         setTimeout(() => {
@@ -82,7 +83,7 @@ const DenunciationList = () => {
     API.post(`/report/${deny.denunciationsId}/status-update`, deny
 
     ).then(response => {
-      listDenunciations();
+      listDenunciations(user.cityHall.city.id);
       setErrors(["Denúncia negada com sucesso!"])
       setErrorsStatus2(true)
       setTimeout(() => {
@@ -98,31 +99,31 @@ const DenunciationList = () => {
   })
 
 
-  function onChange(firebaseUser) {
-    if (firebaseUser) {
-      firebaseUser.getIdTokenResult().then((token) => {
-        const claims = token.claims;
-        setUser({
-          ...user,
-          id: claims.app_user_id
-        })
-        listCoodenador(claims.app_user_id);
-      })
-    } else {
-      // No user is signed in.
-    }
-  }
+  // function onChange(firebaseUser) {
+  //   if (firebaseUser) {
+  //     firebaseUser.getIdTokenResult().then((token) => {
+  //       const claims = token.claims;
+  //       setUser({
+  //         ...user,
+  //         id: claims.app_user_id
+  //       })
+  //       listCoodenador(claims.app_user_id);
+  //     })
+  //   } else {
+  //     // No user is signed in.
+  //   }
+  // }
 
-  React.useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged(onChange)
-    return () => unsubscribe()
-  }, [])
+  // React.useEffect(() => {
+  //   const unsubscribe = firebase.auth().onAuthStateChanged(onChange)
+  //   return () => unsubscribe()
+  // }, [])
+
 
 
 
   // Listar coordenadores
   const listCoodenador = (userId) => {
-    console.log("testttttttt" + userId);
     API.get(`/user/${userId}/coordinators`
     ).then(response => {
       const listCoodenadores = response.data;
@@ -139,9 +140,11 @@ const DenunciationList = () => {
 
 
   // Listar os dados  na tela
-  const listDenunciations = () => {
+  const listDenunciations = (cityId) => {
     setOpenValidador(true)
-    API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c'
+    console.log('User:::', user);
+    console.log('City:::', cityId);
+    API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c&city=' + cityId
     ).then(response => {
       setOpenValidador(false)
       if (errorsStatus2 == true) {
@@ -239,13 +242,18 @@ const DenunciationList = () => {
 
   // Atualizar os dados na tela
   useEffect(() => {
-    listDenunciations();
-    listCategory();
-    listCoodenador();
+    currentUser().then(result => {
+      setUser(result)     
+      listDenunciations(result.cityHall.city.id);
+      listCategory();
+      listCoodenador();
+
+    })    
   }, []);
 
+
   const atualizarTela =() =>{
-    listDenunciations();
+    listDenunciations(user.cityHall.city.id);
   }
 
   /////Errros///////
