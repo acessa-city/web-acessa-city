@@ -142,8 +142,6 @@ const DenunciationList = () => {
   // Listar os dados  na tela
   const listDenunciations = (cityId) => {
     setOpenValidador(true)
-    console.log('User:::', user);
-    console.log('City:::', cityId);
     API.get('/report?status=48cf5f0f-40c9-4a79-9627-6fd22018f72c&city=' + cityId
     ).then(response => {
       setOpenValidador(false)
@@ -164,7 +162,7 @@ const DenunciationList = () => {
 
   //Fitrar Denuncias
   const filter = (filtro) => {
-    let stringFiltro = ''
+    let stringFiltro = 'city='+user.cityHall.city.id;
     if (filtro.category) {
       stringFiltro += '&category=' + filtro.category
     }
@@ -242,12 +240,13 @@ const DenunciationList = () => {
 
   // Atualizar os dados na tela
   useEffect(() => {
+    setOpenValidador(true)
     currentUser().then(result => {
-      setUser(result)     
+      setUser(result)      
       listDenunciations(result.cityHall.city.id);
       listCategory();
-      listCoodenador();
-
+      listCoodenador(result.id);
+      setOpenValidador(false)    
     })    
   }, []);
 

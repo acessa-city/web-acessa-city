@@ -18,6 +18,7 @@ import {
 
 import API from '../../../utils/API';
 import firebase from 'firebase/app'
+import currentUser from 'utils/AppUser';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -63,7 +64,7 @@ const DenunciationListCoordinator = () => {
 
       ).then(responseStatus => {
 
-        listDenunciations();
+        listDenunciations(user.cityHall.city.id);
         setMensagem('Denuncia enviada para o coodenador com sucesso!');
         setOpenDialog(true);
 
@@ -94,7 +95,7 @@ const DenunciationListCoordinator = () => {
       API.post(`/report/${deny.reportId}/status-update`, denyJson
   
       ).then(response => {
-        listDenunciations();
+        listDenunciations(user.cityHall.city.id);
         setErrors(["Denúncia negada com sucesso!"])
         setErrorsStatus2(true)
         setTimeout(() => {
@@ -110,28 +111,6 @@ const DenunciationListCoordinator = () => {
   const [user, setUser] = useState({
     userId: ''
   })
-
-
-  function onChange(firebaseUser) {
-    if (firebaseUser) {
-      firebaseUser.getIdTokenResult().then((token) => {
-        const claims = token.claims;
-        setUser({
-          ...user,
-          userId: claims.app_user_id
-        })
-        listCoodenador(claims.app_user_id);
-      })
-    } else {
-      // No user is signed in.
-    }
-  }
-
-  React.useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged(onChange)
-    return () => unsubscribe()
-  }, [])
-
 
   // Listar coordenadores
   const listCoodenador = (userId) => {
@@ -150,7 +129,7 @@ const DenunciationListCoordinator = () => {
 
 
   // Listar os dados  na tela
-  const listDenunciations = () => {
+  const listDenunciations = (cityId) => {
     setOpenValidador(true)
 
    if(finish){
@@ -158,7 +137,7 @@ const DenunciationListCoordinator = () => {
    }
 
 
-    API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
+    API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010&city=' + cityId
     ).then(response => {
       setOpenValidador(false)
       const listDenunciations2 = response.data;
@@ -174,7 +153,7 @@ const DenunciationListCoordinator = () => {
 
   //Fitrar Denuncias
   const filter = (filtro) => {
-    let stringFiltro = ''
+    let stringFiltro = 'city='+user.cityHall.city.id;
     if (filtro.category) {
       stringFiltro += '&category=' + filtro.category
     }
@@ -257,7 +236,7 @@ const DenunciationListCoordinator = () => {
     console.log("progress", JSON.stringify(progressJson))
     API.post(`/report/start-progress`, progressJson
     ).then(response => {
-      listDenunciations();
+      listDenunciations(user.cityHall.city.id);
       setErrors(["Denúncia está em progresso!"])
       setErrorsStatus2(true)
       setTimeout(() => {
@@ -309,7 +288,7 @@ const DenunciationListCoordinator = () => {
 
     API.post(`/report/end-progress`, endJson
     ).then(response => {
-      listDenunciations();
+      listDenunciations(user.cityHall.city.id);
       setErrors(["Denúncia Encerrada com sucesso!"])
       setFinish(true)
       setErrorsStatus2(true)
@@ -324,14 +303,15 @@ const DenunciationListCoordinator = () => {
     })
   }
 
-
-  // Atualizar os dados na tela
   useEffect(() => {
-    listDenunciations();
-    listCategory();
+    setOpenValidador(true)    
+    currentUser().then(result => {
+      setUser(result)        
+      listDenunciations(result.cityHall.city.id);
+      listCategory();
+      setOpenValidador(false)
+    })    
   }, []);
-
-
 
   /////Errros///////
   const handleSnackClick = () => {
