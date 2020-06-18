@@ -172,13 +172,13 @@ const MainReportMap = props => {
       response.data.forEach(element => {
 
         if ((ReportStatus.EmProgresso() == element.reportStatusId) && emProgresso) {
-          reports.push(adicionarDenunciaNoMapa('blue', element))
+          reports.push(adicionarDenunciaNoMapa('#2e7d32', element))//verde
         }
         else if ((ReportStatus.Finalizada() == element.reportStatusId) && finalizadas) {
-          reports.push(adicionarDenunciaNoMapa('green', element))
+          reports.push(adicionarDenunciaNoMapa('#1a237e', element))//azul
         }
         else if ((ReportStatus.Aprovado() == element.reportStatusId) && aprovadas) {
-          reports.push(adicionarDenunciaNoMapa('yellow', element))
+          reports.push(adicionarDenunciaNoMapa('#795548', element))//marrom           
         }
 
       });

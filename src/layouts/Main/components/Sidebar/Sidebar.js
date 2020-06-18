@@ -231,12 +231,10 @@ const Sidebar = props => {
           moderatorMenu(novoMenu);
         }
 
-        if (claims.user) {
-
+        if (claims.user && !claims.moderator && !claims.coordinator && !claims.city_hall && !claims.admin) {
           userMenu(novoMenu);
-
         }
-        // último elemento do menu
+        // Apenas no menu de usuário cidadão
         novoMenu.push(
           {
             title: 'Alterar perfil',
