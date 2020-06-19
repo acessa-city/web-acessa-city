@@ -681,6 +681,7 @@ const AproveCityHallTable = props => {
                           <TextField
                             onChange={e => handleDenyChange(e.target.value)}
                             fullWidth
+                            autocomplete='off'
                             helperText="Descreva o motivo dessa negação."
                             label="Descrição da negação"
                             margin="dense"

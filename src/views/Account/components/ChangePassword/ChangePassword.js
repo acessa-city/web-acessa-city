@@ -80,7 +80,14 @@ const ChangePassword = props => {
             });
         }
         else {
-            alert(infoError);
+            setErrors([
+                infoError
+            ])
+            setErrorsStatus(false)
+            setTimeout(() => {
+                setErrors([]);
+            }, 1000);
+        
             setMensagemErro(infoError)
         }
     }
