@@ -794,7 +794,6 @@ const zipCodeMask = props => {
 
 CityHallCreate.propTypes = {
   className: PropTypes.string,
-  classes: PropTypes.objec.isRequired,
 };
 
 /*TextMaskCustom.propTypes = {
