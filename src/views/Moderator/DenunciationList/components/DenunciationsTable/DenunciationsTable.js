@@ -809,7 +809,7 @@ const DenunciationsTable = props => {
                         <Grid item xs={12} sm={12}>
 
                           <FormControl variant="outlined" margin="dense" fullWidth>
-                            <InputLabel>Coodenadores:</InputLabel>
+                            <InputLabel>Coordenadores:</InputLabel>
                             <Select native label="Coodenadores" value={coodenador.id} onChange={e => handleCoordinatorChange(e.target.value)}>
                               <option aria-label="None" value="" />
                               {coodenadores.map(listCoodenadores => {

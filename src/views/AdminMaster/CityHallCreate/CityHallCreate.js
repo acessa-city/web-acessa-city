@@ -487,18 +487,23 @@ const CityHallCreate = props => {
                 md={6}
                 xs={12}
               >
-                <TextField
-                  fullWidth
-                  helperText="Informe o nome da prefeitura"
-                  label="Nome da prefeitura"
-                  margin="dense"
-                  name="name"
-                  onChange={handleChange}
-                  required
-                  value={values.name}
-                  variant="outlined"
+                <form
+                  noValidate
+                  autoComplete="off"
+                >
+                  <TextField
+                    fullWidth
+                    helperText="Informe o nome da prefeitura"
+                    label="Nome da prefeitura"
+                    margin="dense"
+                    name="name"
+                    onChange={handleChange}
+                    required
+                    value={values.name}
+                    variant="outlined"
 
-                />
+                  />
+                </form>
               </Grid>
               <Grid
                 item
@@ -540,6 +545,10 @@ const CityHallCreate = props => {
                 md={2}
                 xs={12}
               >
+                <form
+                  noValidate
+                  autoComplete="off"
+                >
                 <TextField
                   fullWidth
                   helperText="Informe o CEP da prefeitura"
@@ -555,28 +564,33 @@ const CityHallCreate = props => {
                     onChange: handleChange,
                 }}
                 />
-              </Grid>
-              <Grid
-                item
-                md={2}
-                xs={12}
-              >
-                <TextField
-                  fullWidth
-                  helperText="Informe o número da prefeitura"
-                  label="Número"
-                  margin="dense"
-                  name="number"
-                  onChange={handleChange}
-                  required
-                  value={values.number}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
+                </form>
+            </Grid>
+            <Grid
+              item
+              md={2}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                helperText="Informe o número da prefeitura"
+                label="Número"
+                margin="dense"
+                name="number"
+                onChange={handleChange}
+                required
+                value={values.number}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              <form
+                noValidate
+                autoComplete="off"
               >
                 <TextField
                   fullWidth
@@ -590,11 +604,16 @@ const CityHallCreate = props => {
                   value={values.email}
                   variant="outlined"
                 />
-              </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
+              </form>
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              <form
+                noValidate
+                autoComplete="off"
               >
                 <TextField
                   fullWidth
@@ -608,11 +627,16 @@ const CityHallCreate = props => {
                   value={values.address}
                   variant="outlined"
                 />
-              </Grid>
-              <Grid
-                item
-                md={6}
-                xs={12}
+              </form>
+            </Grid>
+            <Grid
+              item
+              md={6}
+              xs={12}
+            >
+              <form
+                noValidate
+                autoComplete="off"
               >
                 <TextField
                   fullWidth
@@ -626,120 +650,121 @@ const CityHallCreate = props => {
                   value={values.neighborhood}
                   variant="outlined"
                 />
-              </Grid>
+              </form>
+            </Grid>
 
-              <Grid
-                item
-                md={3}
-                xs={12}
+            <Grid
+              item
+              md={3}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                helperText="Informe o estado"
+                label="Estado"
+                margin="dense"
+                name="state"
+                onChange={handleChange}
+                required
+                select
+                SelectProps={{ native: true }}
+                onChange={handleStateChange}
+                value={values.state}
+                variant="outlined"
               >
-                <TextField
-                  fullWidth
-                  helperText="Informe o estado"
-                  label="Estado"
-                  margin="dense"
-                  name="state"
-                  onChange={handleChange}
-                  required
-                  select
-                  SelectProps={{ native: true }}
-                  onChange={handleStateChange}
-                  value={values.state}
-                  variant="outlined"
-                >
-                  <option aria-label="None" value="" />
-                  {states.states.map(option => (
-                    <option
-                      key={option.id}
-                      value={option.id}
-                    >
-                      {option.name}
-                    </option>
-                  ))}
-                </TextField>
-              </Grid>
-              <Grid
-                item
-                md={3}
-                xs={12}
+                <option aria-label="None" value="" />
+                {states.states.map(option => (
+                  <option
+                    key={option.id}
+                    value={option.id}
+                  >
+                    {option.name}
+                  </option>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid
+              item
+              md={3}
+              xs={12}
+            >
+              <TextField
+                fullWidth
+                helperText="Informe a cidade"
+                label="Cidades"
+                margin="dense"
+                select
+                SelectProps={{ native: true }}
+                onChange={handleChange2}
+                required
+                name="city"
+                value={values2.city}
+                variant="outlined"
               >
-                <TextField
-                  fullWidth
-                  helperText="Informe a cidade"
-                  label="Cidades"
-                  margin="dense"
-                  select
-                  SelectProps={{ native: true }}
-                  onChange={handleChange2}
-                  required
-                  name="city"
-                  value={values2.city}
-                  variant="outlined"
-                >
-                  <option aria-label="None" value="" />
-                  {cities.cities.map(option => (
-                    <option
-                      key={option.id}
-                      value={option.id}
-                    >
-                      {option.name}
-                    </option>
-                  ))}
-                </TextField>
-              </Grid>
+                <option aria-label="None" value="" />
+                {cities.cities.map(option => (
+                  <option
+                    key={option.id}
+                    value={option.id}
+                  >
+                    {option.name}
+                  </option>
+                ))}
+              </TextField>
+            </Grid>
             </Grid>
           </CardContent>
-          <Divider />
-          <CardActions>
-            {mudarCor &&
-              <Grid
-                item
-                lg={12}
-                md={12}
-                xl={12}
-                xs={12}
+        <Divider />
+        <CardActions>
+          {mudarCor &&
+            <Grid
+              item
+              lg={12}
+              md={12}
+              xl={12}
+              xs={12}
+            >
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={handleClick}
+                style={{ background: '#1b5e20', float: 'right' }}
               >
-                <Button
-                  color="primary"
-                  variant="contained"
-                  onClick={handleClick}
-                  style={{ background: '#1b5e20', float: 'right' }}
-                >
-                  Cadastrar
+                Cadastrar
               </Button>
-              </Grid>
-            }
+            </Grid>
+          }
 
-            {mudarCor2 &&
-              <Grid
-                item
-                lg={12}
-                md={12}
-                xl={12}
-                xs={12}
+          {mudarCor2 &&
+            <Grid
+              item
+              lg={12}
+              md={12}
+              xl={12}
+              xs={12}
+            >
+              <Button
+                color="secondary"
+                variant="contained"
+                onClick={handleClickAlterar}
+                style={{ float: 'right' }}
               >
-                <Button
-                  color="secondary"
-                  variant="contained"
-                  onClick={handleClickAlterar}
-                  style={{ float: 'right' }}
-                >
-                  Salvar
+                Salvar
               </Button>
-              </Grid>
-            }
-          </CardActions>
+            </Grid>
+          }
+        </CardActions>
         </form>
       </Card>
-      <Snackbar open={errors.length} onClick={handleSnackClick}>
-        {erros()}
-      </Snackbar>
-      <Backdrop
-        style={{ zIndex: 99999999 }}
-        className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
-    </div>
+    <Snackbar open={errors.length} onClick={handleSnackClick}>
+      {erros()}
+    </Snackbar>
+    <Backdrop
+      style={{ zIndex: 99999999 }}
+      className={classes.backdrop} open={openValidador} onClick={handleCloseValidador}>
+      <CircularProgress color="inherit" />
+    </Backdrop>
+    </div >
   );
 };
 

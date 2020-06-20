@@ -39,23 +39,26 @@ const Profile = props => {
     if (firebaseUser) {
       firebaseUser.getIdTokenResult().then((token) => {
         const claims = token.claims;
-          setUser({
-              ...user,
-              name: claims.name,
-              avatar: claims.picture,
-              bio: claims.email,
-              admin: claims.admin
-          })
+        setUser({
+          ...user,
+          name: claims.name,
+          avatar: claims.picture,
+          bio: claims.email,
+          admin: claims.admin,
+          coordinador:claims.coordinator,
+          city_hall:claims.city_hall,
+          modertor:claims.moderator
+        })
       })
     } else {
-        // No user is signed in.
+      // No user is signed in.
     }
-}
+  }
 
-  React.useEffect(() => {        
+  React.useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(onChange)
     return () => unsubscribe()
-  }, [])  
+  }, [])
 
   return (
     <div
@@ -72,6 +75,7 @@ const Profile = props => {
       <Typography
         className={classes.name}
         variant="h4"
+        style={{textAlign:'center'}}
       >
         {user.name}
       </Typography>
@@ -81,11 +85,29 @@ const Profile = props => {
       <Typography variant="body2">
         {
           user.admin &&
-          <button>
-            Coisas de admin
-          </button>
+          <Typography variant="body2">
+            ADMINISTRADOR
+        </Typography>
         }
-      </Typography>      
+        {
+          user.coordinator &&
+          <Typography variant="body2">
+            COORDENADOR
+        </Typography>
+        }
+        {
+          user.moderator &&
+          <Typography variant="body2">
+            MODERADOR
+        </Typography>
+        }
+           {
+          user.city_hall &&
+          <Typography variant="body2">
+            PREFEITURA
+        </Typography>
+        }
+      </Typography>
     </div>
   );
 };

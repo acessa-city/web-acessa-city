@@ -249,6 +249,10 @@ const AccountDetails = props => {
                 md={6}
                 xs={12}
               >
+                <form
+                  noValidate
+                  autoComplete="off"
+                >
                 <TextField
                   fullWidth
                   helperText="Informe o primeiro nome"
@@ -260,12 +264,17 @@ const AccountDetails = props => {
                   value={values.name}
                   variant="outlined"
                 />
+                </form>
               </Grid>
               <Grid
                 item
                 md={6}
                 xs={12}
               >
+                 <form
+                  noValidate
+                  autoComplete="off"
+                >
                 <TextField
                   fullWidth
                   helperText="Informe o sobrenome"
@@ -277,12 +286,17 @@ const AccountDetails = props => {
                   value={values.lastName}
                   variant="outlined"
                 />
+                </form>
               </Grid>
               <Grid
                 item
                 md={4}
                 xs={12}
               >
+                 <form
+                  noValidate
+                  autoComplete="off"
+                >
                 <TextField
                   fullWidth
                   helperText="Informe o endereço de e-mail"
@@ -294,10 +308,15 @@ const AccountDetails = props => {
                   value={values.email}
                   variant="outlined"
                 />
+                </form>
               </Grid>
 
 
               <Grid item xs={12} md={3}>
+              <form
+                  noValidate
+                  autoComplete="off"
+                >
                 <TextField
                   fullWidth
                   error={password.password != password.confirmPassword}
@@ -311,9 +330,14 @@ const AccountDetails = props => {
                   onChange={sender => handleChange2('password', sender)}
                   variant="outlined"
                 />
+                </form>
               </Grid>
-
+    
               <Grid item xs={12} md={3}>
+              <form
+                  noValidate
+                  autoComplete="off"
+                >
                 <TextField
                   fullWidth
                   error={password.password != password.confirmPassword}
@@ -327,6 +351,7 @@ const AccountDetails = props => {
                   value={password.confirmPassword}
                   variant="outlined"
                 />
+                </form>
               </Grid>
 
               {/* <Grid
