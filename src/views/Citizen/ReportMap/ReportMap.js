@@ -359,20 +359,32 @@ const ReportMap = props => {
     setOpenAlerta(false);
   };
 
+  const procuraPhoto = (photo, photos) => {
+    let encontrou = -1;
 
+    console.log(photo);
+    for (let i = 0; i < photos.length; i++) {
+      console.log(photos[i]);
+      if (photo.midiasVideoPhoto.base64 == photos[i].base64) {
+        encontrou = i;
+      }
+    }
+    return encontrou;
+  }
   const handleExlcuir = (event) => {
     event.preventDefault();
-    console.log("PEguei a photo",midiasDelete);
-   // props.deleteCategory(categoriesDelete);
-   var novoArr = midia.images.slice(midiasDelete);
-   console.log("dfdfsf",novoArr);
-   
+
+    if (midiasDelete.midiasVideoPhoto.fileLocal.type.includes('video/mp4')) {
+      const indexVideo = procuraPhoto(midiasDelete, midia.videos);
+      midia.videos.splice(indexVideo)
+      setMidiaStatusVideo(midia.videos.length > 0)
+    } else {
+      const indexImges = procuraPhoto(midiasDelete, midia.images);
+      midia.images.splice(indexImges);
+      setMidiaStatusPhotos(midia.images.length > 0)
+    }
     setOpenAlerta(false);
   }
-
-
-
-
 
 
 
@@ -464,7 +476,7 @@ const ReportMap = props => {
 
         if (name == 'images') {
 
-          if (validarTamanho(2048, target.files[i].size, true)) {
+          if (validarTamanho(1024 * 5, target.files[i].size, true)) {
             setMidiaStatusPhotos(true)
             const imagem = {
               base64: e.target.result,
@@ -558,6 +570,8 @@ const ReportMap = props => {
                   }, 10000);
                   limparForm();
                   limparMidia();
+                  setMidiaStatusPhotos(false);
+                  setMidiaStatusVideo(false);
                 }).catch((aError) => {
                   limparForm();
                   limparMidia();
@@ -998,83 +1012,11 @@ const ReportMap = props => {
                             cellHeight={160} className={style.gridList} cols={3}>
                             {midia.images.map((midias) => (
                               <GridListTile key={midias.fileLocal.name} cols={midias.cols || 1}>
-                                <img onClick={() => handleOpenDelete(midias)} src={midias.base64} />
+                                <img onClick={() => handleOpenDelete(midias)} style={{ cursor: 'pointer' }} src={midias.base64} />
                               </GridListTile>
                             ))}
                           </GridList>
                         }
-
-                        {/* Modal Alerta */}
-                        {openAlerta &&
-
-                          <Modal
-                            aria-labelledby="transition-modal-title"
-                            aria-describedby="transition-modal-description"
-                            className={style.modal}
-                            open={openAlerta}
-                            onClose={handleCloseAlerta}
-                            BackdropComponent={Backdrop}
-                            BackdropProps={{
-                              timeout: 500,
-                            }}
-                            
-                          >
-                            {/* Modal da Dereita */}
-                            <Fade in={openAlerta}>
-                              <div className={style.paper}>
-                                <div style={{
-                                  textAlign: 'right'
-                                }}>
-
-                                  <IconButton
-                                    aria-label="more"
-                                    aria-controls="long-menu"
-                                    aria-haspopup="true"
-                                    onClick={handleCloseAlerta}
-                                  >
-                                    <CloseIcon />
-                                  </IconButton>
-                                </div>
-                                <Card className={style.root}
-                                  style={{
-                                    textAlign: 'center',
-                                    width: 500,
-                                    maxHeight: 500,
-                                  }}>
-
-                                  <CardContent>
-                                    {
-                                      <Typography>
-                                        Deseja excluir a photo {midiasDelete.categories.fileLocal.name}?
-                                   </Typography>
-                                    }
-                                  </CardContent>
-                                  <Divider />
-                                  <CardActions>
-                                    <Grid
-                                      item
-                                      lg={12}
-                                      md={12}
-                                      xl={12}
-                                      xs={12}
-                                    >
-                                      <Button
-                                        color="secondary"
-                                        variant="contained"
-                                        style={{ float: 'right', background: '#b71c1c' }}
-                                        onClick={handleExlcuir}
-                                      >
-                                        Excluir
-                                     </Button>
-                                    </Grid>
-                                  </CardActions>
-                                </Card>
-                              </div>
-                            </Fade>
-                          </Modal>
-                          // {/* FIM Abri Modal envio coordenador  */}
-                        }
-
                         <Fragment>
                           <input
                             accept="image/*"
@@ -1115,12 +1057,12 @@ const ReportMap = props => {
                             {midia.videos.map((videos) => (
                               <GridListTile key={videos.fileLocal.name} cols={videos.cols || 1}>
                                 <video controls
-                                  style={{cursor: 'point'}}
+                                  style={{ cursor: 'pointer' }}
                                   onClick={() => handleOpenDelete(videos)}
                                   width='100%'
                                   height='auto'
                                 >
-                                  <source src={videos.base64} />
+                                  <source style={{ cursor: 'pointer' }} src={videos.base64} />
                                 </video>
                               </GridListTile>
                             ))}
@@ -1144,6 +1086,78 @@ const ReportMap = props => {
                           </label>
                         </Fragment>
                       </Grid>
+
+                      {/* Modal Alerta */}
+                      {openAlerta &&
+
+                        <Modal
+                          aria-labelledby="transition-modal-title"
+                          aria-describedby="transition-modal-description"
+                          className={style.modal}
+                          open={openAlerta}
+                          onClose={handleCloseAlerta}
+                          BackdropComponent={Backdrop}
+                          BackdropProps={{
+                            timeout: 500,
+                          }}
+
+                        >
+                          {/* Modal da Dereita */}
+                          <Fade in={openAlerta}>
+                            <div className={style.paper}>
+                              <div style={{
+                                textAlign: 'right'
+                              }}>
+
+                                <IconButton
+                                  aria-label="more"
+                                  aria-controls="long-menu"
+                                  aria-haspopup="true"
+                                  onClick={handleCloseAlerta}
+                                >
+                                  <CloseIcon />
+                                </IconButton>
+                              </div>
+                              <Card className={style.root}
+                                style={{
+                                  textAlign: 'center',
+                                  width: 500,
+                                  maxHeight: 500,
+                                }}>
+
+                                <CardContent>
+                                  {
+                                    <Typography>
+                                      Deseja excluir a photo?
+                                 </Typography>
+                                  }
+                                </CardContent>
+                                <Divider />
+                                <CardActions>
+                                  <Grid
+                                    item
+                                    lg={12}
+                                    md={12}
+                                    xl={12}
+                                    xs={12}
+                                  >
+                                    <Button
+                                      color="secondary"
+                                      variant="contained"
+                                      style={{ float: 'right', background: '#b71c1c' }}
+                                      onClick={handleExlcuir}
+                                    >
+                                      Excluir
+                                    </Button>
+                                  </Grid>
+                                </CardActions>
+                              </Card>
+                            </div>
+                          </Fade>
+                        </Modal>
+                        // {/* FIM Abri Modal envio coordenador  */}
+                      }
+
                     </Grid>
                   </CardContent>
                   <Divider />

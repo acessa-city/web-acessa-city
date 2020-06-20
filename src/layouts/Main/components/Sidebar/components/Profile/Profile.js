@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/styles';
 import { Avatar, Typography } from '@material-ui/core';
 import { useState } from 'react';
 import firebase from 'firebase/app'
+import currentUser from 'utils/AppUser'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,29 +36,22 @@ const Profile = props => {
     admin: false
   })
 
-  function onChange(firebaseUser) {
-    if (firebaseUser) {
-      firebaseUser.getIdTokenResult().then((token) => {
-        const claims = token.claims;
-        setUser({
-          ...user,
-          name: claims.name,
-          avatar: claims.picture,
-          bio: claims.email,
-          admin: claims.admin,
-          coordinador:claims.coordinator,
-          city_hall:claims.city_hall,
-          modertor:claims.moderator
-        })
-      })
-    } else {
-      // No user is signed in.
-    }
-  }
 
   React.useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged(onChange)
-    return () => unsubscribe()
+    currentUser().then((user) =>{
+      console.log("dfsdfffdsfsdffsdfsdfsdfdf",user)
+         setUser({
+        ...user,
+        name: user.firstName + ' ' + user.lastName,
+        avatar: user.profileUrl,
+        bio: user.email,
+        admin: user.roles.includes('admin'),
+        coordinador: user.roles.includes('coordinator'),
+        city_hall: user.roles.includes('city_hall'),
+        modertor: user.roles.includes('moderator')
+      })
+   
+    })
   }, [])
 
   return (

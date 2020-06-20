@@ -205,6 +205,7 @@ const CityHallCreate = props => {
 
 
   const handleClick = () => {
+    console.log("ressss", values);
     setOpen(true)
     setOpenValidador(true)
     if (values2.city === '' || values.state === '' || values.name === '' || values.cnpj === '' || values.email === '' || values.address === '' || values.neighborhood === '' || values.zipCode === '' || values.number === '') {
@@ -230,7 +231,7 @@ const CityHallCreate = props => {
         cityId: values2.city
       }
 
-      if (newCityHall.cnpj.replace(/\s/g, '').length !== 14) {
+      if (newCityHall.cnpj.replace(/\_/g, '').length !== 14) {
         setOpenValidador(false)
         setErrorsStatus(false)
         setErrors([
@@ -239,7 +240,7 @@ const CityHallCreate = props => {
         setTimeout(() => {
           setErrors([]);
         }, 2000);
-      } else if (newCityHall.zipCode.replace(/\s/g, '').length !== 8) {
+      } else if (newCityHall.zipCode.replace(/\_/g, '').length !== 8) {
 
         setOpenValidador(false)
         setErrorsStatus(false)
@@ -775,8 +776,6 @@ const cnpjMask = props => {
   <MaskedInput
       { ...other }
       mask={[/\d/, /\d/,'.', /\d/,/\d/,/\d/,'.', /\d/, /\d/,/\d/,'/',/\d/, /\d/, /\d/,/\d/,'-',/\d/,/\d/]}
-      placeholderChar={'\u2000'}
-      showMask
   />
   );
 }
