@@ -711,6 +711,8 @@ const AproveCityHallTable = props => {
   );
 };
 
+
+
 AproveCityHallTable.propTypes = {
   className: PropTypes.string,
   users: PropTypes.array.isRequired

@@ -388,7 +388,7 @@ const CityHallCreate = props => {
 
 
 
-  function TextMaskCustom(props) {
+ /* function TextMaskCustom(props) {
     const { inputRef, ...outros } = props;
 
     return (
@@ -403,11 +403,11 @@ const CityHallCreate = props => {
         showMask
       />
     );
-  }
+  }*/
 
 
 
-  function TextMaskCustom2(props) {
+ /* function TextMaskCustom2(props) {
     const { inputRef, ...outros } = props;
 
     return (
@@ -422,11 +422,8 @@ const CityHallCreate = props => {
         showMask
       />
     );
-  }
+  }*/
 
-  TextMaskCustom.propTypes = {
-    inputRef: PropTypes.func.isRequired,
-  };
 
   const erros = () => {
     if (errorsStatus == true) {
@@ -527,13 +524,14 @@ const CityHallCreate = props => {
                   label="CNPJ"
                   margin="dense"
                   name="cnpj"
-                  onChange={handleChange}
                   required
                   value={values.cnpj}
                   variant="outlined"
                   InputProps={{
-                    inputComponent: TextMaskCustom,
-                  }}
+                    inputComponent: cnpjMask,
+                    value: values.cnpj,
+                    onChange: handleChange,
+                }}
                 />
 
               </Grid>
@@ -548,13 +546,14 @@ const CityHallCreate = props => {
                   label="CEP"
                   margin="dense"
                   name="zipCode"
-                  onChange={handleChange}
                   required
                   value={values.zipCode}
                   variant="outlined"
                   InputProps={{
-                    inputComponent: TextMaskCustom2,
-                  }}
+                    inputComponent: zipCodeMask,
+                    value: values.zipCode,
+                    onChange: handleChange,
+                }}
                 />
               </Grid>
               <Grid
@@ -744,8 +743,37 @@ const CityHallCreate = props => {
   );
 };
 
+const cnpjMask = props => {
+  const { inputRef, ...other } = props;
+
+  return (
+  <MaskedInput
+      { ...other }
+      mask={[/\d/, /\d/,'.', /\d/,/\d/,/\d/,'.', /\d/, /\d/,/\d/,'/',/\d/, /\d/, /\d/,/\d/,'-',/\d/,/\d/]}
+      placeholderChar={'\u2000'}
+      showMask
+  />
+  );
+}
+
+const zipCodeMask = props => {
+  const { inputRef, ...other } = props;
+
+  return(
+    <MaskedInput 
+      { ...other }
+      mask={[/\d/,/\d/,/\d/,/\d/,/\d/,'-',/\d/,/\d/,/\d/]}
+    />
+  );
+}
+
 CityHallCreate.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  classes: PropTypes.objec.isRequired,
 };
+
+/*TextMaskCustom.propTypes = {
+  inputRef: PropTypes.func.isRequired,
+};*/
 
 export default CityHallCreate;
