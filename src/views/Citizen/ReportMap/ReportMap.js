@@ -1128,7 +1128,7 @@ const ReportMap = props => {
                                 <CardContent>
                                   {
                                     <Typography>
-                                      Deseja excluir a photo?
+                                      Deseja excluir este conteúdo?
                                  </Typography>
                                   }
                                 </CardContent>

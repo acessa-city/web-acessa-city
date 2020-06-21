@@ -99,7 +99,8 @@ const useStyles = makeStyles(theme => ({
     marginTop: 50
   },
   media: {
-    height: '280px'
+    width: '800px',
+    height: '380px'
   },
 
 }));
