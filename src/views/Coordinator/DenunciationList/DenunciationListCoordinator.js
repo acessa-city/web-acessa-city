@@ -254,6 +254,7 @@ const DenunciationListCoordinator = () => {
   const filterLimpar = (filtroAprovadas)=>{
 
     setDenunciations(filtroAprovadas)
+    window.location.reload(true);
 
   }
 
@@ -281,10 +282,12 @@ const DenunciationListCoordinator = () => {
 
     const endJson = {
       reportId: finish.reportId,
-      userId: user.userId,
+      userId: user.id,
       description: finish.description,
       endDate: endDate
     }
+
+   // console.log("Testando real o encerramento", endJson)
 
     API.post(`/report/end-progress`, endJson
     ).then(response => {
@@ -295,7 +298,7 @@ const DenunciationListCoordinator = () => {
       setTimeout(() => {
         setErrors([]);
       }, 2000);
-
+      window.location.reload(true);
     }).catch(erro => {
       console.log(erro);
       setMensagem('Ocorreu um erro', erro);

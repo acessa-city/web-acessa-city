@@ -764,14 +764,14 @@ const DenunciationsTable = props => {
                           {statusProgressDenunciation == 'c37d9588-1875-44dd-8cf1-6781de7533c3' &&
                             <CardActions>
                               <Grid item md={6} xs={6}>
-                                <Button
+                                {/* <Button
                                   style={{ background: '#b71c1c' }}
                                   onClick={handleOpenDeny}
                                   color="primary"
                                   variant="contained"
                                 >
                                   Negar
-                               </Button>
+                               </Button> */}
                               </Grid>
                               <Grid item md={6} xs={6}>
                                 <Button

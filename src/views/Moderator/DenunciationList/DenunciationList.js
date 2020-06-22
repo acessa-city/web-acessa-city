@@ -219,12 +219,11 @@ const DenunciationList = () => {
   const filterLimpar = (filtroAprovadas) => {
 
     setDenunciations(filtroAprovadas)
+    window.location.reload(true);
 
   }
 
   ///Lista de categorias
-
-
   const listCategory = () => {
     API.get('/category'
     ).then(response => {
