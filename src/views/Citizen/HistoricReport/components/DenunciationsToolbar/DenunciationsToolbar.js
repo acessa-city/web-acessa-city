@@ -89,7 +89,15 @@ const DenunciationsToolbar = props => {
 
   const classes = useStyles();
 
+  const filterLimpar = (filtroAprovadas) => {
 
+
+    window.location.reload(true);
+    setDenunciationCategory('');
+    setDenunciationStreet('');
+    setDenunciationNeighborhood('');
+    setDenunciationData('');
+  }
 
 
   const handleData = (sender) => {
@@ -118,7 +126,7 @@ const DenunciationsToolbar = props => {
     //Filtro geral
     const filtro = {
       category: denunciationCategory,
-      setDenunciationData: denunciationStreet.street,
+      street: denunciationStreet.street,
       neighborhood: denunciationNeighborhood.neighborhood,
       creationDate: denunciationData.data,
       status: reportStatusValue,
@@ -126,18 +134,7 @@ const DenunciationsToolbar = props => {
     props.filter(filtro);
 
   }
-
-  const submitLimpar = (event) => {
-    event.preventDefault();
-
-
-    setDenunciationCategory('');
-    setDenunciationStreet({});
-    setDenunciationNeighborhood('');
-    setDenunciationData('');
-  }
-
-
+  
   const [progressStatus, setProgressStatus] = React.useState(true);
 
   //Filtro denúncias em progresso
@@ -260,7 +257,7 @@ const DenunciationsToolbar = props => {
 
           <Grid item xs={12} sm={1}>
             <FormControl margin="dense" fullWidth>
-              <Button onClick={submitLimpar} variant="contained" >Limpar</Button>
+              <Button onClick={filterLimpar} variant="contained" >Limpar</Button>
             </FormControl>
           </Grid>
         </Grid>
