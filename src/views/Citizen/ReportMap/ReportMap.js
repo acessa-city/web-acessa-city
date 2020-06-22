@@ -607,7 +607,7 @@ const ReportMap = props => {
                 if (aError.response.status == 400) {
                   setOpenValidador(false)
                   console.log(aError.response.data.errors)
-                  setErrors(aError.response.data.errors)
+                  setErrors("Erro aqui")
 
                   setTimeout(() => {
                     setErrors([]);
