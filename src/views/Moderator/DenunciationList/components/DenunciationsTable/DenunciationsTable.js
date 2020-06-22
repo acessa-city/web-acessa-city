@@ -699,6 +699,7 @@ const DenunciationsTable = props => {
                                   <div>
                                     {item.url.includes('.mp4') &&
                                       <video controls
+                                       onClick={() => window.open(item.url, "_blank")}
                                         width='100%'
                                         height='auto'
                                       >
