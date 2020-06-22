@@ -572,6 +572,7 @@ const ReportMap = props => {
                   limparMidia();
                   setMidiaStatusPhotos(false);
                   setMidiaStatusVideo(false);
+                  window.location.reload(true);
                 }).catch((aError) => {
                   limparForm();
                   limparMidia();

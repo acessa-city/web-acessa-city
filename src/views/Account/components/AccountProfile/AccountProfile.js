@@ -71,6 +71,7 @@ const AccountProfile = props => {
           setErrors([]);
         }, 2000);
         setUser(response.data)
+        window.location.reload(true);
         
       }).catch((erro) => {
         setOpenValidador(false)
@@ -90,6 +91,7 @@ const AccountProfile = props => {
           setErrors([]);
         }, 2000);
         setUser(response.data)
+        window.location.reload(true);
         
       }).catch((erro) => {
         setOpenValidador(false)
