@@ -84,7 +84,7 @@ const DenunciationListCoordinator = () => {
      
 
       const denyJson = {
-        userId: user.userId,
+        userId: user.id,
         reportId: deny.reportId,
         reportStatusId: deny.reportStatusId,
         description: deny.description,
@@ -229,7 +229,7 @@ const DenunciationListCoordinator = () => {
 
     const progressJson = {
       reportId: progress.denunciationsId,
-      userId: user.userId,
+      userId: user.id,
       description: progress.description,
       startDate: dataformatada
     }
@@ -313,6 +313,10 @@ const DenunciationListCoordinator = () => {
     })    
   }, []);
 
+  const getCity = () =>{
+    return user.cityHall.city.id
+  }
+
   /////Errros///////
   const handleSnackClick = () => {
     setErrors([]);
@@ -369,7 +373,7 @@ const DenunciationListCoordinator = () => {
   return (
     <div className={classes.root}>
       {/* <DenunciationsToolbar save={save} /> */}
-      <DenunciationsToolbar denunciationsSlect={denunciationsSlect} categories={categories} filter={filter} filterAprove={filterAprove} filterLimpar={filterLimpar}/>
+      <DenunciationsToolbar  cityId={getCity} denunciationsSlect={denunciationsSlect} categories={categories} filter={filter} filterAprove={filterAprove} filterLimpar={filterLimpar}/>
       <div className={classes.content}>
         <DenunciationsTable statusProgressDenunciation={statusProgressDenunciation} denunciations={denunciations} coodenadores={coodenadores} envioCoordenador={envioCoordenador} envioDeny={envioDeny} envioProgress={envioProgress} envioFinish={envioFinish} />
       </div>

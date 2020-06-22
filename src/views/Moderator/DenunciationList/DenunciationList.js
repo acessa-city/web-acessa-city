@@ -237,7 +237,6 @@ const DenunciationList = () => {
     })
   }
 
-
   // Atualizar os dados na tela
   useEffect(() => {
     setOpenValidador(true)
@@ -250,6 +249,9 @@ const DenunciationList = () => {
     })    
   }, []);
 
+  const getCity = () =>{
+    return user.cityHall.city.id
+  }
 
   const atualizarTela =() =>{
     listDenunciations(user.cityHall.city.id);
@@ -313,7 +315,7 @@ const DenunciationList = () => {
   return (
     <div className={classes.root}>
       {/* <DenunciationsToolbar save={save} /> */}
-      <DenunciationsToolbar denunciationsSlect={denunciationsSlect} categories={categories} filter={filter} filterLimpar={filterLimpar} />
+      <DenunciationsToolbar cityId={getCity} denunciationsSlect={denunciationsSlect} categories={categories} filter={filter} filterLimpar={filterLimpar} />
       <div className={classes.content}>
         <DenunciationsTable statusDenunciation={statusDenunciation} denunciations={denunciations} coodenadores={coodenadores} envioCoordenador={envioCoordenador} envioDeny={envioDeny} atualizarTela={atualizarTela} />
       </div>

@@ -83,7 +83,7 @@ const useStyles = makeStyles(theme => ({
 
 
 const DenunciationsToolbar = props => {
-  const { className, denunciationsSlect, categories, ...rest } = props;
+  const { className, denunciationsSlect, categories,cityId, ...rest } = props;
 
   const [descricao, setDescricao] = useState('');
   const [categoria, setCategoria] = useState('');
@@ -137,7 +137,7 @@ const DenunciationsToolbar = props => {
 const filterLimpar = (event) => {
     event.preventDefault();
     setOpenValidador(true)
-    API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010'
+    API.get('/report?status=96afa0df-8ad9-4a44-a726-70582b7bd010&city=' + cityId()
     ).then(response => {
       setOpenValidador(false)
       const listDenunciationsAprovadas = response.data;
