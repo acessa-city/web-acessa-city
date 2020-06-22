@@ -508,7 +508,10 @@ const DenunciationsTable = props => {
                     >
                       <Fade in={open}>
                         {/* DENTRO DO MODAL */}
-                        <div className={classes.paper}>
+                        <div style={{
+                          overflow: 'scroll',
+                          height: '100%'
+                        }} className={classes.paper}>
                           <Report reportId={idReportModal}></Report>
                           <Button onClick={handleClose}>Voltar</Button>
 
